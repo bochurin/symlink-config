@@ -13,7 +13,7 @@ Continue from Phase 1 complete - TypeScript implementation ready for testing.
 ```
 
 ### Available Prompts
-- **[symlink-config-context.md](prompts/symlink-config-context.md)** - Main project context and technical foundation
+- No project-specific prompts currently - use general Amazon Q prompts directory
 
 ## Development Tools
 - **VSCode Extension API** - Core extension framework
