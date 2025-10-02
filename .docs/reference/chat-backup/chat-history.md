@@ -114,3 +114,121 @@
 - Amazon Q integration functional
 - JSON processing utilities available
 - Ready for enhanced development workflow
+
+## Session 3: File Watcher System and Architecture Refactoring (02.10.2025)
+
+### Context
+- User needed help testing symlink-config VSCode extension
+- Extension had issues with loading and infinite loops in file watchers
+- Goal: Implement robust file watching system and fix architectural issues
+
+### Key Technical Challenges
+
+#### Extension Loading Issues
+- Initial problem: Extension not loading properly in VSCode
+- Root cause: Class-based architecture was complex and had initialization issues
+- Solution: Converted to functional approach for better maintainability and composability
+
+#### File Watcher System Implementation
+- **Requirement**: Watch for changes in symlink.config.json files, next.symlink.config.json, .gitignore, and .git repository
+- **Implementation**: Created comprehensive file watcher orchestrator using VSCode FileSystemWatcher API
+- **Components**:
+  - `file-watcher-orchestrator.ts` (later renamed to `watcher-orchestrator.ts`, then `set-watchers.ts`)
+  - `file-watcher-hook.ts` (later renamed to `watcher-hook.ts`, then `hooks/use-file-watcher.ts`)
+  - `next-config-manager.ts` - Manages next.symlink.config.json generation
+  - `gitignore-manager.ts` - Manages gitignore sections with Begin/End markers
+
+#### Infinite Loop Bug Discovery and Fix
+- **Problem**: GitignoreManager writing to .gitignore triggered its own watcher, creating infinite loop
+- **Root Cause**: Watcher detecting its own file changes and triggering updates repeatedly
+- **Solution**: Implemented state tracking pattern with `lastWrittenContent` variable
+- **Additional Fix**: Converted section management from line-by-line parsing to regex-based approach
+
+#### Architecture Refactoring
+- **From**: Class-based architecture with factory functions (`createFileWatcherOrchestrator`, `createGitignoreManager`)
+- **To**: Functional architecture with direct exports and simple init methods
+- **Benefits**: Cleaner code, better composability, easier maintenance
+- **File Structure**: Organized into `managers/`, `hooks/`, and `types/` directories
+
+#### Project Reorganization
+- User reorganized project structure during development:
+  - `src/managers/gitignore/` - Gitignore management with index.ts export
+  - `src/managers/next-config/` - Next config management with index.ts export  
+  - `src/hooks/` - Reusable hooks like file watcher utility
+  - `src/types/` - Type definitions
+  - `src/set-watchers.ts` - Main watcher orchestrator
+  - `src/extension.ts` - Simplified extension entry point
+
+#### Code Simplification
+- **Removed**: All VSCode commands and status bar (not implemented yet)
+- **Simplified**: Extension to only run file watchers automatically
+- **Shortened**: File names from `file-watcher-*` to `watcher-*` for cleaner naming
+- **Eliminated**: Unnecessary `create*` wrapper functions
+
+### Technical Implementation Details
+
+#### File Watcher Patterns
+```typescript
+// Distributed symlink configs
+'**/symlink.config.json'
+
+// Root-level next config  
+'next.symlink.config.json'
+
+// Gitignore files
+'**/.gitignore'
+
+// Git repository
+'.git'
+```
+
+#### State Tracking Pattern
+```typescript
+let lastWrittenContent: string | undefined
+
+function updateFile(content: string) {
+  // Check if this is our own change
+  if (currentContent === lastWrittenContent) {
+    return // Ignore our own change
+  }
+  
+  // Store what we're about to write
+  lastWrittenContent = newContent
+  fs.writeFileSync(path, newContent)
+}
+```
+
+#### Functional Architecture Pattern
+```typescript
+// Before: Factory functions
+export function createGitignoreManager(workspaceRoot: string) { ... }
+
+// After: Direct exports with init
+export const gitignoreManager = {
+  init(workspaceRoot: string) { ... },
+  updateBasedOnConfiguration() { ... }
+}
+```
+
+### Technical Achievements
+- ✅ **File Watcher System**: Comprehensive watching of all relevant files
+- ✅ **Infinite Loop Fix**: State tracking prevents watcher feedback loops
+- ✅ **Functional Architecture**: Cleaner, more maintainable code structure
+- ✅ **Project Organization**: Logical directory structure with proper exports
+- ✅ **Code Simplification**: Removed unnecessary complexity and wrapper functions
+- ✅ **Regex-based Processing**: More robust gitignore section management
+
+### Current Status
+**Phase 1.7 Complete** - File Watcher System and Architecture Refactoring
+- Robust file watching system operational
+- Infinite loop issues resolved with state tracking
+- Clean functional architecture implemented
+- Project properly organized with logical structure
+- Extension simplified to core functionality only
+- Ready for command implementation and testing phase
+
+### Next Steps
+- Implement VSCode commands (Create All, Clean All, Dry Run)
+- Add status bar integration
+- Comprehensive testing of file watcher system
+- User experience refinement
