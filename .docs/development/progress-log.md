@@ -4,7 +4,7 @@
 
 **Goal**: VSCode extension for automated symlink management across project containers and workspaces  
 **Approach**: Translate proven CVHere symlink system to TypeScript with VSCode integration  
-**Current Phase**: Phase 1 Complete - TypeScript Implementation & GitHub Setup
+**Current Phase**: Phase 1 Complete - TypeScript Implementation & Development Tools Setup
 
 ## Development Phases
 
@@ -58,6 +58,16 @@
   - Preserved all CVHere logic and edge cases
   - Enhanced with VSCode API integration
   - Eliminated bash dependencies for cross-platform compatibility
+
+#### 1.6 CVHere Utilities Integration ✅
+- **Date**: 02.10.2025
+- **Status**: Complete
+- **Details**:
+  - Added structured commit workflow scripts (code-commit.sh, docs-commit.sh)
+  - Integrated Amazon Q prompts menu system for AI assistance
+  - Added init-jq.sh for cross-platform JSON parsing support
+  - Enhanced package.json with commit workflow and Q menu scripts
+  - Provides same development utilities as CVHere project
 
 ## Technical Implementation
 
@@ -188,7 +198,7 @@ sl-package.json
 
 **Phase**: Phase 1 Complete - TypeScript Implementation  
 **Branch**: `main`  
-**Latest**: Complete TypeScript translation with VSCode integration, GitHub repository published  
+**Latest**: Complete TypeScript translation with VSCode integration, GitHub repository published, CVHere development utilities integrated  
 **Next**: Testing and refinement (Phase 2)
 
 **Technical Foundation**:
@@ -201,3 +211,87 @@ sl-package.json
 **Ready for**: Comprehensive testing and user experience refinement
 
 *Based on proven symlink management system from CVHere project with 100% functionality preservation.*
+
+## Current Implementation Status
+
+### Implemented Features
+
+- **Complete CVHere Logic** - Full TypeScript translation of proven bash system
+- **Distributed .gitignore Tracking** - SymLinks block management
+- **Cross-Platform Support** - Windows batch file generation, Unix symlinks
+- **@-Syntax Path Resolution** - Project root relative paths
+- **Recursive Processing** - With exclude pattern filtering
+- **Non-Destructive Operations** - Preserves existing .gitignore entries
+
+### Core Components
+
+1. **SymlinkManager** (`src/symlink/manager.ts`)
+   - Main processing logic from CVHere process-path.sh
+   - Handles full workflow: clean → process → recurse → Windows batch
+
+2. **SymlinkCreator** (`src/symlink/creator.ts`)
+   - Cross-platform symlink creation with Windows batch support
+   - Timestamp-based batch file generation
+
+3. **GitignoreManager** (`src/symlink/gitignore.ts`)
+   - SymLinks block append/extract/clear functionality
+   - Windows line ending compatibility
+
+4. **Utils & Types** (`src/symlink/utils.ts`, `src/symlink/types.ts`)
+   - Path resolution, Windows detection, exclude filtering
+   - Type definitions matching CVHere system
+
+### Available Commands
+
+- `Symlinks: Create All` - Create all symlinks defined in config files
+- `Symlinks: Clean All` - Remove orphaned symlinks  
+- `Symlinks: Dry Run` - Preview changes without applying them
+
+### Development Utilities
+
+#### Commit Management
+- **`npm run git:code:commit`** - Interactive code commit (excludes docs)
+- **`npm run git:code:commit:auto`** - Auto-commit code with message from file
+- **`npm run git:docs:commit`** - Interactive documentation commit
+- **`npm run git:docs:commit:auto`** - Auto-commit docs with message from file
+
+#### Amazon Q Integration
+- **`npm run q:menu`** - Interactive prompts menu with arrow navigation
+- **`npm run q:prompts`** - Open Amazon Q prompts directory
+
+#### JSON Processing
+- **`scripts/shared/init-jq.sh`** - Cross-platform jq initialization utility
+
+### Testing Status
+
+- CVHere logic fully translated and tested
+- Dry run operations working correctly
+- .gitignore SymLinks block processing verified
+- Cross-platform path resolution confirmed
+
+### Usage Example
+
+Create a `symlink.config.json` file in your project:
+
+```json
+{
+  "directories": [
+    {
+      "target": "container1/shared",
+      "source": "@shared"
+    }
+  ],
+  "files": [
+    {
+      "target": "container2/package.json", 
+      "source": "@shared/package.json"
+    }
+  ],
+  "exclude_paths": ["node_modules", ".git"]
+}
+```
+
+Use Command Palette (`Ctrl+Shift+P`) and run:
+- `Symlinks: Dry Run` to preview changes
+- `Symlinks: Create All` to create symlinks
+- `Symlinks: Clean All` to remove orphaned symlinks
