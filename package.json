@@ -2,14 +2,16 @@
   "name": "symlink-config",
   "displayName": "symlink-config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.104.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [

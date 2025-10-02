@@ -1,6 +1,8 @@
 # Symlink Config
 
-Automated symlink management for package.json files across project containers and workspaces.
+VSCode extension for automated symlink management across project containers and workspaces.
+
+> **📚 Complete Documentation**: See **[.docs/](.docs/)** folder for comprehensive project documentation including architecture, decisions, and development progress.
 
 ## Features
 
@@ -52,15 +54,30 @@ Automated symlink management for package.json files across project containers an
 - **VSCode** - Version 1.104.0 or higher
 - **Admin privileges** - Required for symlink creation on Windows
 
+## Based on Proven Technology
+
+Built on the symlink management system from the CVHere project:
+- **Distributed .gitignore tracking** - SymLinks blocks in local .gitignore files
+- **Non-destructive operations** - Read existing entries without modification
+- **Cross-platform compatibility** - Windows batch generation, Unix native symlinks
+- **Battle-tested logic** - All CVHere Phase 4.17-4.20 functionality preserved
+- **Complete TypeScript translation** - No bash dependencies, native VSCode integration
+
+## Documentation
+
+Complete project documentation in **[.docs/](.docs/)**:
+- **[Migration from CVHere](.docs/project/migration-from-cvhere.md)** - Transfer process and context preservation
+- **[Progress Log](.docs/development/progress-log.md)** - Development phases and current implementation status
+- **[CVHere Symlink System](.docs/reference/cvhere-symlink-system.md)** - Original system documentation
+- **[Technical Decisions](.docs/development/decisions/decisions.md)** - Architecture and implementation decisions
+
 ## Implementation Status
 
-✅ **Phase 1.2 Complete** - Core symlink functionality implemented
-- TypeScript-based JSON configuration parsing
+✅ **Phase 1 Complete** - TypeScript Implementation
+- Complete translation of CVHere symlink system to TypeScript
 - Cross-platform symlink creation and management
 - VSCode integration with Command Palette and status bar
-- Dry run mode for safe preview of operations
-
-See [IMPLEMENTATION-STATUS.md](IMPLEMENTATION-STATUS.md) for detailed progress.
+- All proven CVHere logic and edge cases preserved
 
 ## Release Notes
 

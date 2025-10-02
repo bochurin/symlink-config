@@ -1,0 +1,17 @@
+node_modules/
+dist/
+build/
+.env
+.vscode/
+.DS_Store
+
+# Begin Symlink.Config
+next.symlink.config.json
+# End Symlink.Config
+
+# Begin Symlink.Config
+# End Symlink.Config
+
+# Begin Symlink.Config
+next.symlink.config.json
+# End Symlink.Config

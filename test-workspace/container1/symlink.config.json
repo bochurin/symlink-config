@@ -1,0 +1,9 @@
+{
+  "directories": [
+    {
+      "target": "container1/container2-sl2",
+      "source": "@container2"
+    }
+  ],
+  "exclude_paths": ["*"]
+}

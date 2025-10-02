@@ -1,0 +1,9 @@
+{
+  "directories": [
+    {
+      "target": "shared-sl",
+      "source": "@shared"
+    }
+  ],
+  "exclude_paths": ["*"]
+}
