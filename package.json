@@ -56,7 +56,12 @@
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test",
-    "git:docs:commit:auto": "git add .docs && git commit -F docs-commit-message.txt"
+    "git:docs:commit:auto": "git add .docs && git commit -F docs-commit-message.txt",
+    "git:docs:commit": "bash scripts/utils/commit/docs-commit.sh",
+    "git:code:commit": "bash scripts/utils/commit/code-commit.sh",
+    "git:code:commit:auto": "bash scripts/utils/commit/code-commit.sh --auto",
+    "q:menu": "bash scripts/utils/q/prompts-menu.sh",
+    "q:prompts": "start %USERPROFILE%\\.aws\\amazonq\\prompts"
   },
   "devDependencies": {
     "@types/vscode": "^1.104.0",
