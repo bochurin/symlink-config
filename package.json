@@ -1,0 +1,74 @@
+{
+  "name": "symlink-config",
+  "displayName": "symlink-config",
+  "description": "Automated symlink management for package.json files across project containers and workspaces",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.104.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "symlink-config.createAll",
+        "title": "Symlinks: Create All",
+        "category": "Symlink Config"
+      },
+      {
+        "command": "symlink-config.cleanAll",
+        "title": "Symlinks: Clean All",
+        "category": "Symlink Config"
+      },
+      {
+        "command": "symlink-config.dryRun",
+        "title": "Symlinks: Dry Run",
+        "category": "Symlink Config"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "symlink-config.createAll",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "symlink-config.cleanAll",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "symlink-config.dryRun",
+          "when": "workspaceFolderCount > 0"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.104.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "@typescript-eslint/parser": "^8.42.0",
+    "eslint": "^9.34.0",
+    "typescript": "^5.9.2",
+    "ts-loader": "^9.5.4",
+    "webpack": "^5.101.3",
+    "webpack-cli": "^6.0.1",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2"
+  }
+}

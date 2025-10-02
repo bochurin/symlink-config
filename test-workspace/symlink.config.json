@@ -1,0 +1,15 @@
+{
+  "directories": [
+    {
+      "target": "container1/shared",
+      "source": "@shared"
+    }
+  ],
+  "files": [
+    {
+      "target": "container2/package.json",
+      "source": "@shared/package.json"
+    }
+  ],
+  "exclude_paths": ["node_modules", ".git", "dist"]
+}
