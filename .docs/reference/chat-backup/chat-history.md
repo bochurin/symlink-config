@@ -165,51 +165,6 @@
 - **Shortened**: File names from `file-watcher-*` to `watcher-*` for cleaner naming
 - **Eliminated**: Unnecessary `create*` wrapper functions
 
-### Technical Implementation Details
-
-#### File Watcher Patterns
-```typescript
-// Distributed symlink configs
-'**/symlink.config.json'
-
-// Root-level next config  
-'next.symlink.config.json'
-
-// Gitignore files
-'**/.gitignore'
-
-// Git repository
-'.git'
-```
-
-#### State Tracking Pattern
-```typescript
-let lastWrittenContent: string | undefined
-
-function updateFile(content: string) {
-  // Check if this is our own change
-  if (currentContent === lastWrittenContent) {
-    return // Ignore our own change
-  }
-  
-  // Store what we're about to write
-  lastWrittenContent = newContent
-  fs.writeFileSync(path, newContent)
-}
-```
-
-#### Functional Architecture Pattern
-```typescript
-// Before: Factory functions
-export function createGitignoreManager(workspaceRoot: string) { ... }
-
-// After: Direct exports with init
-export const gitignoreManager = {
-  init(workspaceRoot: string) { ... },
-  updateBasedOnConfiguration() { ... }
-}
-```
-
 ### Technical Achievements
 - ✅ **File Watcher System**: Comprehensive watching of all relevant files
 - ✅ **Infinite Loop Fix**: State tracking prevents watcher feedback loops
@@ -227,8 +182,102 @@ export const gitignoreManager = {
 - Extension simplified to core functionality only
 - Ready for command implementation and testing phase
 
+## Session 4: Code Organization and Architecture Refinement (02.10.2025)
+
+### Context
+- User wanted to improve code organization and simplify architecture
+- Focus on implementing "one file = one function" pattern
+- Goal: Clean up codebase with better separation of concerns
+
+### Key Refactoring Activities
+
+#### Global State Management
+- **Problem**: Workspace root and state scattered across modules
+- **Solution**: Centralized all state in `src/state.ts`
+- **Added**: `gitignoreIsUpdating`, `gitignoreSectionEntries` to global state
+- **Benefits**: Single source of truth, easier debugging, consistent state access
+
+#### Gitignore Manager Decomposition
+- **Applied**: One file = one function pattern
+- **Structure Created**:
+  ```
+  gitignore/
+  ├── constants.ts
+  ├── memo.ts (memo function)
+  ├── make.ts (make function)
+  ├── file-ops/
+  │   ├── get-gitignore-path.ts
+  │   ├── read-gitignore.ts
+  │   ├── write-gitignore.ts
+  │   └── ensure-gitignore-exists.ts
+  ├── section/
+  │   ├── create-section.ts
+  │   ├── remove-section.ts
+  │   ├── get-current-section-entries.ts
+  │   └── is-section-valid.ts
+  └── operations/
+      ├── ensure-section-exists.ts
+      ├── add-entry-to-section.ts
+      ├── remove-entry-from-section.ts
+      └── remove-symlink-entries.ts
+  ```
+
+#### Next-Config Manager Decomposition
+- **Applied**: Same one file = one function pattern
+- **Structure Created**:
+  ```
+  next-config/
+  ├── memo.ts (memo function)
+  ├── make.ts (make function)
+  ├── handle-manual-change.ts
+  └── handle-manual-delete.ts
+  ```
+
+#### Function Naming Improvements
+- **Renamed Functions**:
+  - `init()` → `memo()` (memoization/initialization)
+  - `updateBasedOnConfiguration()` → `make()` (creates/builds gitignore)
+  - `generateNextConfig()` → `make()` (creates next config)
+  - `handleNextConfigChange()` → `handleManualChange()`
+  - `handleNextConfigDelete()` → `handleManualDelete()`
+
+#### Architecture Simplification
+- **Removed**: Unnecessary `create*` wrapper functions
+- **Converted**: From object-based exports to direct function exports
+- **Eliminated**: Redundant orchestrator files
+- **Simplified**: Index.ts files to clean re-exports only
+
+#### Development Tools Integration
+- **Added**: Prettier for code formatting
+- **Added**: ESLint import organization plugin
+- **Configured**: Format on save and import sorting
+- **Enhanced**: Package.json with formatting scripts
+
+### Technical Achievements
+- ✅ **One File = One Function**: Complete decomposition achieved
+- ✅ **Global State Management**: Centralized state in state.ts
+- ✅ **Clean Architecture**: Functional approach with direct exports
+- ✅ **Better Naming**: Descriptive function names (memo, make, handle*)
+- ✅ **Code Organization**: Logical grouping in subfolders
+- ✅ **Development Tools**: Prettier and ESLint integration
+- ✅ **Consistent Patterns**: Same structure across all managers
+
+### Final Improvements
+- **Unified Manual Handling**: Combined `handleManualChange` and `handleManualDelete` into single `handleManualAction(action: 'change' | 'delete')` function
+- **Enhanced Error Handling**: Added try-catch blocks for file operations
+- **Better State Integration**: Updated to use centralized state management
+- **Improved User Feedback**: Dynamic messages based on action type
+
+### Current Status
+**Architecture Complete** - Clean, maintainable codebase
+- One file = one function pattern implemented throughout
+- Global state management operational
+- Functional architecture with direct exports
+- Enhanced development tools integrated
+- Ready for comprehensive testing and feature development
+
 ### Next Steps
 - Implement VSCode commands (Create All, Clean All, Dry Run)
-- Add status bar integration
-- Comprehensive testing of file watcher system
+- Add comprehensive testing
 - User experience refinement
+- VSCode Marketplace preparation
