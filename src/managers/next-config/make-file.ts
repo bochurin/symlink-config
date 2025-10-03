@@ -1,10 +1,10 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import * as state from '../../state'
+import * as state from '../../shared/state'
 import { buildNextConfig } from './build-next-config'
 
-export async function makeFile() {
-  const content = await buildNextConfig()
+export function makeFile() {
+  const content = buildNextConfig()
   const nextConfigPath = path.join(
     state.getWorkspaceRoot(),
     'next.symlink.config.json'

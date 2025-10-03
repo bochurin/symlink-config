@@ -1,25 +1,43 @@
-import * as vscode from 'vscode'
 import * as fs from 'fs'
 import * as path from 'path'
 import { SymlinkConfig, SymlinkEntry } from '../../types'
-import { getWorkspaceRoot } from '../../state'
+import { getWorkspaceRoot } from '../../shared/state'
 
-export async function buildNextConfig(): Promise<string> {
+export function buildNextConfig(): string {
   try {
-    const configFiles = await findConfigFiles()
-    const masterConfig = await createMasterConfig(configFiles)
+    const configFiles = findConfigFiles()
+    const masterConfig = createMasterConfig(configFiles)
     return JSON.stringify(masterConfig, null, 2)
   } catch {
     return ''
   }
 }
 
-async function findConfigFiles(): Promise<string[]> {
-  const files = await vscode.workspace.findFiles('**/symlink.config.json')
-  return files.map((uri) => uri.fsPath)
+function findConfigFiles(): string[] {
+  const configFiles: string[] = []
+  const workspaceRoot = getWorkspaceRoot()
+
+  function scanDirectory(dir: string) {
+    try {
+      const entries = fs.readdirSync(dir, { withFileTypes: true })
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name)
+        if (entry.isDirectory()) {
+          scanDirectory(fullPath)
+        } else if (entry.name === 'symlink.config.json') {
+          configFiles.push(fullPath)
+        }
+      }
+    } catch {
+      // Skip directories we can't read
+    }
+  }
+
+  scanDirectory(workspaceRoot)
+  return configFiles
 }
 
-async function createMasterConfig(configFiles: string[]): Promise<SymlinkConfig> {
+function createMasterConfig(configFiles: string[]): SymlinkConfig {
   const masterConfig: SymlinkConfig = {
     directories: [],
     files: [],
@@ -27,7 +45,7 @@ async function createMasterConfig(configFiles: string[]): Promise<SymlinkConfig>
   }
 
   for (const configFile of configFiles) {
-    const config = await loadConfig(configFile)
+    const config = loadConfig(configFile)
     if (!config) continue
 
     const configDir = path.dirname(configFile)
@@ -35,7 +53,9 @@ async function createMasterConfig(configFiles: string[]): Promise<SymlinkConfig>
 
     if (config.directories) {
       for (const entry of config.directories) {
-        masterConfig.directories!.push(convertToAtSyntax(entry, relativeConfigDir))
+        masterConfig.directories!.push(
+          convertToAtSyntax(entry, relativeConfigDir)
+        )
       }
     }
 
@@ -54,7 +74,10 @@ async function createMasterConfig(configFiles: string[]): Promise<SymlinkConfig>
   return masterConfig
 }
 
-function convertToAtSyntax(entry: SymlinkEntry, configDir: string): SymlinkEntry {
+function convertToAtSyntax(
+  entry: SymlinkEntry,
+  configDir: string
+): SymlinkEntry {
   return {
     target: pathToAtSyntax(entry.target, configDir),
     source: pathToAtSyntax(entry.source, configDir),
@@ -66,13 +89,16 @@ function pathToAtSyntax(originalPath: string, configDir: string): string {
     return originalPath
   }
 
-  const absolutePath = path.resolve(path.join(getWorkspaceRoot(), configDir), originalPath)
+  const absolutePath = path.resolve(
+    path.join(getWorkspaceRoot(), configDir),
+    originalPath
+  )
   const relativePath = path.relative(getWorkspaceRoot(), absolutePath)
 
   return '@' + relativePath.replace(/\\\\/g, '/')
 }
 
-async function loadConfig(configPath: string): Promise<SymlinkConfig | null> {
+function loadConfig(configPath: string): SymlinkConfig | null {
   try {
     const content = fs.readFileSync(configPath, 'utf8')
     return JSON.parse(content)

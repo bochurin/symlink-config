@@ -6,34 +6,34 @@ import { useFileWatcher } from './hooks'
 export function setWatchers() {
   const watchers: vscode.FileSystemWatcher[] = []
 
-  const configFileHandlers = [
-    () => nextConfigManager.makeFile(),
-    () => nextConfigManager.memo(),
-  ]
-  watchers.push(
-    useFileWatcher({
-      pattern: '**/symlink.config.json',
-      onCreate: [...configFileHandlers],
-      onChange: [...configFileHandlers],
-      onDelete: [...configFileHandlers],
-    })
-  )
+  // const configFileHandlers = [
+  //   () => nextConfigManager.makeFile(),
+  //   () => nextConfigManager.memo(),
+  // ]
+  // watchers.push(
+  //   useFileWatcher({
+  //     pattern: '**/symlink.config.json',
+  //     onCreate: [...configFileHandlers],
+  //     onChange: [...configFileHandlers],
+  //     onDelete: [...configFileHandlers],
+  //   })
+  // )
 
-  watchers.push(
-    useFileWatcher({
-      pattern: 'next.symlink.config.json',
-      ignoreCreateEvents: true,
-      onChange: () => nextConfigManager.handleFileEvent('change'),
-      onDelete: () => nextConfigManager.handleFileEvent('delete'),
-    })
-  )
+  // watchers.push(
+  //   useFileWatcher({
+  //     pattern: 'next.symlink.config.json',
+  //     ignoreCreateEvents: true,
+  //     onChange: () => nextConfigManager.handleFileEvent('change'),
+  //     onDelete: () => nextConfigManager.handleFileEvent('delete'),
+  //   })
+  // )
 
   watchers.push(
     useFileWatcher({
       pattern: '**/.gitignore',
       ignoreCreateEvents: true,
-      onChange: () => gitignoreManager.handleFileEvent('change'),
-      onDelete: () => gitignoreManager.handleFileEvent('delete'),
+      onChange: () => gitignoreManager.handleEvent('modified'),
+      onDelete: () => gitignoreManager.handleEvent('deleted'),
     })
   )
 

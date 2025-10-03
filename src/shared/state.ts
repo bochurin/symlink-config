@@ -1,5 +1,4 @@
 let workspaceRoot: string
-let gitignoreSection: string
 let nextSymlinkConfig: string
 
 export function setWorkspaceRoot(path: string) {
@@ -11,14 +10,6 @@ export function getWorkspaceRoot(): string {
     throw new Error('Workspace root not initialized')
   }
   return workspaceRoot
-}
-
-export function setGitignoreSection(entries: string) {
-  gitignoreSection = entries
-}
-
-export function getGitignoreSection(): string {
-  return gitignoreSection
 }
 
 export function setNextConfig(config: string) {

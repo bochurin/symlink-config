@@ -1,7 +1,5 @@
-import { handleFileEvent } from './handle-file-event'
-import { memo } from './memo'
+import { handleEvent } from './handle-event'
 
 export function init() {
-  memo()
-  handleFileEvent('change')
+  handleEvent('inited')
 }

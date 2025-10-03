@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 
-import * as state from '../../state'
+import * as state from '../../shared/state'
 
 export function readFromFile(): string {
   try {

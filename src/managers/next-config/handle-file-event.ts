@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 
-import * as state from '../../state'
+import * as state from '../../shared/state'
 
 import { readFromFile } from './read-from-file'
 import { makeFile } from './make-file'

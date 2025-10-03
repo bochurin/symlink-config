@@ -1,7 +1,9 @@
+import { buildNextConfig } from './build-next-config'
 import { handleFileEvent } from './handle-file-event'
-import { memo } from './memo'
+import * as state from '../../shared/state'
 
 export function init() {
-  memo()
+  const config = buildNextConfig()
+  state.setNextConfig(config)
   handleFileEvent('change')
 }
