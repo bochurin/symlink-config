@@ -9,3 +9,6 @@ node_modules
 
 # Bat script for symlink creation
 process_symlinks*.bat
+
+# Test workspace
+test-workspace/
