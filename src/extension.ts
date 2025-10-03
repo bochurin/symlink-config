@@ -1,4 +1,10 @@
 import * as vscode from 'vscode'
+
+import { setWorkspaceRoot } from './state'
+
+import * as gitignoreManager from './managers/gitignore'
+import * as nextConfigManager from './managers/next-config'
+
 import { setWatchers } from './set-watchers'
 
 export function activate(context: vscode.ExtensionContext) {
@@ -10,7 +16,12 @@ export function activate(context: vscode.ExtensionContext) {
     return
   }
 
-  const dispose = setWatchers(workspaceFolder.uri.fsPath)
+  setWorkspaceRoot(workspaceFolder.uri.fsPath)
+
+  nextConfigManager.init()
+  gitignoreManager.init()
+
+  const dispose = setWatchers()
   context.subscriptions.push({ dispose })
 }
 

@@ -1,57 +1,53 @@
 import * as vscode from 'vscode'
-import { gitignoreManager } from './managers/gitignore'
-import { nextConfigManager } from './managers/next-config'
+import * as gitignoreManager from './managers/gitignore'
+import * as nextConfigManager from './managers/next-config'
 import { useFileWatcher } from './hooks'
 
-export function setWatchers(workspaceRoot: string) {
-  gitignoreManager.init(workspaceRoot)
-  nextConfigManager.init(workspaceRoot)
-
+export function setWatchers() {
   const watchers: vscode.FileSystemWatcher[] = []
 
-  nextConfigManager.initialize()
-
+  const configFileHandlers = [
+    () => nextConfigManager.makeFile(),
+    () => nextConfigManager.memo(),
+  ]
   watchers.push(
     useFileWatcher({
       pattern: '**/symlink.config.json',
-      onCreate: () => nextConfigManager.generateNextConfig(),
-      onChange: () => nextConfigManager.generateNextConfig(),
-      onDelete: () => nextConfigManager.generateNextConfig(),
-    }),
+      onCreate: [...configFileHandlers],
+      onChange: [...configFileHandlers],
+      onDelete: [...configFileHandlers],
+    })
   )
 
   watchers.push(
     useFileWatcher({
       pattern: 'next.symlink.config.json',
       ignoreCreateEvents: true,
-      onChange: () => nextConfigManager.handleNextConfigChange(),
-      onDelete: [
-        () => nextConfigManager.handleNextConfigDelete(),
-        () => gitignoreManager.updateBasedOnConfiguration(),
-      ],
-    }),
+      onChange: () => nextConfigManager.handleFileEvent('change'),
+      onDelete: () => nextConfigManager.handleFileEvent('delete'),
+    })
   )
 
   watchers.push(
     useFileWatcher({
       pattern: '**/.gitignore',
-      onCreate: () => gitignoreManager.updateBasedOnConfiguration(),
-      onChange: () => gitignoreManager.updateBasedOnConfiguration(),
-      onDelete: () => gitignoreManager.updateBasedOnConfiguration(),
-    }),
+      ignoreCreateEvents: true,
+      onChange: () => gitignoreManager.handleFileEvent('change'),
+      onDelete: () => gitignoreManager.handleFileEvent('delete'),
+    })
   )
 
-  watchers.push(
-    useFileWatcher({
-      pattern: '.git',
-      ignoreChangeEvents: true,
-      onCreate: () => gitignoreManager.updateBasedOnConfiguration(),
-      onDelete: () => gitignoreManager.updateBasedOnConfiguration(),
-    }),
-  )
+  // watchers.push(
+  //   useFileWatcher({
+  //     pattern: '.git',
+  //     ignoreChangeEvents: true,
+  //     onCreate: () => gitignoreManager.make(),
+  //     onDelete: () => gitignoreManager.make(),
+  //   })
+  // )
 
-  nextConfigManager.generateNextConfig()
-  gitignoreManager.updateBasedOnConfiguration()
+  nextConfigManager.makeFile()
+  gitignoreManager.makeFile()
 
-  return () => watchers.forEach(w => w.dispose())
+  return () => watchers.forEach((w) => w.dispose())
 }
