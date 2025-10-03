@@ -5,6 +5,7 @@
 - **[TypeScript Implementation](typescript-implementation.md)** - Decision to translate bash scripts to TypeScript for better VSCode integration
 - **[VSCode Integration Strategy](vscode-integration-strategy.md)** - Command palette, status bar, and output channel approach
 - **[Gitignore Manager Architecture](gitignore-manager-architecture.md)** - Rewrite for consistency and state-based change detection
+- **[Shared Utilities Architecture](shared-utilities-architecture.md)** - Shared file operations and simplified state management
 
 ## Development Process
 
