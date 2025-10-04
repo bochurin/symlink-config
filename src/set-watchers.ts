@@ -5,10 +5,14 @@ import * as workspaceManager from './managers/workspace'
 import { useFileWatcher, useConfigWatcher } from './hooks'
 
 export function setWatchers() {
-  const watchers: vscode.FileSystemWatcher[] = []
-  const config = vscode.workspace.getConfiguration('symlink-config')
-  const manageGitignore = config.get<boolean>('manageGitignore', true)
-  const hideServiceFiles = config.get<boolean>('hideServiceFiles', false)
+  const manageGitignore = workspaceManager.readFromConfig(
+    'symlink-config.manageGitignore',
+    true
+  )
+  const hideServiceFiles = workspaceManager.readFromConfig(
+    'symlink-config.hideServiceFiles',
+    false
+  )
 
   // const configFileHandlers = [
   //   () => nextConfigManager.makeFile(),
@@ -32,25 +36,13 @@ export function setWatchers() {
   //   })
   // )
 
-  if (manageGitignore) {
-    watchers.push(
-      useFileWatcher({
+  const gitignoreWatcher = manageGitignore
+    ? useFileWatcher({
         pattern: '**/.gitignore',
         onChange: () => gitignoreManager.handleEvent('modified'),
         onDelete: () => gitignoreManager.handleEvent('deleted'),
       })
-    )
-  }
-
-  if (hideServiceFiles) {
-    watchers.push(
-      useFileWatcher({
-        pattern: '**/.vscode/settings.json',
-        onChange: () => workspaceManager.handleEvent('modified'),
-        onDelete: () => workspaceManager.handleEvent('deleted'),
-      })
-    )
-  }
+    : null
 
   // watchers.push(
   //   useFileWatcher({
@@ -60,33 +52,37 @@ export function setWatchers() {
   //   })
   // )
 
-  nextConfigManager.makeFile()
-  if (manageGitignore) {
-    gitignoreManager.makeFile()
-  }
-  if (hideServiceFiles) {
-    workspaceManager.makeFile()
-  }
-
   // Listen for configuration changes
   const configWatcher = useConfigWatcher({
-    section: 'symlink-config',
-    handlers: {
-      manageGitignore: {
-        onChange: (payload) => {
-          gitignoreManager.handleEvent(payload.value ? 'inited' : 'disabled')
+    sections: [
+      {
+        section: 'symlink-config',
+        parameters: [
+          {
+            parameter: 'manageGitignore',
+            onChange: (section, parameter, payload) =>
+              workspaceManager.handleConfigChange(section, parameter, payload),
+          },
+          {
+            parameter: 'hideServiceFiles',
+            onChange: (section, parameter, payload) =>
+              workspaceManager.handleConfigChange(section, parameter, payload),
+          },
+        ],
+      },
+      {
+        section: 'files',
+        parameters: {
+          parameter: 'exclude',
+          onChange: (section, parameter, payload) =>
+            workspaceManager.handleConfigChange(section, parameter, payload),
         },
       },
-      hideServiceFiles: {
-        onChange: (payload) => {
-          workspaceManager.handleEvent(payload.value ? 'inited' : 'disabled')
-        },
-      },
-    },
+    ],
   })
 
   return () => {
-    watchers.forEach((w) => w.dispose())
+    gitignoreWatcher?.dispose()
     configWatcher.dispose()
   }
 }

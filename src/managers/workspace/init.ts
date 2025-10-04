@@ -1,5 +1,5 @@
-import { handleEvent } from './handle-event'
+import { makeExludeInConfig } from './make-exlude-in-config'
 
-export function init() {
-  handleEvent('inited')
+export async function init() {
+  makeExludeInConfig()
 }

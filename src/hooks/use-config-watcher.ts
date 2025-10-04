@@ -1,36 +1,56 @@
 import * as vscode from 'vscode'
 
-export interface ConfigWatcherConfig {
+type Handler = (section: string, parameter: string, payload: { value: any; old_value: any }) => void
+
+type ParameterConfig = {
+  parameter: string
+  onChange: Handler | Handler[]
+}
+
+type SectionConfig = {
   section: string
-  handlers: Record<string, {
-    onChange: (data: { value: any; old_value: any }) => void
-  }>
+  parameters: ParameterConfig | ParameterConfig[]
+}
+
+export interface ConfigWatcherConfig {
+  sections: SectionConfig | SectionConfig[]
 }
 
 export function useConfigWatcher(config: ConfigWatcherConfig): vscode.Disposable {
-  const initialConfig = vscode.workspace.getConfiguration(config.section)
-  const previousValues: Record<string, any> = {}
+  const previousValues: Record<string, Record<string, any>> = {}
+  const sections = Array.isArray(config.sections) ? config.sections : [config.sections]
   
-  // Store initial values
-  Object.keys(config.handlers).forEach(key => {
-    previousValues[key] = initialConfig.get(key)
+  // Store initial values for all sections
+  sections.forEach(sectionConfig => {
+    const initialConfig = vscode.workspace.getConfiguration(sectionConfig.section)
+    previousValues[sectionConfig.section] = {}
+    const parameters = Array.isArray(sectionConfig.parameters) ? sectionConfig.parameters : [sectionConfig.parameters]
+    
+    parameters.forEach(param => {
+      previousValues[sectionConfig.section][param.parameter] = initialConfig.get(param.parameter)
+    })
   })
   
   return vscode.workspace.onDidChangeConfiguration(event => {
-    if (event.affectsConfiguration(config.section)) {
-      const newConfig = vscode.workspace.getConfiguration(config.section)
-      
-      Object.keys(config.handlers).forEach(key => {
-        const newValue = newConfig.get(key)
-        const oldValue = previousValues[key]
-        const handler = config.handlers[key]
+    sections.forEach(sectionConfig => {
+      if (event.affectsConfiguration(sectionConfig.section)) {
+        const newConfig = vscode.workspace.getConfiguration(sectionConfig.section)
+        const parameters = Array.isArray(sectionConfig.parameters) ? sectionConfig.parameters : [sectionConfig.parameters]
         
-        if (newValue !== oldValue) {
-          const data = { value: newValue, old_value: oldValue }
-          handler.onChange(data)
-          previousValues[key] = newValue
-        }
-      })
-    }
+        parameters.forEach(param => {
+          const newValue = newConfig.get(param.parameter)
+          const oldValue = previousValues[sectionConfig.section][param.parameter]
+          
+          if (newValue !== oldValue) {
+            const payload = { value: newValue, old_value: oldValue }
+            const handlers = Array.isArray(param.onChange) ? param.onChange : [param.onChange]
+            handlers.forEach(handler => {
+              handler(sectionConfig.section, param.parameter, payload)
+            })
+            previousValues[sectionConfig.section][param.parameter] = newValue
+          }
+        })
+      }
+    })
   })
 }

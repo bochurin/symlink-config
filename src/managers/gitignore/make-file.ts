@@ -2,7 +2,7 @@ import { readFile, writeFile } from '../../shared/file-ops'
 import { sectionStart, sectionEnd } from './constants'
 import { buildSection } from './build-section'
 
-export function makeFile() {
+export async function makeFile() {
   const builtSection = buildSection()
 
   let fileContent = readFile('.gitignore')
@@ -22,5 +22,5 @@ export function makeFile() {
     fileContent = fileContent ? `${fileContent}\n\n${fullSection}` : fullSection
   }
 
-  writeFile('.gitignore', fileContent)
+  await writeFile('.gitignore', fileContent)
 }

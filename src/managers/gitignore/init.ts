@@ -1,5 +1,5 @@
 import { handleEvent } from './handle-event'
 
-export function init() {
-  handleEvent('inited')
+export async function init() {
+  await handleEvent('inited')
 }

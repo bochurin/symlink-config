@@ -1,14 +1,7 @@
-import * as fs from 'fs'
-import * as path from 'path'
-import * as state from '../../shared/state'
+import { writeFile } from '../../shared/file-ops'
 import { buildNextConfig } from './build-next-config'
 
-export function makeFile() {
+export async function makeFile() {
   const content = buildNextConfig()
-  const nextConfigPath = path.join(
-    state.getWorkspaceRoot(),
-    'next.symlink.config.json'
-  )
-
-  fs.writeFileSync(nextConfigPath, content, 'utf8')
+  await writeFile('next.symlink.config.json', content)
 }

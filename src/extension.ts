@@ -8,7 +8,7 @@ import * as workspaceManager from './managers/workspace'
 
 import { setWatchers } from './set-watchers'
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   console.log('🔗 Symlink Config extension is now active!')
 
   const workspaceFolder = vscode.workspace.workspaceFolders?.[0] //TODO: Intelenge it
@@ -20,15 +20,19 @@ export function activate(context: vscode.ExtensionContext) {
   setWorkspaceRoot(workspaceFolder.uri.fsPath)
 
   nextConfigManager.init()
-  
-  const config = vscode.workspace.getConfiguration('symlink-config')
-  const manageGitignore = config.get<boolean>('manageGitignore', true)
-  const hideServiceFiles = config.get<boolean>('hideServiceFiles', false)
-  
+
+  const manageGitignore = workspaceManager.readFromConfig(
+    'symlink-config.manageGitignore',
+    true
+  )
   if (manageGitignore) {
     gitignoreManager.init()
   }
-  
+
+  const hideServiceFiles = workspaceManager.readFromConfig(
+    'symlink-config.hideServiceFiles',
+    false
+  )
   if (hideServiceFiles) {
     workspaceManager.init()
   }

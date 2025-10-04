@@ -6,7 +6,7 @@ import { readFromFile } from './read-from-file'
 import { makeFile } from './make-file'
 import { memo } from './memo'
 
-export function handleFileEvent(action: 'change' | 'delete') {
+export async function handleFileEvent(action: 'change' | 'delete') {
   var needsRegenerate = action === 'delete'
 
   const message = `next.symlink.config.json was ${
@@ -24,7 +24,7 @@ export function handleFileEvent(action: 'change' | 'delete') {
 
   if (needsRegenerate) {
     vscode.window.showWarningMessage(message, 'OK')
-    makeFile()
+    await makeFile()
     memo()
   }
 }
