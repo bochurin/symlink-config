@@ -230,6 +230,45 @@ sl-package.json
 - Easier testing and maintenance
 - Reduced complexity with direct exports instead of factory functions
 
+### ✅ Phase 1.10: Configuration Management and User Control (Completed - 04.10.2025)
+- **Date**: 04.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Configuration Option**: Added `symlink-config.manageGitignore` setting (default: true)
+  - **User Control**: Users can disable gitignore management in VSCode settings
+  - **Conditional Initialization**: Extension respects user preference for gitignore functionality
+  - **Warning Comments**: Added auto-generation warning to gitignore sections
+  - **Improved Build Structure**: Enhanced build-section with lines array for better maintainability
+
+#### Technical Implementation Details
+
+**Configuration Schema**:
+- **Setting**: `symlink-config.manageGitignore` (boolean, default: true)
+- **Description**: "Automatically manage .gitignore entries for symlink configuration files"
+- **Location**: VSCode Settings → Extensions → Symlink Config
+
+**Conditional Management**:
+- **Extension Startup**: Checks configuration before initializing gitignore manager
+- **File Watchers**: Only sets up gitignore watchers when enabled
+- **Clean Separation**: Next-config functionality remains independent
+
+**Enhanced Gitignore Section**:
+```
+#Symlink.Config:{
+# WARNING: This section is auto-generated. Do not modify manually.
+next.symlink.config.json
+#}:Symlink.Config
+```
+
+**Build Section Structure**:
+```typescript
+const lines = [
+  '# WARNING: This section is auto-generated. Do not modify manually.',
+  'next.symlink.config.json'
+]
+return lines.join('\n')
+```
+
 ### ✅ Phase 1.9: Gitignore Manager Improvements and Shared Utilities (Completed - 03.10.2025)
 - **Date**: 03.10.2025
 - **Status**: Complete
@@ -304,9 +343,9 @@ sl-package.json
 
 ## Current Status
 
-**Phase**: Phase 1.9 Complete - Gitignore Manager Improvements & Shared Utilities  
+**Phase**: Phase 1.10 Complete - Configuration Management & User Control  
 **Branch**: `main`  
-**Latest**: Improved gitignore manager with new section markers, shared file operations, and simplified state management  
+**Latest**: User-configurable gitignore management with warning comments and improved build structure  
 **Next**: Testing and refinement (Phase 2)
 
 **Technical Foundation**:

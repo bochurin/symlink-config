@@ -6,6 +6,7 @@
 - **[VSCode Integration Strategy](vscode-integration-strategy.md)** - Command palette, status bar, and output channel approach
 - **[Gitignore Manager Architecture](gitignore-manager-architecture.md)** - Rewrite for consistency and state-based change detection
 - **[Shared Utilities Architecture](shared-utilities-architecture.md)** - Shared file operations and simplified state management
+- **[Configuration Management](configuration-management.md)** - User-configurable gitignore management and extension flexibility
 
 ## Development Process
 
