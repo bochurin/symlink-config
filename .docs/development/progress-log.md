@@ -230,6 +230,60 @@ sl-package.json
 - Easier testing and maintenance
 - Reduced complexity with direct exports instead of factory functions
 
+### ✅ Phase 1.11: Workspace Manager and Configuration Hooks (Completed - 04.10.2025)
+- **Date**: 04.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Workspace Manager**: New manager for VSCode workspace settings management
+  - **Files.exclude Management**: Automatically hides service files from Explorer when enabled
+  - **Configuration Hooks**: Created `useConfigWatcher` hook for parameter-handler pairs
+  - **Event-Driven Configuration**: Managers respond to configuration changes via events
+  - **Simplified Event System**: Removed redundant 'enabled' event, using 'inited' instead
+
+#### Technical Implementation Details
+
+**Workspace Manager Architecture**:
+1. **`build-exclusions.ts`** - Generates files.exclude entries for service files
+2. **`make-file.ts`** - Updates VSCode workspace files.exclude setting via Configuration API
+3. **`read-from-file.ts`** - Reads current workspace files.exclude configuration
+4. **`handle-event.ts`** - Detects changes and regenerates exclusions when needed
+5. **`init.ts`** - Initialization function that calls handleEvent('inited')
+
+**Configuration Hook Pattern**:
+```typescript
+const configWatcher = useConfigWatcher({
+  section: 'symlink-config',
+  handlers: {
+    manageGitignore: {
+      onEnable: () => gitignoreManager.handleEvent('inited'),
+      onDisable: () => gitignoreManager.handleEvent('disabled')
+    },
+    hideServiceFiles: {
+      onEnable: () => workspaceManager.handleEvent('inited'),
+      onDisable: () => workspaceManager.handleEvent('disabled')
+    }
+  }
+})
+```
+
+**Enhanced Event System**:
+- **`inited`** - Used for both startup and when features are enabled
+- **`modified`** - When files are manually changed
+- **`deleted`** - When files are deleted  
+- **`disabled`** - When features are disabled (shows message only)
+
+**Workspace Settings Integration**:
+- **Files.exclude Management**: Adds `"next.symlink.config.json": true` to workspace settings
+- **Settings Watcher**: Monitors `.vscode/settings.json` for manual changes
+- **Automatic Restoration**: Re-applies exclusions if user removes them manually
+- **Configuration Target**: Uses `vscode.ConfigurationTarget.Workspace` for proper scoping
+
+**Hook Architecture Benefits**:
+- **Parameter-Handler Pairs**: Clean mapping of config parameters to enable/disable handlers
+- **Automatic Change Detection**: Hook tracks previous values and detects changes
+- **Minimal Set-Watchers Code**: Just declare what should happen when settings change
+- **Reusable Pattern**: Can be applied to future configuration options
+
 ### ✅ Phase 1.10: Configuration Management and User Control (Completed - 04.10.2025)
 - **Date**: 04.10.2025
 - **Status**: Complete
@@ -343,9 +397,9 @@ return lines.join('\n')
 
 ## Current Status
 
-**Phase**: Phase 1.10 Complete - Configuration Management & User Control  
+**Phase**: Phase 1.11 Complete - Workspace Manager & Configuration Hooks  
 **Branch**: `main`  
-**Latest**: User-configurable gitignore management with warning comments and improved build structure  
+**Latest**: Complete workspace settings management with configuration hooks and event-driven architecture  
 **Next**: Testing and refinement (Phase 2)
 
 **Technical Foundation**:
