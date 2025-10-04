@@ -5,6 +5,8 @@ import { useFileWatcher } from './hooks'
 
 export function setWatchers() {
   const watchers: vscode.FileSystemWatcher[] = []
+  const config = vscode.workspace.getConfiguration('symlink-config')
+  const manageGitignore = config.get<boolean>('manageGitignore', true)
 
   // const configFileHandlers = [
   //   () => nextConfigManager.makeFile(),
@@ -28,14 +30,16 @@ export function setWatchers() {
   //   })
   // )
 
-  watchers.push(
-    useFileWatcher({
-      pattern: '**/.gitignore',
-      ignoreCreateEvents: true,
-      onChange: () => gitignoreManager.handleEvent('modified'),
-      onDelete: () => gitignoreManager.handleEvent('deleted'),
-    })
-  )
+  if (manageGitignore) {
+    watchers.push(
+      useFileWatcher({
+        pattern: '**/.gitignore',
+        ignoreCreateEvents: true,
+        onChange: () => gitignoreManager.handleEvent('modified'),
+        onDelete: () => gitignoreManager.handleEvent('deleted'),
+      })
+    )
+  }
 
   // watchers.push(
   //   useFileWatcher({
@@ -47,7 +51,9 @@ export function setWatchers() {
   // )
 
   nextConfigManager.makeFile()
-  gitignoreManager.makeFile()
+  if (manageGitignore) {
+    gitignoreManager.makeFile()
+  }
 
   return () => watchers.forEach((w) => w.dispose())
 }

@@ -19,7 +19,13 @@ export function activate(context: vscode.ExtensionContext) {
   setWorkspaceRoot(workspaceFolder.uri.fsPath)
 
   nextConfigManager.init()
-  gitignoreManager.init()
+  
+  const config = vscode.workspace.getConfiguration('symlink-config')
+  const manageGitignore = config.get<boolean>('manageGitignore', true)
+  
+  if (manageGitignore) {
+    gitignoreManager.init()
+  }
 
   const dispose = setWatchers()
   context.subscriptions.push({ dispose })
