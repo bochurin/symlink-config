@@ -4,7 +4,12 @@ import { readFromFile } from './read-from-file'
 import { buildSection } from './build-section'
 import { makeFile } from './make-file'
 
-export function handleEvent(action: 'inited' | 'modified' | 'deleted') {
+export function handleEvent(action: 'inited' | 'modified' | 'deleted' | 'disabled') {
+  if (action === 'disabled') {
+    vscode.window.showInformationMessage('Gitignore management disabled.', 'OK')
+    return
+  }
+
   let needsRegenerate = true
 
   if (action !== 'deleted') {

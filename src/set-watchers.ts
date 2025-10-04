@@ -1,12 +1,14 @@
 import * as vscode from 'vscode'
 import * as gitignoreManager from './managers/gitignore'
 import * as nextConfigManager from './managers/next-config'
-import { useFileWatcher } from './hooks'
+import * as workspaceManager from './managers/workspace'
+import { useFileWatcher, useConfigWatcher } from './hooks'
 
 export function setWatchers() {
   const watchers: vscode.FileSystemWatcher[] = []
   const config = vscode.workspace.getConfiguration('symlink-config')
   const manageGitignore = config.get<boolean>('manageGitignore', true)
+  const hideServiceFiles = config.get<boolean>('hideServiceFiles', false)
 
   // const configFileHandlers = [
   //   () => nextConfigManager.makeFile(),
@@ -41,6 +43,17 @@ export function setWatchers() {
     )
   }
 
+  if (hideServiceFiles) {
+    watchers.push(
+      useFileWatcher({
+        pattern: '**/.vscode/settings.json',
+        ignoreCreateEvents: true,
+        onChange: () => workspaceManager.handleEvent('modified'),
+        onDelete: () => workspaceManager.handleEvent('deleted'),
+      })
+    )
+  }
+
   // watchers.push(
   //   useFileWatcher({
   //     pattern: '.git',
@@ -54,6 +67,27 @@ export function setWatchers() {
   if (manageGitignore) {
     gitignoreManager.makeFile()
   }
+  if (hideServiceFiles) {
+    workspaceManager.makeFile()
+  }
 
-  return () => watchers.forEach((w) => w.dispose())
+  // Listen for configuration changes
+  const configWatcher = useConfigWatcher({
+    section: 'symlink-config',
+    handlers: {
+      manageGitignore: {
+        onEnable: () => gitignoreManager.handleEvent('inited'),
+        onDisable: () => gitignoreManager.handleEvent('disabled')
+      },
+      hideServiceFiles: {
+        onEnable: () => workspaceManager.handleEvent('inited'),
+        onDisable: () => workspaceManager.handleEvent('disabled')
+      }
+    }
+  })
+
+  return () => {
+    watchers.forEach((w) => w.dispose())
+    configWatcher.dispose()
+  }
 }
