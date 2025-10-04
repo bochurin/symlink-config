@@ -9,6 +9,8 @@
 - **[Configuration Management](configuration-management.md)** - User-configurable gitignore management and extension flexibility
 - **[Workspace Manager Architecture](workspace-manager-architecture.md)** - VSCode workspace settings management and configuration hooks
 - **[Hook Interface Improvements](hook-interface-improvements.md)** - Simplified hooks with automatic detection and cleaner APIs
+- **[Shared Configuration Operations](shared-configuration-operations.md)** - Centralized workspace configuration management with type safety
+- **[Async File Operations](async-file-operations.md)** - Migration to async file operations for consistency and performance
 
 ## Development Process
 

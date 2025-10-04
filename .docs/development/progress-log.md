@@ -454,11 +454,67 @@ return lines.join('\n')
 - Prevents race conditions in file operations
 - Ensures predictable order of operations
 
+### ✅ Phase 1.13: Shared Configuration Operations and Async File Operations (Completed - 04.10.2025)
+- **Date**: 04.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Shared Configuration Operations**: Created `shared/config-ops/` with `readFromConfig()` and `writeToConfig()` functions
+  - **Async File Operations**: Converted all file operations to async using `fs/promises`
+  - **Workspace Configuration Management**: Enhanced workspace manager to handle multiple configuration sections
+  - **Files.exclude Monitoring**: Added automatic detection and restoration of manually removed service file exclusions
+  - **Centralized Configuration Handling**: All configuration changes now go through workspace manager
+  - **Consistent Async Pattern**: All managers now use async/await for file and configuration operations
+
+#### Technical Implementation Details
+
+**Shared Configuration Operations**:
+- **`readFromConfig<T>(parameter, defaultValue)`** - Generic workspace configuration reader with type safety
+- **`writeToConfig<T>(parameter, value)`** - Generic workspace configuration writer using `ConfigurationTarget.Workspace`
+- **Centralized Usage**: All managers use shared config operations for consistency
+
+**Async File Operations Migration**:
+- **`writeFile()`** - Converted from `fs.writeFileSync()` to `fs.promises.writeFile()`
+- **Manager Updates**: All `makeFile()` functions now async and await file operations
+- **Event Handlers**: Updated `handleEvent()` and `handleFileEvent()` functions to be async
+- **Initialization**: All `init()` functions now async to properly await file operations
+
+**Enhanced Workspace Manager**:
+- **Multi-Section Watching**: Monitors both `symlink-config` and `files` configuration sections
+- **Files.exclude Protection**: Detects manual removal of service file exclusions and restores them
+- **Centralized Handler**: `handleConfigChange()` processes all configuration parameter changes
+- **Direct Configuration Usage**: Eliminated `makeFile()` wrapper, using `writeToConfig()` directly
+
+**Configuration Architecture**:
+```typescript
+// Multi-section configuration watching
+const configWatcher = useConfigWatcher({
+  sections: [
+    {
+      section: 'symlink-config',
+      parameters: [
+        { parameter: 'manageGitignore', onChange: workspaceManager.handleConfigChange },
+        { parameter: 'hideServiceFiles', onChange: workspaceManager.handleConfigChange }
+      ]
+    },
+    {
+      section: 'files',
+      parameters: { parameter: 'exclude', onChange: workspaceManager.handleConfigChange }
+    }
+  ]
+})
+```
+
+**Files.exclude Auto-Restoration**:
+- **Detection**: Monitors `files.exclude` changes to detect manual removal of service file exclusions
+- **Validation**: Checks if required service files are still excluded when `hideServiceFiles` is enabled
+- **Restoration**: Automatically re-adds missing exclusions with user notification
+- **User Feedback**: Shows warning message when exclusions are restored
+
 ## Current Status
 
-**Phase**: Phase 1.12 Complete - Hook Interface Improvements & Auto-Detection  
+**Phase**: Phase 1.13 Complete - Shared Configuration Operations & Async File Operations  
 **Branch**: `main`  
-**Latest**: Simplified hook interfaces with automatic event detection and cleaner configuration patterns  
+**Latest**: Unified configuration management with async file operations and automatic service file protection  
 **Next**: Testing and refinement (Phase 2)
 
 **Technical Foundation**:
