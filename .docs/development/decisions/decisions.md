@@ -8,6 +8,7 @@
 - **[Shared Utilities Architecture](shared-utilities-architecture.md)** - Shared file operations and simplified state management
 - **[Configuration Management](configuration-management.md)** - User-configurable gitignore management and extension flexibility
 - **[Workspace Manager Architecture](workspace-manager-architecture.md)** - VSCode workspace settings management and configuration hooks
+- **[Hook Interface Improvements](hook-interface-improvements.md)** - Simplified hooks with automatic detection and cleaner APIs
 
 ## Development Process
 

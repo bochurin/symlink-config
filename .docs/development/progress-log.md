@@ -230,6 +230,65 @@ sl-package.json
 - Easier testing and maintenance
 - Reduced complexity with direct exports instead of factory functions
 
+### ✅ Phase 1.12: Hook Interface Improvements and Auto-Detection (Completed - 04.10.2025)
+- **Date**: 04.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Simplified Configuration Hook**: Single `onChange` handler with value/old_value payload
+  - **Automatic Event Detection**: File watchers auto-detect what events to watch based on handlers
+  - **Cleaner Interface**: Removed redundant watch* configuration properties
+  - **Intuitive API**: No handler provided = event ignored automatically
+  - **Parameter Naming**: Consistent `payload` parameter naming for configuration changes
+
+#### Technical Implementation Details
+
+**Configuration Hook Simplification**:
+```typescript
+// Before: Separate onEnable/onDisable handlers
+{
+  onEnable: (data) => manager.handleEvent('inited'),
+  onDisable: (data) => manager.handleEvent('disabled')
+}
+
+// After: Single onChange handler with payload
+{
+  onChange: (payload) => {
+    manager.handleEvent(payload.value ? 'inited' : 'disabled')
+  }
+}
+```
+
+**Automatic File Watcher Detection**:
+```typescript
+// Before: Explicit watch configuration
+useFileWatcher({
+  pattern: '**/.gitignore',
+  watchCreate: false,
+  onChange: () => handler(),
+  onDelete: () => handler()
+})
+
+// After: Automatic detection
+useFileWatcher({
+  pattern: '**/.gitignore',
+  onChange: () => handler(),  // Automatically watches CHANGE
+  onDelete: () => handler()   // Automatically watches DELETE
+  // No onCreate = automatically IGNORES CREATE
+})
+```
+
+**Hook Logic Enhancement**:
+- **Handler presence detection**: `!config.onCreate` determines if create events should be ignored
+- **Zero configuration**: Just specify handlers, watching is automatic
+- **Performance optimization**: Only watches events that have handlers
+- **Self-documenting**: Configuration clearly shows what events are handled
+
+**Interface Improvements**:
+- **Payload object**: `{ value: any, old_value: any }` provides full context
+- **Consistent naming**: `payload` parameter name across all handlers
+- **Cleaner conditionals**: Ternary operators for simple enable/disable logic
+- **Reduced boilerplate**: No need to specify what not to watch
+
 ### ✅ Phase 1.11: Workspace Manager and Configuration Hooks (Completed - 04.10.2025)
 - **Date**: 04.10.2025
 - **Status**: Complete
@@ -397,9 +456,9 @@ return lines.join('\n')
 
 ## Current Status
 
-**Phase**: Phase 1.11 Complete - Workspace Manager & Configuration Hooks  
+**Phase**: Phase 1.12 Complete - Hook Interface Improvements & Auto-Detection  
 **Branch**: `main`  
-**Latest**: Complete workspace settings management with configuration hooks and event-driven architecture  
+**Latest**: Simplified hook interfaces with automatic event detection and cleaner configuration patterns  
 **Next**: Testing and refinement (Phase 2)
 
 **Technical Foundation**:
