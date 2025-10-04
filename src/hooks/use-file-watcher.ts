@@ -2,9 +2,6 @@ import * as vscode from 'vscode';
 
 export interface WatcherConfig {
     pattern: string;
-    ignoreCreateEvents?: boolean;
-    ignoreChangeEvents?: boolean;
-    ignoreDeleteEvents?: boolean;
     onCreate?: (() => void) | (() => void)[];
     onChange?: (() => void) | (() => void)[];
     onDelete?: (() => void) | (() => void)[];
@@ -13,9 +10,9 @@ export interface WatcherConfig {
 export function useFileWatcher(config: WatcherConfig): vscode.FileSystemWatcher {
     const watcher = vscode.workspace.createFileSystemWatcher(
         config.pattern,
-        config.ignoreCreateEvents ?? false,
-        config.ignoreChangeEvents ?? false,
-        config.ignoreDeleteEvents ?? false
+        !config.onCreate,  // ignore create if no onCreate handler
+        !config.onChange,  // ignore change if no onChange handler
+        !config.onDelete   // ignore delete if no onDelete handler
     );
 
     if (config.onCreate) {

@@ -36,7 +36,6 @@ export function setWatchers() {
     watchers.push(
       useFileWatcher({
         pattern: '**/.gitignore',
-        ignoreCreateEvents: true,
         onChange: () => gitignoreManager.handleEvent('modified'),
         onDelete: () => gitignoreManager.handleEvent('deleted'),
       })
@@ -47,7 +46,6 @@ export function setWatchers() {
     watchers.push(
       useFileWatcher({
         pattern: '**/.vscode/settings.json',
-        ignoreCreateEvents: true,
         onChange: () => workspaceManager.handleEvent('modified'),
         onDelete: () => workspaceManager.handleEvent('deleted'),
       })
@@ -57,7 +55,6 @@ export function setWatchers() {
   // watchers.push(
   //   useFileWatcher({
   //     pattern: '.git',
-  //     ignoreChangeEvents: true,
   //     onCreate: () => gitignoreManager.make(),
   //     onDelete: () => gitignoreManager.make(),
   //   })
@@ -76,14 +73,16 @@ export function setWatchers() {
     section: 'symlink-config',
     handlers: {
       manageGitignore: {
-        onEnable: () => gitignoreManager.handleEvent('inited'),
-        onDisable: () => gitignoreManager.handleEvent('disabled')
+        onChange: (payload) => {
+          gitignoreManager.handleEvent(payload.value ? 'inited' : 'disabled')
+        },
       },
       hideServiceFiles: {
-        onEnable: () => workspaceManager.handleEvent('inited'),
-        onDisable: () => workspaceManager.handleEvent('disabled')
-      }
-    }
+        onChange: (payload) => {
+          workspaceManager.handleEvent(payload.value ? 'inited' : 'disabled')
+        },
+      },
+    },
   })
 
   return () => {

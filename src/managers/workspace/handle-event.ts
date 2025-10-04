@@ -5,6 +5,17 @@ import { makeFile } from './make-file'
 
 export function handleEvent(action: 'inited' | 'modified' | 'deleted' | 'disabled') {
   if (action === 'disabled') {
+    // Remove exclusions when disabled
+    const config = vscode.workspace.getConfiguration()
+    let currentExclusions = config.get<Record<string, boolean>>('files.exclude', {})
+    const builtExclusions = buildExclusions()
+    
+    // Remove our exclusions
+    Object.keys(builtExclusions).forEach(key => {
+      delete currentExclusions[key]
+    })
+    
+    config.update('files.exclude', currentExclusions, vscode.ConfigurationTarget.Workspace)
     vscode.window.showInformationMessage('Service files hiding disabled.', 'OK')
     return
   }

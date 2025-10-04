@@ -3,8 +3,7 @@ import * as vscode from 'vscode'
 export interface ConfigWatcherConfig {
   section: string
   handlers: Record<string, {
-    onEnable?: () => void
-    onDisable?: () => void
+    onChange: (data: { value: any; old_value: any }) => void
   }>
 }
 
@@ -27,11 +26,8 @@ export function useConfigWatcher(config: ConfigWatcherConfig): vscode.Disposable
         const handler = config.handlers[key]
         
         if (newValue !== oldValue) {
-          if (newValue && handler.onEnable) {
-            handler.onEnable()
-          } else if (!newValue && handler.onDisable) {
-            handler.onDisable()
-          }
+          const data = { value: newValue, old_value: oldValue }
+          handler.onChange(data)
           previousValues[key] = newValue
         }
       })
