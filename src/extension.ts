@@ -4,7 +4,7 @@ import { setWorkspaceRoot } from './shared/state'
 
 import * as gitignoreManager from './managers/gitignore'
 import * as nextConfigManager from './managers/next-config'
-import * as workspaceManager from './managers/workspace'
+import * as fileExcludeManager from './managers/file-exclude'
 
 import { setWatchers } from './set-watchers'
 
@@ -20,7 +20,11 @@ async function initializeExtension() {
   setWorkspaceRoot(workspaceRoot)
   console.log('ROOT:', workspaceRoot)
 
-  await Promise.all([gitignoreManager.init(), workspaceManager.init(), nextConfigManager.init()])
+  await Promise.all([
+    fileExcludeManager.init(), //
+    gitignoreManager.init(), //
+    nextConfigManager.init() //
+  ])
 
   const dispose = setWatchers()
   isInitialized = true
@@ -37,13 +41,15 @@ export async function activate(context: vscode.ExtensionContext) {
   }
 
   // Listen for workspace folder changes
-  const workspaceListener = vscode.workspace.onDidChangeWorkspaceFolders(async () => {
-    isInitialized = false // Reset to allow reinitialization
-    const dispose = await initializeExtension()
-    if (dispose) {
-      context.subscriptions.push({ dispose })
+  const workspaceListener = vscode.workspace.onDidChangeWorkspaceFolders(
+    async () => {
+      isInitialized = false // Reset to allow reinitialization
+      const dispose = await initializeExtension()
+      if (dispose) {
+        context.subscriptions.push({ dispose })
+      }
     }
-  })
+  )
 
   context.subscriptions.push(workspaceListener)
 }

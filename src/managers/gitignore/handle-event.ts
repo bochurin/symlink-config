@@ -1,12 +1,14 @@
 import * as vscode from 'vscode'
 
-import { readFromFile } from './read-from-file'
-import { buildSection } from './build-section'
-import { makeFile } from './make-file'
-import { readFromConfig } from '../../shared/config-ops'
+import { read } from './read'
+import { build } from './build'
+import { make } from './make'
+import * as symlinkConfigManager from '../symlink-config'
 
 export async function handleEvent(action: 'modified' | 'deleted') {
-  const gitignoreServiceFiles = readFromConfig('symlink-config.gitignoreServiceFiles', false)
+  const gitignoreServiceFiles = symlinkConfigManager.read(
+    'gitignoreServiceFiles'
+  )
   if (!gitignoreServiceFiles) {
     return
   }
@@ -14,14 +16,17 @@ export async function handleEvent(action: 'modified' | 'deleted') {
   let needsRegen = action === 'deleted'
 
   if (action !== 'deleted') {
-    const builtSection = buildSection()
-    const fromFileSection = readFromFile()
+    const builtSection = build()
+    const fromFileSection = read()
     needsRegen = fromFileSection !== builtSection
   }
 
   if (needsRegen) {
-    vscode.window.showWarningMessage('.gitignore is not correct or absent. Generating ...', 'OK')
+    vscode.window.showWarningMessage(
+      '.gitignore is not correct or absent. Generating ...',
+      'OK'
+    )
 
-    await makeFile()
+    await make()
   }
 }

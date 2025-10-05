@@ -1,7 +1,7 @@
-import * as gitignoreManager from './managers/gitignore'
-import * as workspaceManager from './managers/workspace'
 import { useFileWatcher, useConfigWatcher } from './hooks'
-import { readFromConfig } from './shared/config-ops'
+import * as gitignoreManager from './managers/gitignore'
+import * as symlinkConfigManager from './managers/symlink-config'
+import * as fileExcludeManager from './managers/file-exclude'
 
 export function setWatchers() {
   // const configFileHandlers = [
@@ -47,18 +47,30 @@ export function setWatchers() {
         parameters: [
           {
             parameter: 'gitignoreServiceFiles',
-            onChange: (section, parameter, payload) =>
-              workspaceManager.handleConfigChange(section, parameter, payload)
+            onChange: async (section, parameter, payload) =>
+              await symlinkConfigManager.handleEvent(
+                section,
+                parameter,
+                payload
+              )
           },
           {
             parameter: 'hideServiceFiles',
-            onChange: (section, parameter, payload) =>
-              workspaceManager.handleConfigChange(section, parameter, payload)
+            onChange: async (section, parameter, payload) =>
+              await symlinkConfigManager.handleEvent(
+                section,
+                parameter,
+                payload
+              )
           },
           {
             parameter: 'hideSymlinkConfigs',
-            onChange: (section, parameter, payload) =>
-              workspaceManager.handleConfigChange(section, parameter, payload)
+            onChange: async (section, parameter, payload) =>
+              await symlinkConfigManager.handleEvent(
+                section,
+                parameter,
+                payload
+              )
           }
         ]
       },
@@ -67,7 +79,7 @@ export function setWatchers() {
         parameters: {
           parameter: 'exclude',
           onChange: (section, parameter, payload) =>
-            workspaceManager.handleConfigChange(section, parameter, payload)
+            fileExcludeManager.handleEvent()
         }
       }
     ]

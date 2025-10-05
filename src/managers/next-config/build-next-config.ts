@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { SymlinkConfig, SymlinkEntry } from '../../types'
+import { SymlinkConfig, SymlinkEntry } from './types'
 import { getWorkspaceRoot } from '../../shared/state'
 
 export function buildNextConfig(): string {
@@ -53,7 +53,9 @@ function createMasterConfig(configFiles: string[]): SymlinkConfig {
 
     if (config.directories) {
       for (const entry of config.directories) {
-        masterConfig.directories!.push(convertToAtSyntax(entry, relativeConfigDir))
+        masterConfig.directories!.push(
+          convertToAtSyntax(entry, relativeConfigDir)
+        )
       }
     }
 
@@ -72,7 +74,10 @@ function createMasterConfig(configFiles: string[]): SymlinkConfig {
   return masterConfig
 }
 
-function convertToAtSyntax(entry: SymlinkEntry, configDir: string): SymlinkEntry {
+function convertToAtSyntax(
+  entry: SymlinkEntry,
+  configDir: string
+): SymlinkEntry {
   return {
     target: pathToAtSyntax(entry.target, configDir),
     source: pathToAtSyntax(entry.source, configDir)
@@ -84,7 +89,10 @@ function pathToAtSyntax(originalPath: string, configDir: string): string {
     return originalPath
   }
 
-  const absolutePath = path.resolve(path.join(getWorkspaceRoot(), configDir), originalPath)
+  const absolutePath = path.resolve(
+    path.join(getWorkspaceRoot(), configDir),
+    originalPath
+  )
   const relativePath = path.relative(getWorkspaceRoot(), absolutePath)
 
   return '@' + relativePath.replace(/\\\\/g, '/')

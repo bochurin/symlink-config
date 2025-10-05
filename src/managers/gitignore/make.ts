@@ -1,13 +1,16 @@
 import { readFile, writeFile } from '../../shared/file-ops'
 import { sectionStart, sectionEnd } from './constants'
-import { buildSection } from './build-section'
+import { build } from './build'
 
-export async function makeFile() {
-  const builtSection = buildSection()
+export async function make() {
+  const builtSection = build()
 
   let fileContent = readFile('.gitignore')
 
-  const regex = new RegExp(`(${sectionStart}\\n)[\\s\\S]*?(\\n${sectionEnd})`, 'g')
+  const regex = new RegExp(
+    `(${sectionStart}\\n)[\\s\\S]*?(\\n${sectionEnd})`,
+    'g'
+  )
   const match = regex.exec(fileContent)
 
   if (match) {
