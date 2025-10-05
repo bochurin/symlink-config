@@ -19,10 +19,8 @@ export interface ProcessResult {
   details?: string[]
 }
 
-export const ExclusionMode = {
-  All: 'all',
-  ServiceFiles: 'serviceFiles',
-  SymlinkConfigs: 'symlinkConfigs'
-} as const
-
-export type ExclusionMode = (typeof ExclusionMode)[keyof typeof ExclusionMode]
+export enum ExclusionMode {
+  All = 'all',
+  ServiceFiles = 'serviceFiles',
+  SymlinkConfigs = 'symlinkConfigs'
+}

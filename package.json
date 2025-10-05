@@ -1,8 +1,8 @@
 {
-  "name": "symlink-config",
+  "name": "@bochurin/symlink-config",
   "displayName": "symlink.config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "engines": {
     "vscode": "^1.104.0"
   },
