@@ -23,4 +23,4 @@
 - **[Configuration System](configuration-system.md)** - JSON-based distributed configuration approach
 - **[Path Resolution](path-resolution.md)** - @-syntax and relative path handling
 
-*See individual decision documents for detailed rationale and implementation details.*
+_See individual decision documents for detailed rationale and implementation details._

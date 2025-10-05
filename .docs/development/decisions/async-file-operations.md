@@ -7,6 +7,7 @@
 ## Problem
 
 The extension had mixed synchronous and asynchronous file operations:
+
 - **Workspace configuration**: Used async `config.update()` (VSCode API requirement)
 - **File operations**: Used sync `fs.writeFileSync()` and `fs.readFileSync()`
 - **Inconsistent patterns**: Some managers async, others sync
@@ -21,6 +22,7 @@ Convert all file operations to async using `fs/promises` for consistency with VS
 ### File Operations Migration
 
 #### Before: Synchronous Operations
+
 ```typescript
 // writeFile - blocking operation
 export function writeFile(file: string, content: string) {
@@ -34,6 +36,7 @@ export function writeFile(file: string, content: string) {
 ```
 
 #### After: Asynchronous Operations
+
 ```typescript
 // writeFile - non-blocking operation
 export async function writeFile(file: string, content: string) {
@@ -49,6 +52,7 @@ export async function writeFile(file: string, content: string) {
 ### Manager Function Updates
 
 #### Gitignore Manager
+
 ```typescript
 // makeFile - now async
 export async function makeFile() {
@@ -65,6 +69,7 @@ export async function handleEvent(action: string) {
 ```
 
 #### Next-Config Manager
+
 ```typescript
 // makeFile - now async
 export async function makeFile() {
@@ -81,6 +86,7 @@ export async function handleFileEvent(action: string) {
 ```
 
 #### Workspace Manager
+
 ```typescript
 // Already async due to VSCode config.update()
 export async function handleConfigChange(section: string, parameter: string, payload: any) {
@@ -89,15 +95,16 @@ export async function handleConfigChange(section: string, parameter: string, pay
 ```
 
 ### Initialization Chain Updates
+
 ```typescript
 // Extension activation - now async
 export async function activate(context: vscode.ExtensionContext) {
   await nextConfigManager.init()
-  
+
   if (manageGitignore) {
     await gitignoreManager.init()
   }
-  
+
   if (hideServiceFiles) {
     await workspaceManager.init()
   }
@@ -107,18 +114,21 @@ export async function activate(context: vscode.ExtensionContext) {
 ## Benefits Achieved
 
 ### Performance Benefits
+
 - **Non-blocking Operations**: File I/O doesn't freeze VSCode interface
 - **Better Responsiveness**: Extension remains responsive during file operations
 - **Concurrent Operations**: Multiple async operations can run simultaneously
 - **Scalability**: Handles large files and multiple operations efficiently
 
 ### Code Consistency
+
 - **Unified Pattern**: All operations (file and config) now use async/await
 - **Predictable Behavior**: Same error handling patterns across all operations
 - **Maintainable**: Consistent async patterns easier to understand and modify
 - **Future-Proof**: Ready for additional async operations
 
 ### Error Handling
+
 - **Proper Propagation**: Async errors properly bubble up through call chain
 - **Graceful Failures**: Better error recovery with async try/catch patterns
 - **User Feedback**: Can provide better progress indication for long operations
@@ -127,6 +137,7 @@ export async function activate(context: vscode.ExtensionContext) {
 ## Technical Implementation
 
 ### File Operations Module
+
 ```typescript
 // shared/file-ops/writeFile.ts
 import * as fs from 'fs/promises'
@@ -134,7 +145,7 @@ import * as fs from 'fs/promises'
 export async function writeFile(file: string, content: string) {
   const workspaceRoot = state.getWorkspaceRoot()
   const filePath = path.join(workspaceRoot, file)
-  
+
   try {
     await fs.writeFile(filePath, content, 'utf8')
   } catch (error) {
@@ -144,6 +155,7 @@ export async function writeFile(file: string, content: string) {
 ```
 
 ### Manager Pattern
+
 ```typescript
 // Consistent async pattern across all managers
 export async function init() {
@@ -162,6 +174,7 @@ export async function makeFile() {
 ```
 
 ### Error Handling Strategy
+
 ```typescript
 // Graceful error handling in async operations
 try {
@@ -175,11 +188,13 @@ try {
 ## Migration Considerations
 
 ### Breaking Changes
+
 - **Function Signatures**: All file operation functions now return `Promise<void>`
 - **Caller Updates**: All callers must use `await` or handle promises
 - **Initialization**: Extension activation function must be async
 
 ### Backward Compatibility
+
 - **API Consistency**: Function names and parameters remain the same
 - **Error Behavior**: Same error handling, just async propagation
 - **Functionality**: No changes to actual file operation behavior
@@ -187,12 +202,14 @@ try {
 ## Validation Strategy
 
 ### Performance Testing
+
 - **File Operation Speed**: Measure async vs sync operation times
 - **UI Responsiveness**: Verify VSCode remains responsive during operations
 - **Concurrent Operations**: Test multiple simultaneous file operations
 - **Large File Handling**: Validate performance with large configuration files
 
 ### Functionality Testing
+
 - **Error Scenarios**: Test file permission errors, disk full, etc.
 - **Concurrent Access**: Multiple operations on same files
 - **Cross-Platform**: Verify async operations work on Windows, macOS, Linux
@@ -201,12 +218,14 @@ try {
 ## Future Enhancements
 
 ### Advanced Async Features
+
 - **Operation Queuing**: Queue file operations to prevent conflicts
 - **Progress Indication**: Show progress for long-running operations
 - **Cancellation**: Support for canceling in-progress operations
 - **Retry Logic**: Automatic retry for transient failures
 
 ### Performance Optimizations
+
 - **Batch Operations**: Combine multiple file operations
 - **Caching**: Cache file contents to reduce I/O
 - **Streaming**: Use streams for large file operations
