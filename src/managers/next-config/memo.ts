@@ -4,10 +4,7 @@ import * as path from 'path'
 import * as state from '../../shared/state'
 
 export function memo() {
-  const nextConfigPath = path.join(
-    state.getWorkspaceRoot(),
-    'next.symlink.config.json'
-  )
+  const nextConfigPath = path.join(state.getWorkspaceRoot(), 'next.symlink.config.json')
   try {
     if (fs.existsSync(nextConfigPath)) {
       const config = fs.readFileSync(nextConfigPath, 'utf8')

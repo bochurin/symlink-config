@@ -1,5 +1,5 @@
-import { makeExludeInConfig } from './make-exlude-in-config'
+import { handleFilesExcludeConfigSection } from './handle-config-change'
 
 export async function init() {
-  makeExludeInConfig()
+  handleFilesExcludeConfigSection()
 }

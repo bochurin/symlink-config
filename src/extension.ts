@@ -8,37 +8,44 @@ import * as workspaceManager from './managers/workspace'
 
 import { setWatchers } from './set-watchers'
 
-export async function activate(context: vscode.ExtensionContext) {
-  console.log('🔗 Symlink Config extension is now active!')
+let isInitialized = false
 
-  const workspaceFolder = vscode.workspace.workspaceFolders?.[0] //TODO: Intelenge it
-  if (!workspaceFolder) {
-    console.log('No workspace folder found')
+async function initializeExtension() {
+  if (isInitialized || !vscode.workspace.workspaceFolders) {
     return
   }
 
-  setWorkspaceRoot(workspaceFolder.uri.fsPath)
+  const workspaceRoot = '.'
 
-  nextConfigManager.init()
+  setWorkspaceRoot(workspaceRoot)
+  console.log('ROOT:', workspaceRoot)
 
-  const manageGitignore = workspaceManager.readFromConfig(
-    'symlink-config.manageGitignore',
-    true
-  )
-  if (manageGitignore) {
-    gitignoreManager.init()
-  }
-
-  const hideServiceFiles = workspaceManager.readFromConfig(
-    'symlink-config.hideServiceFiles',
-    false
-  )
-  if (hideServiceFiles) {
-    workspaceManager.init()
-  }
+  await Promise.all([gitignoreManager.init(), workspaceManager.init(), nextConfigManager.init()])
 
   const dispose = setWatchers()
-  context.subscriptions.push({ dispose })
+  isInitialized = true
+  return dispose
+}
+
+export async function activate(context: vscode.ExtensionContext) {
+  console.log('🔗 Symlink Config extension is now active!')
+
+  // Try to initialize immediately
+  const dispose = await initializeExtension()
+  if (dispose) {
+    context.subscriptions.push({ dispose })
+  }
+
+  // Listen for workspace folder changes
+  const workspaceListener = vscode.workspace.onDidChangeWorkspaceFolders(async () => {
+    isInitialized = false // Reset to allow reinitialization
+    const dispose = await initializeExtension()
+    if (dispose) {
+      context.subscriptions.push({ dispose })
+    }
+  })
+
+  context.subscriptions.push(workspaceListener)
 }
 
 export function deactivate() {}

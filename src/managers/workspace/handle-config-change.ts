@@ -1,6 +1,9 @@
 import * as vscode from 'vscode'
-import { makeExludeInConfig } from './make-exlude-in-config'
+
 import * as gitignoreManager from '../gitignore'
+
+import { makeExcludeInConfig } from './make-exclude-in-config'
+import { readFromConfig } from '../../shared/config-ops'
 
 export async function handleConfigChange(
   section: string,
@@ -10,32 +13,59 @@ export async function handleConfigChange(
   switch (section) {
     case 'symlink-config':
       switch (parameter) {
-        case 'hideServiceFiles':
-          await handleHideServiceFiles(payload.value)
+        case 'gitignoreServiceFiles':
+          handleGitignoreServiceFileParameter(payload)
           break
-        case 'manageGitignore':
-          await handleManageGitignore(payload.value)
+        case 'hideServiceFiles':
+          await handleHideServiceFilesParameter(payload)
+          break
+        case 'hideSymlinkConfigs':
+          await handelHideSymlinkConfigsParameter(payload)
           break
       }
       break
     case 'files':
       switch (parameter) {
         case 'exclude':
-          await makeExludeInConfig()
+          await handleFilesExcludeConfigSection()
           break
       }
       break
   }
 }
 
-async function handleHideServiceFiles(enabled: boolean) {
-  vscode.window.showInformationMessage(
-    `Service files hiding ${enabled ? 'enabled' : 'disabled'}.`,
-    'OK'
-  )
-  await makeExludeInConfig()
+export async function handleFilesExcludeConfigSection() {
+  const hideServiceFiles = readFromConfig('symlink-config.hideServiceFiles', false)
+  const hideSymlinkConfigs = readFromConfig('symlink-config.manageHidingSymlinkConfigs', false)
+  if (hideServiceFiles || hideSymlinkConfigs) {
+    await makeExcludeInConfig()
+  }
 }
 
-async function handleManageGitignore(enabled: boolean) {
-  gitignoreManager.handleEvent(enabled ? 'inited' : 'disabled')
+async function handelHideSymlinkConfigsParameter(payload: { value: any; old_value: any }) {
+  vscode.window.showInformationMessage(
+    `Hiding symlink.config.json files ${payload.value ? 'enabled' : 'disabled'}.`,
+    'OK'
+  )
+  await makeExcludeInConfig('symlinkConfigs')
+}
+
+async function handleHideServiceFilesParameter(payload: { value: any; old_value: any }) {
+  vscode.window.showInformationMessage(
+    `Hiding service files ${payload.value ? 'enabled' : 'disabled'}.`,
+    'OK'
+  )
+  await makeExcludeInConfig('serviceFiles')
+}
+
+function handleGitignoreServiceFileParameter(payload: { value: any; old_value: any }) {
+  vscode.window.showInformationMessage(
+    `Gitignoring service files ${payload.value ? 'enabled' : 'disabled'}.`,
+    'OK'
+  )
+  if (payload.value) {
+    gitignoreManager.handleEvent('modified')
+  } else {
+    //TODO: Ask if the section should be cleaned
+  }
 }

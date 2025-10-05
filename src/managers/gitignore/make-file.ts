@@ -7,10 +7,7 @@ export async function makeFile() {
 
   let fileContent = readFile('.gitignore')
 
-  const regex = new RegExp(
-    `(${sectionStart}\\n)[\\s\\S]*?(\\n${sectionEnd})`,
-    'g'
-  )
+  const regex = new RegExp(`(${sectionStart}\\n)[\\s\\S]*?(\\n${sectionEnd})`, 'g')
   const match = regex.exec(fileContent)
 
   if (match) {

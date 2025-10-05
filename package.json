@@ -1,8 +1,8 @@
 {
   "name": "symlink-config",
-  "displayName": "symlink-config",
+  "displayName": "symlink.config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -32,17 +32,22 @@
       }
     ],
     "configuration": {
-      "title": "Symlink Config",
+      "title": "symlink.config",
       "properties": {
-        "symlink-config.manageGitignore": {
+        "symlink-config.gitignoreServiceFiles": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically manage .gitignore entries in the special section."
+          "description": "Automatically .gitignore service files."
         },
         "symlink-config.hideServiceFiles": {
           "type": "boolean",
           "default": false,
-          "description": "Hide service configuration files (like next.symlink.config.json) from VSCode Explorer"
+          "description": "Automatically hide service files from VSCode Explorer."
+        },
+        "symlink-config.hideSymlinkConfigs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically hide symlink.config.json files from VSCode Explorer."
         }
       }
     },

@@ -15,8 +15,7 @@ export async function handleFileEvent(action: 'change' | 'delete') {
 
   if (action === 'change') {
     try {
-      needsRegenerate = needsRegenerate =
-        readFromFile() !== state.getNextConfig()
+      needsRegenerate = needsRegenerate = readFromFile() !== state.getNextConfig()
     } catch (error) {
       needsRegenerate = true
     }

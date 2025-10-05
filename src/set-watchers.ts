@@ -1,19 +1,9 @@
-import * as vscode from 'vscode'
 import * as gitignoreManager from './managers/gitignore'
-import * as nextConfigManager from './managers/next-config'
 import * as workspaceManager from './managers/workspace'
 import { useFileWatcher, useConfigWatcher } from './hooks'
+import { readFromConfig } from './shared/config-ops'
 
 export function setWatchers() {
-  const manageGitignore = workspaceManager.readFromConfig(
-    'symlink-config.manageGitignore',
-    true
-  )
-  const hideServiceFiles = workspaceManager.readFromConfig(
-    'symlink-config.hideServiceFiles',
-    false
-  )
-
   // const configFileHandlers = [
   //   () => nextConfigManager.makeFile(),
   //   () => nextConfigManager.memo(),
@@ -36,14 +26,6 @@ export function setWatchers() {
   //   })
   // )
 
-  const gitignoreWatcher = manageGitignore
-    ? useFileWatcher({
-        pattern: '**/.gitignore',
-        onChange: () => gitignoreManager.handleEvent('modified'),
-        onDelete: () => gitignoreManager.handleEvent('deleted'),
-      })
-    : null
-
   // watchers.push(
   //   useFileWatcher({
   //     pattern: '.git',
@@ -52,37 +34,48 @@ export function setWatchers() {
   //   })
   // )
 
-  // Listen for configuration changes
+  const gitignoreWatcher = useFileWatcher({
+    pattern: '**/.gitignore',
+    onChange: () => gitignoreManager.handleEvent('modified'),
+    onDelete: () => gitignoreManager.handleEvent('deleted')
+  })
+
   const configWatcher = useConfigWatcher({
     sections: [
       {
         section: 'symlink-config',
         parameters: [
           {
-            parameter: 'manageGitignore',
+            parameter: 'gitignoreServiceFiles',
             onChange: (section, parameter, payload) =>
-              workspaceManager.handleConfigChange(section, parameter, payload),
+              workspaceManager.handleConfigChange(section, parameter, payload)
           },
           {
             parameter: 'hideServiceFiles',
             onChange: (section, parameter, payload) =>
-              workspaceManager.handleConfigChange(section, parameter, payload),
+              workspaceManager.handleConfigChange(section, parameter, payload)
           },
-        ],
+          {
+            parameter: 'hideSymlinkConfigs',
+            onChange: (section, parameter, payload) =>
+              workspaceManager.handleConfigChange(section, parameter, payload)
+          }
+        ]
       },
       {
         section: 'files',
         parameters: {
           parameter: 'exclude',
           onChange: (section, parameter, payload) =>
-            workspaceManager.handleConfigChange(section, parameter, payload),
-        },
-      },
-    ],
+            workspaceManager.handleConfigChange(section, parameter, payload)
+        }
+      }
+    ]
   })
 
+  // set watcher disposals
   return () => {
-    gitignoreWatcher?.dispose()
+    gitignoreWatcher.dispose()
     configWatcher.dispose()
   }
 }

@@ -41,7 +41,7 @@ function createMasterConfig(configFiles: string[]): SymlinkConfig {
   const masterConfig: SymlinkConfig = {
     directories: [],
     files: [],
-    exclude_paths: [],
+    exclude_paths: []
   }
 
   for (const configFile of configFiles) {
@@ -53,9 +53,7 @@ function createMasterConfig(configFiles: string[]): SymlinkConfig {
 
     if (config.directories) {
       for (const entry of config.directories) {
-        masterConfig.directories!.push(
-          convertToAtSyntax(entry, relativeConfigDir)
-        )
+        masterConfig.directories!.push(convertToAtSyntax(entry, relativeConfigDir))
       }
     }
 
@@ -74,13 +72,10 @@ function createMasterConfig(configFiles: string[]): SymlinkConfig {
   return masterConfig
 }
 
-function convertToAtSyntax(
-  entry: SymlinkEntry,
-  configDir: string
-): SymlinkEntry {
+function convertToAtSyntax(entry: SymlinkEntry, configDir: string): SymlinkEntry {
   return {
     target: pathToAtSyntax(entry.target, configDir),
-    source: pathToAtSyntax(entry.source, configDir),
+    source: pathToAtSyntax(entry.source, configDir)
   }
 }
 
@@ -89,10 +84,7 @@ function pathToAtSyntax(originalPath: string, configDir: string): string {
     return originalPath
   }
 
-  const absolutePath = path.resolve(
-    path.join(getWorkspaceRoot(), configDir),
-    originalPath
-  )
+  const absolutePath = path.resolve(path.join(getWorkspaceRoot(), configDir), originalPath)
   const relativePath = path.relative(getWorkspaceRoot(), absolutePath)
 
   return '@' + relativePath.replace(/\\\\/g, '/')
