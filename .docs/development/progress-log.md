@@ -500,6 +500,60 @@ return lines.join('\n')
 - Prevents race conditions in file operations
 - Ensures predictable order of operations
 
+### ✅ Phase 1.16: Async/Await Improvements and Configuration Event Handling (Completed - 05.10.2025)
+- **Date**: 05.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Async Event Handlers**: Added proper async/await to configuration event handlers in set-watchers.ts
+  - **Event Handler Understanding**: Clarified async function behavior and VSCode event system integration
+  - **Configuration Race Condition**: Identified and documented multi-parameter change issue with files.exclude overwriting
+  - **Error Handling Strategy**: Established pattern for handling async errors in event callbacks
+  - **Mode.All Usage**: Updated symlink-config manager to use Mode.All for consistent exclusion rebuilding
+
+#### Technical Implementation Details
+
+**Async Event Handler Enhancement**:
+```typescript
+// Before: Fire-and-forget async calls
+onChange: (section, parameter, payload) =>
+  symlinkConfigManager.handleEvent(section, parameter, payload)
+
+// After: Proper async handling
+onChange: async (section, parameter, payload) =>
+  await symlinkConfigManager.handleEvent(section, parameter, payload)
+```
+
+**Async Function Benefits Understanding**:
+- **Non-blocking I/O**: File operations don't freeze VSCode UI
+- **Event Loop Integration**: Allows other events to process during I/O waits
+- **Concurrency**: Enables parallel operations within functions using Promise.all
+- **Responsiveness**: Keeps VSCode editor responsive during extension operations
+
+**Configuration Race Condition Issue**:
+- **Problem**: Multiple parameter changes trigger separate events that overwrite each other
+- **Example**: Setting both `hideServiceFiles` and `hideSymlinkConfigs` to false
+- **Symptom**: First exclusion set correctly, then overwritten by second event
+- **Root Cause**: Using specific modes (ServiceFiles/SymlinkConfigs) instead of Mode.All
+
+**Error Handling Pattern**:
+```typescript
+// Recommended: Handle errors inside async functions
+export async function handleEvent(section, parameter, payload) {
+  try {
+    await fileOperations()
+  } catch (error) {
+    console.error('Error in handleEvent:', error)
+    vscode.window.showErrorMessage('Configuration update failed')
+  }
+}
+```
+
+**Event System Insights**:
+- **Fire-and-forget**: VSCode doesn't wait for event handler completion
+- **Sequential Execution**: Multiple events for same parameter execute sequentially
+- **Error Isolation**: Errors in one handler don't affect others
+- **No Return Values**: Event handlers return void, not Promise results
+
 ### ✅ Phase 1.15: Code Quality Fixes and Enum Migration (Completed - 05.10.2025)
 - **Date**: 05.10.2025
 - **Status**: Complete
@@ -662,9 +716,9 @@ const configWatcher = useConfigWatcher({
 
 ## Current Status
 
-**Phase**: Phase 1.15 Complete - Code Quality Fixes & Enum Migration  
+**Phase**: Phase 1.16 Complete - Async/Await Improvements & Configuration Event Handling  
 **Branch**: `main`  
-**Latest**: Enhanced security with scoped package, robust error handling, and idiomatic enum usage  
+**Latest**: Enhanced async event handling, documented configuration race conditions, and improved error handling patterns  
 **Next**: Testing and refinement (Phase 2)
 
 **Technical Foundation**:
