@@ -500,6 +500,56 @@ return lines.join('\n')
 - Prevents race conditions in file operations
 - Ensures predictable order of operations
 
+### ✅ Phase 1.17: Sequential Event Processing and Race Condition Resolution (Completed - 06.10.2025)
+- **Date**: 06.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Promise Chain Queue**: Implemented sequential processing queue for configuration events to prevent race conditions
+  - **Multi-Parameter Fix**: Resolved issue where simultaneous parameter changes would overwrite each other
+  - **Event Serialization**: All configuration events now process one after another using promise chaining
+  - **Race Condition Elimination**: Fixed files.exclude overwriting when multiple parameters change simultaneously
+  - **Robust Event Handling**: Ensured consistent state management across concurrent configuration changes
+
+#### Technical Implementation Details
+
+**Promise Chain Queue Implementation**:
+```typescript
+export function setWatchers() {
+  let processingQueue = Promise.resolve()
+  
+  // All events use the same queue for sequential processing
+  onChange: (section, parameter, payload) => {
+    processingQueue = processingQueue.then(() =>
+      symlinkConfigManager.handleEvent(section, parameter, payload)
+    )
+  }
+}
+```
+
+**Sequential Processing Benefits**:
+- **Eliminates Race Conditions**: Events process one after another, not simultaneously
+- **Consistent State**: Each event sees the complete result of the previous event
+- **Predictable Behavior**: Order of execution matches order of configuration changes
+- **Error Isolation**: Failed events don't break the queue, subsequent events still process
+
+**Multi-Parameter Change Resolution**:
+- **Before**: Setting both `hideServiceFiles` and `hideSymlinkConfigs` to false would cause overwrites
+- **After**: First parameter processes completely, then second parameter processes with current state
+- **Result**: Both exclusions correctly set to false without interference
+
+**Queue Implementation Pattern**:
+- **Simple Promise Chain**: `processingQueue = processingQueue.then(() => asyncOperation())`
+- **Automatic Continuation**: Queue continues even if individual operations fail
+- **Memory Efficient**: No complex queue data structures, just promise chaining
+- **Thread Safe**: JavaScript single-threaded nature ensures queue integrity
+
+**Event Processing Flow**:
+1. **Event 1 Triggered**: Starts processing immediately
+2. **Event 2 Triggered**: Waits for Event 1 to complete
+3. **Event 1 Completes**: Event 2 begins processing
+4. **Event 3 Triggered**: Waits for Event 2 to complete
+5. **Sequential Execution**: All events process in order without overlap
+
 ### ✅ Phase 1.16: Async/Await Improvements and Configuration Event Handling (Completed - 05.10.2025)
 - **Date**: 05.10.2025
 - **Status**: Complete
@@ -716,9 +766,9 @@ const configWatcher = useConfigWatcher({
 
 ## Current Status
 
-**Phase**: Phase 1.16 Complete - Async/Await Improvements & Configuration Event Handling  
+**Phase**: Phase 1.17 Complete - Sequential Event Processing & Race Condition Resolution  
 **Branch**: `main`  
-**Latest**: Enhanced async event handling, documented configuration race conditions, and improved error handling patterns  
+**Latest**: Implemented promise chain queue for sequential event processing, resolved multi-parameter race conditions  
 **Next**: Testing and refinement (Phase 2)
 
 **Technical Foundation**:
