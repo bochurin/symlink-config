@@ -4,6 +4,8 @@ import * as symlinkConfigManager from './managers/symlink-config'
 import * as fileExcludeManager from './managers/file-exclude'
 
 export function setWatchers() {
+  let processingQueue = Promise.resolve()
+
   // const configFileHandlers = [
   //   () => nextConfigManager.makeFile(),
   //   () => nextConfigManager.memo(),
@@ -47,30 +49,27 @@ export function setWatchers() {
         parameters: [
           {
             parameter: 'gitignoreServiceFiles',
-            onChange: async (section, parameter, payload) =>
-              await symlinkConfigManager.handleEvent(
-                section,
-                parameter,
-                payload
+            onChange: (section, parameter, payload) => {
+              processingQueue = processingQueue.then(() =>
+                symlinkConfigManager.handleEvent(section, parameter, payload)
               )
+            }
           },
           {
             parameter: 'hideServiceFiles',
-            onChange: async (section, parameter, payload) =>
-              await symlinkConfigManager.handleEvent(
-                section,
-                parameter,
-                payload
+            onChange: (section, parameter, payload) => {
+              processingQueue = processingQueue.then(() =>
+                symlinkConfigManager.handleEvent(section, parameter, payload)
               )
+            }
           },
           {
             parameter: 'hideSymlinkConfigs',
-            onChange: async (section, parameter, payload) =>
-              await symlinkConfigManager.handleEvent(
-                section,
-                parameter,
-                payload
+            onChange: (section, parameter, payload) => {
+              processingQueue = processingQueue.then(() =>
+                symlinkConfigManager.handleEvent(section, parameter, payload)
               )
+            }
           }
         ]
       },
