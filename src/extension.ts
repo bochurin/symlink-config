@@ -15,7 +15,8 @@ async function initializeExtension() {
     return
   }
 
-  const workspaceRoot = '.'
+  const workspaceRoot =
+    vscode.workspace.workspaceFolders[0].uri.fsPath.split('\\').join('/') + '/' // [0] is the root workspace folder (if multiple, we'll need to handle that]
 
   setWorkspaceRoot(workspaceRoot)
   console.log('ROOT:', workspaceRoot)

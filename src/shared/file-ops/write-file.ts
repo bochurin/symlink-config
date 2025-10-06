@@ -1,10 +1,8 @@
 import * as fs from 'fs/promises'
-import * as path from 'path'
-import * as state from '../state'
+import { fullPath } from './full-path'
 
 export async function writeFile(file: string, content: string) {
-  const workspaceRoot = state.getWorkspaceRoot()
-  const filePath = path.join(workspaceRoot, file)
+  const filePath = fullPath(file)
 
   try {
     await fs.writeFile(filePath, content, 'utf8')

@@ -1,9 +1,9 @@
 import { readFile, writeFile } from '../../shared/file-ops'
 import { sectionStart, sectionEnd } from './constants'
-import { build } from './build'
+import { generate } from './generate'
 
 export async function make() {
-  const builtSection = build()
+  const builtSection = generate()
 
   let fileContent = readFile('.gitignore')
 

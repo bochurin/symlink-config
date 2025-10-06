@@ -1,10 +1,8 @@
 import * as fs from 'fs'
-import * as path from 'path'
-import * as state from '../state'
+import { fullPath } from './full-path'
 
 export function readFile(file: string): string {
-  const workspaceRoot = state.getWorkspaceRoot()
-  const filePath = path.join(workspaceRoot, file)
+  const filePath = fullPath(file)
 
   try {
     return fs.readFileSync(filePath, 'utf8')

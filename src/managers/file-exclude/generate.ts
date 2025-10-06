@@ -2,7 +2,7 @@ import * as symlinkConfigManager from '../symlink-config'
 import { read } from './read'
 import { Mode } from './types'
 
-export function build(mode?: Mode): Record<string, boolean> {
+export function generate(mode?: Mode): Record<string, boolean> {
   mode = mode || Mode.All
 
   const exclusions: Record<string, boolean> = {}

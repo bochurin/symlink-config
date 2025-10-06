@@ -1,5 +1,6 @@
 import { useFileWatcher, useConfigWatcher } from './hooks'
 import * as gitignoreManager from './managers/gitignore'
+import * as nextConfigManager from './managers/next-config'
 import * as symlinkConfigManager from './managers/symlink-config'
 import * as fileExcludeManager from './managers/file-exclude'
 
@@ -18,16 +19,7 @@ export function setWatchers() {
   //     onDelete: [...configFileHandlers],
   //   })
   // )
-
-  // watchers.push(
-  //   useFileWatcher({
-  //     pattern: 'next.symlink.config.json',
-  //     ignoreCreateEvents: true,
-  //     onChange: () => nextConfigManager.handleFileEvent('change'),
-  //     onDelete: () => nextConfigManager.handleFileEvent('delete'),
-  //   })
   // )
-
   // watchers.push(
   //   useFileWatcher({
   //     pattern: '.git',
@@ -36,10 +28,28 @@ export function setWatchers() {
   //   })
   // )
 
+  const nextConfigWatcher = useFileWatcher({
+    pattern: './next.symlink.config.json',
+    onChange: () =>
+      (processingQueue = processingQueue.then(() =>
+        nextConfigManager.handleEvent('modified')
+      )),
+    onDelete: () =>
+      (processingQueue = processingQueue.then(() =>
+        nextConfigManager.handleEvent('deleted')
+      ))
+  })
+
   const gitignoreWatcher = useFileWatcher({
     pattern: '**/.gitignore',
-    onChange: () => gitignoreManager.handleEvent('modified'),
-    onDelete: () => gitignoreManager.handleEvent('deleted')
+    onChange: () =>
+      (processingQueue = processingQueue.then(() =>
+        gitignoreManager.handleEvent('modified')
+      )),
+    onDelete: () =>
+      (processingQueue = processingQueue.then(() =>
+        gitignoreManager.handleEvent('deleted')
+      ))
   })
 
   const configWatcher = useConfigWatcher({
@@ -86,7 +96,8 @@ export function setWatchers() {
 
   // set watcher disposals
   return () => {
-    gitignoreWatcher.dispose()
     configWatcher.dispose()
+    gitignoreWatcher.dispose()
+    nextConfigWatcher.dispose()
   }
 }

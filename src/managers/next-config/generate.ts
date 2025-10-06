@@ -3,7 +3,7 @@ import * as path from 'path'
 import { SymlinkConfig, SymlinkEntry } from './types'
 import { getWorkspaceRoot } from '../../shared/state'
 
-export function buildNextConfig(): string {
+export function generate(): string {
   try {
     const configFiles = findConfigFiles()
     const masterConfig = createMasterConfig(configFiles)

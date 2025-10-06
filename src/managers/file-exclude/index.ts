@@ -1,5 +1,5 @@
 export * from './types'
-export * from './build'
+export * from './generate'
 export * from './handle-event'
 export * from './read'
 export * from './make'

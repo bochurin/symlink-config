@@ -1,15 +1,10 @@
-import * as fs from 'fs'
-import * as path from 'path'
-
 import { sectionStart, sectionEnd } from './constants'
 
-import * as state from '../../shared/state'
+import { readFile } from '../../shared/file-ops'
 
 export function read(): string {
   try {
-    const workspaceRoot = state.getWorkspaceRoot()
-    const gitignorePath = path.join(workspaceRoot, '.gitignore')
-    const content = fs.readFileSync(gitignorePath, 'utf8')
+    const content = readFile('.gitignore')
 
     const regex = new RegExp(
       `${sectionStart}\\n([\\s\\S]*?)\\n${sectionEnd}`,

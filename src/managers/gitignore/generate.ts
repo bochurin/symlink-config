@@ -1,6 +1,6 @@
 import * as symlinkConfigManager from '../symlink-config'
 
-export function build(): string {
+export function generate(): string {
   try {
     const gitignoreServiceFiles = symlinkConfigManager.read(
       'gitignoreServiceFiles'
