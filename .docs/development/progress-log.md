@@ -500,6 +500,69 @@ return lines.join('\n')
 - Prevents race conditions in file operations
 - Ensures predictable order of operations
 
+### ✅ Phase 1.19: VSCode User Notifications and File Watcher Improvements (Completed - 06.10.2025)
+- **Date**: 06.10.2025
+- **Status**: Complete
+- **Details**:
+  - **VSCode User Notifications**: Added shared VSCode utilities (`info`, `warning`) for user feedback during operations
+  - **Enhanced User Experience**: All handle-event functions now provide informative status messages
+  - **File Watcher Pattern Optimization**: Resolved VSCode FileSystemWatcher limitations with glob patterns and root file filtering
+  - **Compact Filtering Logic**: Implemented helper functions (`isRootFile`, `queue`) to reduce code duplication
+  - **State Integration**: Migrated from direct vscode.workspace access to centralized state management
+  - **Promise Queue Fix**: Corrected files.exclude parameter handler to use sequential processing queue
+
+#### Technical Implementation Details
+
+**VSCode Utilities Architecture**:
+```typescript
+// src/shared/vscode/info.ts
+export function info(message: string) {
+  vscode.window.showInformationMessage(message, 'OK')
+}
+
+// src/shared/vscode/warning.ts  
+export function warning(message: string) {
+  vscode.window.showWarningMessage(message, 'OK')
+}
+```
+
+**Enhanced User Feedback**:
+- **Gitignore Manager**: "`.gitignore is not correct or absent. Generating ...`"
+- **Next Config Manager**: "`next.symlink.config.json was modified. Regenerating...`"
+- **Symlink Config Manager**: "`Gitignoring service files enabled/disabled.`"
+- **File Exclude Manager**: "`Hiding service files enabled/disabled.`"
+
+**File Watcher Pattern Resolution**:
+- **Problem**: VSCode FileSystemWatcher requires glob patterns (`**/*.ext`) for reliable watching
+- **Solution**: Use `**/.gitignore` pattern with root file filtering instead of `.gitignore`
+- **Implementation**: `isRootFile()` helper compares normalized paths with workspace root
+- **Benefit**: Reliable file watching while maintaining root-only behavior
+
+**Compact Filtering Implementation**:
+```typescript
+const isRootFile = (uri: vscode.Uri, filename: string) => {
+  const root = getWorkspaceRoot()
+  const path = uri.fsPath.split('\\').join('/') + '/'
+  return path === root + filename + '/'
+}
+
+const queue = (fn: () => Promise<void>) => processingQueue = processingQueue.then(fn)
+
+// Usage: Clean, compact event handlers
+onChange: (uri) => isRootFile(uri, '.gitignore') && queue(() => gitignoreManager.handleEvent('modified'))
+```
+
+**State Management Integration**:
+- **Before**: Direct `vscode.workspace.workspaceFolders[0].uri.fsPath` access
+- **After**: Centralized `getWorkspaceRoot()` from state management
+- **Benefit**: Consistent workspace root handling across all components
+- **Reliability**: Single source of truth for workspace path resolution
+
+**Sequential Processing Enhancement**:
+- **Fixed**: `files.exclude` parameter handler missing promise queue integration
+- **Impact**: Ensures all configuration changes process sequentially
+- **Consistency**: All event handlers now use same promise chain pattern
+
 ### ✅ Phase 1.18: Major Architecture Refactoring and Code Quality Improvements (Completed - 06.10.2025)
 - **Date**: 06.10.2025
 - **Status**: Complete
@@ -830,9 +893,9 @@ const configWatcher = useConfigWatcher({
 
 ## Current Status
 
-**Phase**: Phase 1.18 Complete - Major Architecture Refactoring & Code Quality Improvements  
+**Phase**: Phase 1.19 Complete - VSCode User Notifications & File Watcher Improvements  
 **Branch**: `main`  
-**Latest**: Complete manager architecture refactoring, modern JavaScript practices, and enhanced code quality  
+**Latest**: Enhanced user experience with informative notifications, optimized file watcher patterns, and compact filtering logic  
 **Next**: Testing and refinement (Phase 2)
 
 **Technical Foundation**:
