@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 
-import { setWorkspaceRoot } from './shared/state'
+import { setWorkspaceRoot } from './state'
 
 import * as gitignoreManager from './managers/gitignore'
 import * as nextConfigManager from './managers/next-config'

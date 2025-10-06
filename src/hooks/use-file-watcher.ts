@@ -2,32 +2,34 @@ import * as vscode from 'vscode'
 
 export interface WatcherConfig {
   pattern: string
-  onCreate?: (() => void) | (() => void)[]
-  onChange?: (() => void) | (() => void)[]
-  onDelete?: (() => void) | (() => void)[]
+  onCreate?: ((uri: vscode.Uri) => void) | ((uri: vscode.Uri) => void)[]
+  onChange?: ((uri: vscode.Uri) => void) | ((uri: vscode.Uri) => void)[]
+  onDelete?: ((uri: vscode.Uri) => void) | ((uri: vscode.Uri) => void)[]
 }
 
-export function useFileWatcher(config: WatcherConfig): vscode.FileSystemWatcher {
+export function useFileWatcher(
+  config: WatcherConfig
+): vscode.FileSystemWatcher {
   const watcher = vscode.workspace.createFileSystemWatcher(
     config.pattern,
-    !config.onCreate, // ignore create if no onCreate handler
-    !config.onChange, // ignore change if no onChange handler
-    !config.onDelete // ignore delete if no onDelete handler
+    !config.onCreate,
+    !config.onChange,
+    !config.onDelete
   )
 
   if (config.onCreate) {
     const handlers = Array.isArray(config.onCreate) ? config.onCreate : [config.onCreate]
-    watcher.onDidCreate(() => handlers.forEach((handler) => handler()))
+    watcher.onDidCreate((uri) => handlers.forEach((handler) => handler(uri)))
   }
 
   if (config.onChange) {
     const handlers = Array.isArray(config.onChange) ? config.onChange : [config.onChange]
-    watcher.onDidChange(() => handlers.forEach((handler) => handler()))
+    watcher.onDidChange((uri) => handlers.forEach((handler) => handler(uri)))
   }
 
   if (config.onDelete) {
     const handlers = Array.isArray(config.onDelete) ? config.onDelete : [config.onDelete]
-    watcher.onDidDelete(() => handlers.forEach((handler) => handler()))
+    watcher.onDidDelete((uri) => handlers.forEach((handler) => handler(uri)))
   }
 
   return watcher

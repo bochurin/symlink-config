@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import { SymlinkConfig, SymlinkEntry } from './types'
-import { getWorkspaceRoot } from '../../shared/state'
+import { getWorkspaceRoot } from '../../state'
 
 export function generate(): string {
   try {

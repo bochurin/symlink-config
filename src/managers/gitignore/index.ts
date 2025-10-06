@@ -1,5 +1,4 @@
 export * from './constants'
-export * from './types'
 export * from './generate'
 export * from './handle-event'
 export * from './read'

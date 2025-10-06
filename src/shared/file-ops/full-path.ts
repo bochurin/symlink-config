@@ -1,6 +1,6 @@
 import * as path from 'path'
 
-import * as state from '../../shared/state'
+import * as state from '../../state'
 
 export function fullPath(endPath: string): string {
   const workspaceRoot = state.getWorkspaceRoot()
