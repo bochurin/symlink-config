@@ -21,9 +21,7 @@ export async function handleEvent(
         parameter === 'hideServiceFiles' ? 'service files' : 'symlink configs'
       const action = payload.value ? 'enabled' : 'disabled'
       const mode =
-        parameter === 'hideServiceFiles'
-          ? fileExcludeManager.Mode.ServiceFiles
-          : fileExcludeManager.Mode.SymlinkConfigs
+        parameter === 'hideServiceFiles' ? 'serviceFiles' : 'symlinkConfigs'
       info(`Hiding ${object} ${action}.`)
       await fileExcludeManager.make(mode)
       break

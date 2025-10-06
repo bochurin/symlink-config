@@ -1,19 +1,11 @@
-import { sectionStart, sectionEnd } from './constants'
-
 import { readFile } from '../../shared/file-ops'
+import { parseGitignore } from '../../shared/gitignore-ops'
 
-export function read(): string {
+export async function read(): Promise<Record<string, { spacing: string; active: boolean }>> {
   try {
-    const content = readFile('.gitignore')
-
-    const regex = new RegExp(
-      `${sectionStart}\\n([\\s\\S]*?)\\n${sectionEnd}`,
-      'g'
-    )
-    const match = regex.exec(content)
-
-    return match ? match[1] : ''
+    const content = await readFile('.gitignore')
+    return parseGitignore(content)
   } catch {
-    return ''
+    return {}
   }
 }

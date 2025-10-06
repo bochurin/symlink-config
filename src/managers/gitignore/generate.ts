@@ -1,17 +1,19 @@
 import * as symlinkConfigManager from '../symlink-config'
+import { read } from './read'
 
-export function generate(): string {
+export async function generate(): Promise<Record<string, { spacing: string; active: boolean }>> {
+  const entries: Record<string, { spacing: string; active: boolean }> = {}
+
   try {
-    const gitignoreServiceFiles = symlinkConfigManager.read(
-      'gitignoreServiceFiles'
-    )
-    const lines = [
-      '# WARNING: This section is auto-generated. Do not modify manually.',
-      `${gitignoreServiceFiles ? '' : '# '}next.symlink.config.json`
-    ]
+    const gitignoreServiceFiles = symlinkConfigManager.read('gitignoreServiceFiles')
+    entries['next.symlink.config.json'] = {
+      spacing: '',
+      active: gitignoreServiceFiles
+    }
+  } catch {}
 
-    return lines.join('\n')
-  } catch {
-    return ''
-  }
+  const currentEntries = await read()
+  const builtEntries = { ...currentEntries, ...entries }
+
+  return builtEntries
 }

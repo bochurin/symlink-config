@@ -1,19 +1,20 @@
 import * as symlinkConfigManager from '../symlink-config'
 import { read } from './read'
-import { Mode } from './types'
 
-export function generate(mode?: Mode): Record<string, boolean> {
-  mode = mode || Mode.All
+export function generate(
+  mode?: 'all' | 'serviceFiles' | 'symlinkConfigs'
+): Record<string, boolean> {
+  mode = mode || 'all'
 
   const exclusions: Record<string, boolean> = {}
 
   try {
-    if (mode === Mode.All || mode === Mode.ServiceFiles) {
+    if (mode === 'all' || mode === 'serviceFiles') {
       const hideServiceFiles = symlinkConfigManager.read('hideServiceFiles')
       exclusions['next.symlink.config.json'] = hideServiceFiles
     }
 
-    if (mode === Mode.All || mode === Mode.SymlinkConfigs) {
+    if (mode === 'all' || mode === 'symlinkConfigs') {
       const hideSymlinkConfigs = symlinkConfigManager.read('hideSymlinkConfigs')
       exclusions['**/symlink.config.json'] = hideSymlinkConfigs
     }

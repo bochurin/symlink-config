@@ -1,9 +1,12 @@
 import { writeToConfig } from '../../shared/config-ops'
-import { read } from './read'
 import { generate } from './generate'
-import { Mode } from './types'
+import { read } from './read'
 
-export async function make(mode?: Mode): Promise<void> {
-  const builtExclusions = generate(mode || Mode.All)
-  await writeToConfig('files.exclude', builtExclusions)
+export async function make(
+  mode?: 'all' | 'serviceFiles' | 'symlinkConfigs'
+): Promise<void> {
+  const generatedExclusions = generate(mode || 'all')
+  const currentExclusions = read()
+  if (JSON.stringify(currentExclusions) != JSON.stringify(generatedExclusions))
+    await writeToConfig('files.exclude', generatedExclusions)
 }
