@@ -87,8 +87,11 @@ export function setWatchers() {
         section: 'files',
         parameters: {
           parameter: 'exclude',
-          onChange: (section, parameter, payload) =>
-            fileExcludeManager.handleEvent()
+          onChange: (section, parameter, payload) => {
+            processingQueue = processingQueue.then(() =>
+              fileExcludeManager.handleEvent()
+            )
+          }
         }
       }
     ]

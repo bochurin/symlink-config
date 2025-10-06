@@ -1,11 +1,10 @@
-import * as vscode from 'vscode'
-
 import * as symlinkConfigManager from '../symlink-config'
 
+import { info } from '../../shared/vscode'
 import { make } from './make'
 import { needsRegenerate } from './needs-regenerate'
 
-export async function handleEvent(action: 'modified' | 'deleted') {
+export async function handleEvent(event: 'modified' | 'deleted') {
   const gitignoreServiceFiles = symlinkConfigManager.read(
     'gitignoreServiceFiles'
   )
@@ -13,14 +12,10 @@ export async function handleEvent(action: 'modified' | 'deleted') {
     return
   }
 
-  const needsRegen = action === 'deleted' || needsRegenerate()
+  const needsRegen = event === 'deleted' || needsRegenerate()
 
   if (needsRegen) {
-    vscode.window.showWarningMessage(
-      '.gitignore is not correct or absent. Generating ...',
-      'OK'
-    )
-
+    info('.gitignore is not correct or absent. Generating ...')
     await make()
   }
 }
