@@ -10,6 +10,8 @@ import { setWatchers } from './set-watchers'
 import { SymlinkTreeProvider } from './views/tree-provider'
 import { createSymlink, selectSymlinkTarget, cancelSymlinkCreation } from './commands/create-symlink'
 import { openSymlinkConfig } from './commands/open-symlink-config'
+import { applyConfiguration } from './commands/apply-configuration'
+import { collapseAll } from './commands/tree-operations'
 
 let isInitialized = false
 
@@ -59,7 +61,9 @@ export async function activate(context: vscode.ExtensionContext) {
   const selectTargetCommand = vscode.commands.registerCommand('symlink-config.selectSymlinkTarget', selectSymlinkTarget)
   const cancelCommand = vscode.commands.registerCommand('symlink-config.cancelSymlinkCreation', cancelSymlinkCreation)
   const openConfigCommand = vscode.commands.registerCommand('symlink-config.openSymlinkConfig', openSymlinkConfig)
-  context.subscriptions.push(createSymlinkCommand, selectTargetCommand, cancelCommand, openConfigCommand)
+  const applyConfigCommand = vscode.commands.registerCommand('symlink-config.applyConfiguration', applyConfiguration)
+  const collapseAllCommand = vscode.commands.registerCommand('symlink-config.collapseAll', collapseAll)
+  context.subscriptions.push(createSymlinkCommand, selectTargetCommand, cancelCommand, openConfigCommand, applyConfigCommand, collapseAllCommand)
 
   // Try to initialize immediately
   const dispose = await initializeExtension(treeProvider)

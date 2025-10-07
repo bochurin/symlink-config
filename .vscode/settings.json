@@ -6,7 +6,7 @@
     "**/.hg": true,
     "**/.DS_Store": true,
     "**/Thumbs.db": true,
-    "*-commit-message.txt": true,
+    "*-commit-message.txt": false,
     "dist": true,
     "node_modules": true,
     "out": true,

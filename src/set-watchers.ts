@@ -50,6 +50,25 @@ export function setWatchers(treeProvider?: any) {
     }
   })
 
+  const currentConfigWatcher = useFileWatcher({
+    pattern: '**/current-symlink.config.json',
+    onCreate: (uri) => {
+      if (isRootFile(uri, 'current-symlink.config.json')) {
+        treeProvider?.refresh()
+      }
+    },
+    onChange: (uri) => {
+      if (isRootFile(uri, 'current-symlink.config.json')) {
+        treeProvider?.refresh()
+      }
+    },
+    onDelete: (uri) => {
+      if (isRootFile(uri, 'current-symlink.config.json')) {
+        treeProvider?.refresh()
+      }
+    }
+  })
+
   const gitignoreWatcher = useFileWatcher({
     pattern: '**/.gitignore',
     onChange: (uri) =>
@@ -68,19 +87,25 @@ export function setWatchers(treeProvider?: any) {
           {
             parameter: 'gitignoreServiceFiles',
             onChange: (section, parameter, payload) => {
-              queue(() => symlinkConfigManager.handleEvent(section, parameter, payload))
+              queue(() =>
+                symlinkConfigManager.handleEvent(section, parameter, payload)
+              )
             }
           },
           {
             parameter: 'hideServiceFiles',
             onChange: (section, parameter, payload) => {
-              queue(() => symlinkConfigManager.handleEvent(section, parameter, payload))
+              queue(() =>
+                symlinkConfigManager.handleEvent(section, parameter, payload)
+              )
             }
           },
           {
             parameter: 'hideSymlinkConfigs',
             onChange: (section, parameter, payload) => {
-              queue(() => symlinkConfigManager.handleEvent(section, parameter, payload))
+              queue(() =>
+                symlinkConfigManager.handleEvent(section, parameter, payload)
+              )
             }
           }
         ]
@@ -102,6 +127,7 @@ export function setWatchers(treeProvider?: any) {
     configWatcher.dispose()
     gitignoreWatcher.dispose()
     nextConfigWatcher.dispose()
+    currentConfigWatcher.dispose()
     symlinkConfigWatcher.dispose()
   }
 }
