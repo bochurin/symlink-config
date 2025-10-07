@@ -2,7 +2,7 @@
   "name": "@bochurin/symlink-config",
   "displayName": "symlink.config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -39,6 +39,18 @@
         "command": "symlink-config.toggleView",
         "title": "Toggle View Mode",
         "icon": "$(arrow-swap)"
+      },
+      {
+        "command": "symlink-config.createSymlink",
+        "title": "Create Symlink"
+      },
+      {
+        "command": "symlink-config.selectSymlinkTarget",
+        "title": "Select symlink target folder"
+      },
+      {
+        "command": "symlink-config.cancelSymlinkCreation",
+        "title": "Cancel symlink creation"
       }
     ],
     "configuration": {
@@ -89,6 +101,10 @@
         {
           "command": "symlink-config.dryRun",
           "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "symlink-config.cancelSymlinkCreation",
+          "when": "workspaceFolderCount > 0 && symlink-config.sourceSelected"
         }
       ],
       "view/title": [
@@ -114,6 +130,25 @@
           "when": "view == symlink-config",
           "group": "2_settings"
         }
+      ],
+      "explorer/context": [
+        {
+          "command": "symlink-config.createSymlink",
+          "when": "(!explorerResourceIsFolder || explorerResourceIsFolder) && !symlink-config.sourceSelected && view != symlink-config",
+          "group": "7_modification"
+        },
+        {
+          "command": "symlink-config.selectSymlinkTarget",
+          "when": "explorerResourceIsFolder && symlink-config.sourceSelected && view != symlink-config",
+          "group": "7_modification"
+        },
+        {
+          "command": "symlink-config.cancelSymlinkCreation",
+          "when": "symlink-config.sourceSelected && view != symlink-config",
+          "group": "7_modification"
+        }
+      ],
+      "view/item/context": [
       ]
     }
   },
