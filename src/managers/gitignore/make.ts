@@ -4,9 +4,22 @@ import { generate } from './generate'
 import { read } from './read'
 
 export async function make() {
-  const records = await generate()
-  const content = assembleGitignore(records)
   const currentEntries = await read()
-  if (JSON.stringify(currentEntries) !== JSON.stringify(records))
+  const originalSpacing = Object.fromEntries(
+    Object.entries(currentEntries).map(([key, entry]) => [key, entry.spacing])
+  )
+  Object.values(currentEntries).forEach((entry) => {
+    entry.spacing = ''
+  })
+
+  const generatedEntries = await generate()
+  const mergedEntries = { ...currentEntries, ...generatedEntries }
+  if (JSON.stringify(currentEntries) !== JSON.stringify(mergedEntries)) {
+    Object.entries(mergedEntries).forEach(([key, entry]) => {
+      if (originalSpacing[key]) entry.spacing = originalSpacing[key]
+    })
+
+    const content = assembleGitignore(mergedEntries)
     await writeFile('.gitignore', content)
+  }
 }

@@ -2,7 +2,7 @@
   "name": "@bochurin/symlink-config",
   "displayName": "symlink.config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -29,11 +29,21 @@
         "command": "symlink-config.dryRun",
         "title": "Symlinks: Dry Run",
         "category": "Symlink Config"
+      },
+      {
+        "command": "symlink-config.openSettings",
+        "title": "Open Settings",
+        "icon": "$(gear)"
       }
     ],
     "configuration": {
       "title": "symlink.config",
       "properties": {
+        "symlink-config.silent": {
+          "type": "boolean",
+          "default": false,
+          "description": "Silent mode - no VS Studio information messages."
+        },
         "symlink-config.gitignoreServiceFiles": {
           "type": "boolean",
           "default": true,
@@ -51,6 +61,16 @@
         }
       }
     },
+    "views": {
+      "explorer": [
+        {
+          "id": "symlink-config",
+          "name": "symlink.config",
+          "when": "workspaceFolderCount > 0",
+          "icon": "$(link-external)"
+        }
+      ]
+    },
     "menus": {
       "commandPalette": [
         {
@@ -64,6 +84,14 @@
         {
           "command": "symlink-config.dryRun",
           "when": "workspaceFolderCount > 0"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "symlink-config.openSettings",
+          "when": "view == symlink-config",
+          "group": "navigation",
+          "icon": "$(gear)"
         }
       ]
     }

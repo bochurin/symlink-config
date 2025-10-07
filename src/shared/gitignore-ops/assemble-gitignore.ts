@@ -3,11 +3,14 @@ export function assembleGitignore(
 ): string {
   return Object.entries(records)
     .map(([key, { spacing, active }]) => {
+      if (key.startsWith('__EMPTY_LINE_')) {
+        return ''
+      }
       if (active) {
         return spacing + key
       } else {
         const hasHash = spacing.includes('#')
-        return hasHash ? spacing + key : spacing + '# ' + key
+        return hasHash ? spacing + key : '#' + spacing + key
       }
     })
     .join('\n')

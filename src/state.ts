@@ -1,5 +1,6 @@
 let workspaceRoot: string
 let nextSymlinkConfig: string
+let sylentMode: boolean
 
 export function setWorkspaceRoot(path: string) {
   workspaceRoot = path
@@ -14,4 +15,11 @@ export function setNextConfig(config: string) {
 }
 export function getNextConfig(): string {
   return nextSymlinkConfig
+}
+
+export function setSilentMode(mode: boolean) {
+  sylentMode = mode
+}
+export function getSilentMode(): boolean {
+  return sylentMode
 }

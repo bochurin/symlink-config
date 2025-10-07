@@ -6,22 +6,19 @@ export function generate(
 ): Record<string, boolean> {
   mode = mode || 'all'
 
-  const exclusions: Record<string, boolean> = {}
+  const generatedExclusions: Record<string, boolean> = {}
 
   try {
     if (mode === 'all' || mode === 'serviceFiles') {
       const hideServiceFiles = symlinkConfigManager.read('hideServiceFiles')
-      exclusions['next.symlink.config.json'] = hideServiceFiles
+      generatedExclusions['next.symlink.config.json'] = hideServiceFiles
     }
 
     if (mode === 'all' || mode === 'symlinkConfigs') {
       const hideSymlinkConfigs = symlinkConfigManager.read('hideSymlinkConfigs')
-      exclusions['**/symlink.config.json'] = hideSymlinkConfigs
+      generatedExclusions['**/symlink.config.json'] = hideSymlinkConfigs
     }
   } catch {}
 
-  const currentExclusions = read()
-  const builtExclusions = { ...currentExclusions, ...exclusions }
-
-  return builtExclusions
+  return generatedExclusions
 }

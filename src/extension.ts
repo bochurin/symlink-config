@@ -7,6 +7,7 @@ import * as nextConfigManager from './managers/next-config'
 import * as fileExcludeManager from './managers/file-exclude'
 
 import { setWatchers } from './set-watchers'
+import { SymlinkTreeProvider } from './views/tree-provider'
 
 let isInitialized = false
 
@@ -34,6 +35,16 @@ async function initializeExtension() {
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('🔗 Symlink Config extension is now active!')
+
+  // Register tree view
+  const treeProvider = new SymlinkTreeProvider()
+  vscode.window.createTreeView('symlink-config', { treeDataProvider: treeProvider })
+
+  // Register openSettings command
+  const openSettingsCommand = vscode.commands.registerCommand('symlink-config.openSettings', () => {
+    vscode.commands.executeCommand('workbench.action.openSettings', 'symlink-config')
+  })
+  context.subscriptions.push(openSettingsCommand)
 
   // Try to initialize immediately
   const dispose = await initializeExtension()

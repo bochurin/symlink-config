@@ -1,2 +1,2 @@
-export * from './read-from-config'
-export * from './write-to-config'
+export * from './read-config'
+export * from './write-config'
