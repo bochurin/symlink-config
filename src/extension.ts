@@ -46,6 +46,12 @@ export async function activate(context: vscode.ExtensionContext) {
   })
   context.subscriptions.push(openSettingsCommand)
 
+  // Register toggleView command
+  const toggleViewCommand = vscode.commands.registerCommand('symlink-config.toggleView', () => {
+    treeProvider.toggleViewMode()
+  })
+  context.subscriptions.push(toggleViewCommand)
+
   // Try to initialize immediately
   const dispose = await initializeExtension()
   if (dispose) {

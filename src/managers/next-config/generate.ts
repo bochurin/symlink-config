@@ -40,8 +40,7 @@ function findConfigFiles(): string[] {
 function createMasterConfig(configFiles: string[]): SymlinkConfig {
   const masterConfig: SymlinkConfig = {
     directories: [],
-    files: [],
-    exclude_paths: []
+    files: []
   }
 
   for (const configFile of configFiles) {
@@ -64,13 +63,8 @@ function createMasterConfig(configFiles: string[]): SymlinkConfig {
         masterConfig.files!.push(convertToAtSyntax(entry, relativeConfigDir))
       }
     }
-
-    if (config.exclude_paths) {
-      masterConfig.exclude_paths!.push(...config.exclude_paths)
-    }
   }
 
-  masterConfig.exclude_paths = [...new Set(masterConfig.exclude_paths)]
   return masterConfig
 }
 
@@ -95,7 +89,7 @@ function pathToAtSyntax(originalPath: string, configDir: string): string {
   )
   const relativePath = path.relative(getWorkspaceRoot(), absolutePath)
 
-  return '@' + relativePath.replace(/\\\\/g, '/')
+  return '@' + relativePath.replace(/\\/g, '/')
 }
 
 function loadConfig(configPath: string): SymlinkConfig | null {

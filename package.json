@@ -2,7 +2,7 @@
   "name": "@bochurin/symlink-config",
   "displayName": "symlink.config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -34,6 +34,11 @@
         "command": "symlink-config.openSettings",
         "title": "Open Settings",
         "icon": "$(gear)"
+      },
+      {
+        "command": "symlink-config.toggleView",
+        "title": "Toggle View Mode",
+        "icon": "$(arrow-swap)"
       }
     ],
     "configuration": {
@@ -88,10 +93,26 @@
       ],
       "view/title": [
         {
+          "command": "symlink-config.toggleView",
+          "when": "view == symlink-config",
+          "group": "navigation@1",
+          "icon": "$(arrow-swap)"
+        },
+        {
           "command": "symlink-config.openSettings",
           "when": "view == symlink-config",
-          "group": "navigation",
+          "group": "navigation@2",
           "icon": "$(gear)"
+        },
+        {
+          "command": "symlink-config.toggleView",
+          "when": "view == symlink-config",
+          "group": "1_actions"
+        },
+        {
+          "command": "symlink-config.openSettings",
+          "when": "view == symlink-config",
+          "group": "2_settings"
         }
       ]
     }
