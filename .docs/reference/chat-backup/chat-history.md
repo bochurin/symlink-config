@@ -219,3 +219,136 @@ onChange: (payload) => {
 - Advanced symlink validation and conflict detection
 - Performance optimization for large projects
 - VSCode Marketplace preparation and publishing
+
+## Session 3: Interactive Symlink Creation & Context-Aware Operations (07.10.2025)
+
+### Context
+- Continued from Phase 1.20 completion
+- Focus on interactive user workflows and context-aware operations
+- Implementation of two-step symlink creation and smart config file opening
+
+### Key Developments
+
+#### Interactive Symlink Creation Workflow
+- **Two-Step Process**: Source selection → Target selection with clear UI feedback
+- **Dynamic Context Menus**: Commands show/hide based on selection state using VSCode context variables
+- **Status Bar Integration**: Persistent source selection indicator with click-to-cancel functionality
+- **Multiple Cancel Options**: Context menu, command palette, status bar click, and message button
+
+#### Context-Aware Config Opening
+- **Smart File Detection**: Right-click tree items to open specific symlink.config.json files
+- **TargetPath Tracking**: Extended SymlinkEntry interface to track source folder locations
+- **Tree Item Metadata**: Store path information for context-aware operations
+- **Intelligent Path Resolution**: Open correct config file based on clicked tree item location
+
+#### Tree Auto-Refresh System
+- **File Watcher Integration**: Connected tree provider to existing file watcher system
+- **Real-Time Updates**: Tree refreshes automatically when configs change
+- **Native Array Handlers**: Leveraged useFileWatcher's built-in array handler support
+- **Efficient Architecture**: Single watcher setup without duplication
+
+#### Unsaved Config Generation
+- **Preview Before Save**: Creates unsaved documents for user review
+- **JSON Syntax Highlighting**: Proper language detection for editing experience
+- **User Control**: Standard VSCode save/discard workflow
+- **Edit Opportunity**: Users can modify before committing to disk
+
+### Technical Implementation Details
+
+#### Dynamic Context Menu System
+```typescript
+// Context variable management
+function updateContext() {
+  vscode.commands.executeCommand('setContext', 'symlink-config.sourceSelected', !!selectedSource)
+}
+
+// Package.json when clauses
+"when": "(!explorerResourceIsFolder || explorerResourceIsFolder) && !symlink-config.sourceSelected"
+"when": "explorerResourceIsFolder && symlink-config.sourceSelected"
+```
+
+#### Status Bar Integration
+```typescript
+// Persistent indicator with cancel functionality
+if (selectedSource) {
+  statusBarItem.text = `$(link) Source: ${path.basename(selectedSource.fsPath)} (click to cancel)`
+  statusBarItem.command = 'symlink-config.cancelSymlinkCreation'
+  statusBarItem.show()
+}
+```
+
+#### Context-Aware Operations
+```typescript
+// SymlinkEntry enhancement for path tracking
+export interface SymlinkEntry {
+  target: string
+  source: string
+  targetPath?: string  // New: tracks source folder
+}
+
+// Smart config opening
+const targetFolder = treeItem?.targetPath || ''
+const configPath = path.join(workspaceRoot, targetFolder, 'symlink.config.json')
+```
+
+#### Tree Auto-Refresh Architecture
+```typescript
+// Native array handler usage
+const symlinkConfigWatcher = useFileWatcher({
+  pattern: '**/symlink.config.json',
+  onCreate: [
+    () => queue(() => nextConfigManager.handleEvent('modified')),
+    () => treeProvider?.refresh()
+  ]
+})
+```
+
+### User Experience Improvements
+
+#### Interactive Creation Benefits
+- **No Manual JSON**: Click-based source and target selection
+- **Visual Feedback**: Clear status indicators and progress messages
+- **Error Prevention**: Automatic path resolution and @-syntax generation
+- **Flexible Cancellation**: Multiple ways to abort the process
+- **Context Awareness**: Commands appear only when appropriate
+
+#### Smart Config Management
+- **Location Awareness**: Opens correct config file based on tree context
+- **Preview Workflow**: Review changes before saving to disk
+- **Path Intelligence**: Automatic workspace-relative path handling
+- **Integration Consistency**: Uses shared info system for messaging
+
+#### Architecture Refinements
+- **Single Watcher Setup**: Eliminated duplicate file watchers
+- **Native Handler Support**: Leveraged built-in array capabilities
+- **Clean Integration**: Tree provider properly connected to existing system
+- **Type Safety**: Enhanced interfaces with optional properties
+
+### Technical Achievements
+- ✅ **Interactive Workflow**: Two-step symlink creation with visual feedback
+- ✅ **Dynamic UI**: Context-sensitive command visibility
+- ✅ **Smart Operations**: Context-aware config file opening
+- ✅ **Real-Time Updates**: Automatic tree refresh on config changes
+- ✅ **User Control**: Preview-before-save workflow
+- ✅ **Clean Architecture**: Efficient watcher integration without duplication
+
+### Version Progression
+- **0.0.19**: Interactive symlink creation with two-step UI and tree auto-refresh
+- **0.0.20**: Context-aware symlink config opening from tree view
+
+### Current Status
+**Phase 1.21 Complete** - Interactive Symlink Creation & Context-Aware Config Opening
+
+- Interactive two-step symlink creation workflow
+- Dynamic context menus with state-based visibility
+- Status bar integration for persistent feedback
+- Context-aware config file opening from tree items
+- Real-time tree updates with file watcher integration
+- Unsaved document generation for user review
+- Clean architecture leveraging native VSCode capabilities
+
+### Next Development Focus
+- Core symlink operations (Create All, Clean All, Dry Run)
+- Advanced validation and conflict detection
+- Performance optimization for large workspaces
+- VSCode Marketplace preparation
