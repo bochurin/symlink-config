@@ -500,6 +500,98 @@ return lines.join('\n')
 - Prevents race conditions in file operations
 - Ensures predictable order of operations
 
+### ✅ Phase 1.21: Interactive Symlink Creation and Context-Aware Config Opening (Completed - 07.10.2025)
+- **Date**: 07.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Interactive Symlink Creation**: Two-step UI process for creating symlink configurations via Explorer context menu
+  - **Dynamic Context Menus**: Commands show/hide based on selection state using VSCode context variables
+  - **Status Bar Integration**: Persistent source selection feedback with click-to-cancel functionality
+  - **Tree Auto-Refresh**: Integrated tree provider with existing file watchers for real-time updates
+  - **Context-Aware Config Opening**: Right-click tree items to open specific symlink.config.json files
+  - **Unsaved Config Generation**: Creates unsaved documents for user review before saving
+  - **Native Array Handler Support**: Leveraged useFileWatcher's built-in array handler capabilities
+
+#### Technical Implementation Details
+
+**Interactive Symlink Creation Workflow**:
+```typescript
+// Step 1: Source Selection
+"Create Symlink" → stores selectedSource + shows status bar indicator
+
+// Step 2: Target Selection  
+"Select symlink target folder" → creates config + resets selection
+
+// Cancel Options
+- Status bar click
+- Context menu "Cancel symlink creation"
+- Command palette
+```
+
+**Dynamic Context Menu System**:
+```typescript
+// Context variable management
+function updateContext() {
+  vscode.commands.executeCommand('setContext', 'symlink-config.sourceSelected', !!selectedSource)
+}
+
+// Package.json when clauses
+"when": "(!explorerResourceIsFolder || explorerResourceIsFolder) && !symlink-config.sourceSelected"
+"when": "explorerResourceIsFolder && symlink-config.sourceSelected"
+```
+
+**Status Bar Integration**:
+- **Persistent Indicator**: Shows selected source filename with cancel instruction
+- **Click Handler**: Status bar item command triggers cancellation
+- **Auto-Cleanup**: Hides when selection completed or cancelled
+- **Visual Feedback**: Link icon with descriptive text
+
+**Tree Auto-Refresh Architecture**:
+```typescript
+// File watcher integration
+const symlinkConfigWatcher = useFileWatcher({
+  pattern: '**/symlink.config.json',
+  onCreate: [
+    () => queue(() => nextConfigManager.handleEvent('modified')),
+    () => treeProvider?.refresh()
+  ]
+})
+```
+
+**Context-Aware Config Opening**:
+- **SymlinkEntry Enhancement**: Added optional `targetPath` property to track source folders
+- **Tree Item Metadata**: Store targetPath in tree items for context-aware operations
+- **Smart File Opening**: Open specific symlink.config.json based on clicked tree item location
+- **Path Resolution**: Use targetPath to construct correct config file path
+
+**Unsaved Config Generation**:
+```typescript
+// Create unsaved document instead of writing to disk
+const document = await vscode.workspace.openTextDocument({
+  content: JSON.stringify(config, null, 2),
+  language: 'json'
+})
+```
+
+**Native Array Handler Usage**:
+```typescript
+// Leveraged useFileWatcher's built-in array support
+const symlinkConfigWatcher = useFileWatcher({
+  pattern: '**/symlink.config.json',
+  onCreate: [
+    () => queue(() => nextConfigManager.handleEvent('modified')),
+    () => treeProvider?.refresh()
+  ]
+})
+```
+
+**Benefits of Interactive Creation**:
+- **User-Friendly**: No manual JSON editing required
+- **Visual Selection**: Click-based source and target selection
+- **Error Prevention**: Automatic path resolution and @-syntax generation
+- **Review Opportunity**: Unsaved document allows editing before saving
+- **Context Awareness**: Commands appear only when appropriate
+
 ### ✅ Phase 1.20: Gitignore Record-Based Architecture and Type System Simplification (Completed - 06.10.2025)
 - **Date**: 06.10.2025
 - **Status**: Complete
@@ -990,9 +1082,9 @@ const configWatcher = useConfigWatcher({
 
 ## Current Status
 
-**Phase**: Phase 1.20 Complete - Gitignore Record-Based Architecture & Type System Simplification  
+**Phase**: Phase 1.21 Complete - Interactive Symlink Creation & Context-Aware Config Opening  
 **Branch**: `main`  
-**Latest**: Record-based gitignore management, shared parsing utilities, and simplified type system with union types  
+**Latest**: Interactive two-step symlink creation, dynamic context menus, tree auto-refresh, and context-aware config file opening  
 **Next**: Testing and refinement (Phase 2)
 
 **Technical Foundation**:
