@@ -60,7 +60,9 @@ function createMasterConfig(configFiles: string[]): SymlinkConfig {
 
     if (config.files) {
       for (const entry of config.files) {
-        masterConfig.files!.push(convertToAtSyntax(entry, relativeConfigDir))
+        masterConfig.files!.push(
+          convertToAtSyntax(entry, relativeConfigDir)
+        )
       }
     }
   }
@@ -74,8 +76,9 @@ function convertToAtSyntax(
 ): SymlinkEntry {
   return {
     target: pathToAtSyntax(entry.target, configDir),
-    source: pathToAtSyntax(entry.source, configDir)
-  }
+    source: pathToAtSyntax(entry.source, configDir),
+    targetPath: configDir
+  } as SymlinkEntry
 }
 
 function pathToAtSyntax(originalPath: string, configDir: string): string {

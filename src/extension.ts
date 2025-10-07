@@ -9,6 +9,7 @@ import * as fileExcludeManager from './managers/file-exclude'
 import { setWatchers } from './set-watchers'
 import { SymlinkTreeProvider } from './views/tree-provider'
 import { createSymlink, selectSymlinkTarget, cancelSymlinkCreation } from './commands/create-symlink'
+import { openSymlinkConfig } from './commands/open-symlink-config'
 
 let isInitialized = false
 
@@ -57,7 +58,8 @@ export async function activate(context: vscode.ExtensionContext) {
   const createSymlinkCommand = vscode.commands.registerCommand('symlink-config.createSymlink', createSymlink)
   const selectTargetCommand = vscode.commands.registerCommand('symlink-config.selectSymlinkTarget', selectSymlinkTarget)
   const cancelCommand = vscode.commands.registerCommand('symlink-config.cancelSymlinkCreation', cancelSymlinkCreation)
-  context.subscriptions.push(createSymlinkCommand, selectTargetCommand, cancelCommand)
+  const openConfigCommand = vscode.commands.registerCommand('symlink-config.openSymlinkConfig', openSymlinkConfig)
+  context.subscriptions.push(createSymlinkCommand, selectTargetCommand, cancelCommand, openConfigCommand)
 
   // Try to initialize immediately
   const dispose = await initializeExtension(treeProvider)

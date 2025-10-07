@@ -56,7 +56,7 @@ export class SymlinkTreeProvider implements vscode.TreeDataProvider<SymlinkTreeI
   private buildTree(config: any): any {
     const tree: any = {}
     
-    const addToTree = (path: string, other: string, isDir: boolean) => {
+    const addToTree = (path: string, other: string, isDir: boolean, targetPath: string) => {
       const parts = path.replace('@', '').split('/')
       let current = tree
       
@@ -67,7 +67,8 @@ export class SymlinkTreeProvider implements vscode.TreeDataProvider<SymlinkTreeI
             children: {},
             isLeaf: i === parts.length - 1,
             other: i === parts.length - 1 ? other.replace('@', '') : undefined,
-            isDir: i === parts.length - 1 ? isDir : true
+            isDir: i === parts.length - 1 ? isDir : true,
+            targetPath: i === parts.length - 1 ? targetPath : undefined
           }
         }
         current = current[part].children
@@ -77,9 +78,9 @@ export class SymlinkTreeProvider implements vscode.TreeDataProvider<SymlinkTreeI
     if (config.directories) {
       for (const entry of config.directories) {
         if (this.viewMode === 'targets') {
-          addToTree(entry.target, entry.source, true)
+          addToTree(entry.target, entry.source, true, entry.targetPath || '')
         } else {
-          addToTree(entry.source, entry.target, true)
+          addToTree(entry.source, entry.target, true, entry.targetPath || '')
         }
       }
     }
@@ -87,9 +88,9 @@ export class SymlinkTreeProvider implements vscode.TreeDataProvider<SymlinkTreeI
     if (config.files) {
       for (const entry of config.files) {
         if (this.viewMode === 'targets') {
-          addToTree(entry.target, entry.source, false)
+          addToTree(entry.target, entry.source, false, entry.targetPath || '')
         } else {
-          addToTree(entry.source, entry.target, false)
+          addToTree(entry.source, entry.target, false, entry.targetPath || '')
         }
       }
     }
@@ -124,7 +125,8 @@ export class SymlinkTreeProvider implements vscode.TreeDataProvider<SymlinkTreeI
       const item = new SymlinkTreeItem(
         label,
         undefined,
-        hasChildren ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None
+        hasChildren ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None,
+        (node as any).targetPath
       )
       
       if (hasChildren) {
@@ -140,13 +142,16 @@ export class SymlinkTreeProvider implements vscode.TreeDataProvider<SymlinkTreeI
 
 class SymlinkTreeItem extends vscode.TreeItem {
   public children?: SymlinkTreeItem[]
+  public targetPath?: string
   
   constructor(
     public readonly label: string,
     commandId?: string,
-    collapsibleState?: vscode.TreeItemCollapsibleState
+    collapsibleState?: vscode.TreeItemCollapsibleState,
+    targetPath?: string
   ) {
     super(label, collapsibleState || vscode.TreeItemCollapsibleState.None)
+    this.targetPath = targetPath
     if (commandId) {
       this.command = {
         command: commandId,
