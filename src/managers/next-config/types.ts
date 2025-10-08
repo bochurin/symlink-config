@@ -7,5 +7,5 @@ export interface SymlinkConfig {
 export interface SymlinkEntry {
   target: string
   source: string
-  targetPath?: string
+  configPath?: string
 }

@@ -1,14 +1,18 @@
 import * as vscode from 'vscode'
 
-import { setWorkspaceRoot } from './state'
+import * as state from './state'
 
 import * as gitignoreManager from './managers/gitignore'
 import * as nextConfigManager from './managers/next-config'
 import * as fileExcludeManager from './managers/file-exclude'
 
 import { setWatchers } from './set-watchers'
-import { SymlinkTreeProvider } from './views/tree-provider'
-import { createSymlink, selectSymlinkTarget, cancelSymlinkCreation } from './commands/create-symlink'
+import { SymlinkTreeProvider } from './views/symlink-tree'
+import {
+  createSymlink,
+  selectSymlinkTarget,
+  cancelSymlinkCreation
+} from './commands/create-symlink'
 import { openSymlinkConfig } from './commands/open-symlink-config'
 import { applyConfiguration } from './commands/apply-configuration'
 import { collapseAll } from './commands/tree-operations'
@@ -22,8 +26,10 @@ async function initializeExtension(treeProvider?: any) {
 
   const workspaceRoot =
     vscode.workspace.workspaceFolders[0].uri.fsPath.split('\\').join('/') + '/' // [0] is the root workspace folder (if multiple, we'll need to handle that]
+  const workspaceName = vscode.workspace.workspaceFolders?.[0]?.name
 
-  setWorkspaceRoot(workspaceRoot)
+  state.setWorkspaceRoot(workspaceRoot)
+  state.setWorkspaceName(workspaceName)
   console.log('ROOT:', workspaceRoot)
 
   await Promise.all([
@@ -42,28 +48,64 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Register tree view
   const treeProvider = new SymlinkTreeProvider()
-  vscode.window.createTreeView('symlink-config', { treeDataProvider: treeProvider })
+  vscode.window.createTreeView('symlink-config', {
+    treeDataProvider: treeProvider
+  })
 
   // Register openSettings command
-  const openSettingsCommand = vscode.commands.registerCommand('symlink-config.openSettings', () => {
-    vscode.commands.executeCommand('workbench.action.openSettings', 'symlink-config')
-  })
+  const openSettingsCommand = vscode.commands.registerCommand(
+    'symlink-config.openSettings',
+    () => {
+      vscode.commands.executeCommand(
+        'workbench.action.openSettings',
+        'symlink-config'
+      )
+    }
+  )
   context.subscriptions.push(openSettingsCommand)
 
   // Register toggleView command
-  const toggleViewCommand = vscode.commands.registerCommand('symlink-config.toggleView', () => {
-    treeProvider.toggleViewMode()
-  })
+  const toggleViewCommand = vscode.commands.registerCommand(
+    'symlink-config.toggleView',
+    () => {
+      treeProvider.toggleViewMode()
+    }
+  )
   context.subscriptions.push(toggleViewCommand)
 
   // Register createSymlink commands
-  const createSymlinkCommand = vscode.commands.registerCommand('symlink-config.createSymlink', createSymlink)
-  const selectTargetCommand = vscode.commands.registerCommand('symlink-config.selectSymlinkTarget', selectSymlinkTarget)
-  const cancelCommand = vscode.commands.registerCommand('symlink-config.cancelSymlinkCreation', cancelSymlinkCreation)
-  const openConfigCommand = vscode.commands.registerCommand('symlink-config.openSymlinkConfig', openSymlinkConfig)
-  const applyConfigCommand = vscode.commands.registerCommand('symlink-config.applyConfiguration', applyConfiguration)
-  const collapseAllCommand = vscode.commands.registerCommand('symlink-config.collapseAll', collapseAll)
-  context.subscriptions.push(createSymlinkCommand, selectTargetCommand, cancelCommand, openConfigCommand, applyConfigCommand, collapseAllCommand)
+  const createSymlinkCommand = vscode.commands.registerCommand(
+    'symlink-config.createSymlink',
+    createSymlink
+  )
+  const selectTargetCommand = vscode.commands.registerCommand(
+    'symlink-config.selectSymlinkTarget',
+    selectSymlinkTarget
+  )
+  const cancelCommand = vscode.commands.registerCommand(
+    'symlink-config.cancelSymlinkCreation',
+    cancelSymlinkCreation
+  )
+  const openConfigCommand = vscode.commands.registerCommand(
+    'symlink-config.openSymlinkConfig',
+    openSymlinkConfig
+  )
+  const applyConfigCommand = vscode.commands.registerCommand(
+    'symlink-config.applyConfiguration',
+    applyConfiguration
+  )
+  const collapseAllCommand = vscode.commands.registerCommand(
+    'symlink-config.collapseAll',
+    collapseAll
+  )
+  context.subscriptions.push(
+    createSymlinkCommand,
+    selectTargetCommand,
+    cancelCommand,
+    openConfigCommand,
+    applyConfigCommand,
+    collapseAllCommand
+  )
 
   // Try to initialize immediately
   const dispose = await initializeExtension(treeProvider)

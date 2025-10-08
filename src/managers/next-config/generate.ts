@@ -77,7 +77,7 @@ function convertToAtSyntax(
   return {
     target: pathToAtSyntax(entry.target, configDir),
     source: pathToAtSyntax(entry.source, configDir),
-    targetPath: configDir
+    configPath: '@' + configDir.replace(/\\/g, '/')
   } as SymlinkEntry
 }
 
