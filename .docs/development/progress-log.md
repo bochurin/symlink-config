@@ -1080,11 +1080,120 @@ const configWatcher = useConfigWatcher({
 - **Restoration**: Automatically re-adds missing exclusions with user notification
 - **User Feedback**: Shows warning message when exclusions are restored
 
+### ✅ Phase 1.22: Tree View Architecture Refactoring and Config Path Tracking (Completed - 08.10.2025)
+- **Date**: 08.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Tree View Architecture Refactoring**: Reorganized tree building logic into modular `generate/` folder structure
+  - **Enhanced Type System**: Introduced `ElementType` and `SymlinkStatus` union types for better type safety
+  - **Config Path Tracking**: Added per-entry `configPath` tracking in Config interface for granular source file identification
+  - **Tooltip Enhancement**: Enhanced tree item tooltips to display source config file for each symlink relationship
+  - **Cross-Platform Path Processing**: Implemented Node.js `path.posix` for reliable cross-platform path handling
+  - **Code Quality Improvements**: Extracted helper functions for better maintainability and testability
+  - **Automatic Tree Sorting**: Integrated tree sorting directly into generation process
+
+#### Technical Implementation Details
+
+**Modular Tree Generation Architecture**:
+```typescript
+// New structure: src/views/symlink-tree/generate/
+// - config-to-entries.ts: Config parsing and entry creation
+// - generate.ts: Main tree generation orchestration
+// - sort-tree.ts: Tree sorting functionality
+// - index.ts: Clean public API exports
+```
+
+**Enhanced Type System**:
+```typescript
+// Centralized type definitions
+export type ElementType = 'root' | 'dir' | 'file'
+export type SymlinkStatus = 'new' | 'deleted' | 'unchanged'
+
+// Updated interfaces with proper typing
+export interface SymlinkEntry {
+  target: string
+  source: string
+  type: ElementType
+  configPath?: string
+}
+```
+
+**Per-Entry Config Path Tracking**:
+```typescript
+// Enhanced Config interface
+export interface Config {
+  directories?: Array<{
+    target: string
+    source: string
+    configPath: string  // Source config file for this entry
+  }>
+  files?: Array<{
+    target: string
+    source: string
+    configPath: string  // Source config file for this entry
+  }>
+}
+```
+
+**Enhanced Tooltip System**:
+```typescript
+// Multi-line tooltips with config source information
+if (node.status === 'new') {
+  item.tooltip = `New symlink in next configuration\nDefined in: ${node.configPath}`
+} else if (node.status === 'deleted') {
+  item.tooltip = `Will be removed when configuration is applied\nDefined in: ${node.configPath}`
+} else if (node.configPath) {
+  item.tooltip = `Defined in: ${node.configPath}`
+}
+```
+
+**Cross-Platform Path Processing**:
+```typescript
+// Reliable path processing using Node.js path module
+function processPath(inputPath: string): string[] {
+  return path.posix.normalize(inputPath).split('/')
+}
+
+// Handles Windows backslashes, mixed separators, and path normalization
+```
+
+**Function Extraction for Maintainability**:
+```typescript
+// Before: Monolithic buildDiffTree function (68+ lines)
+// After: Focused helper functions
+function processPath(inputPath: string): string[]
+function createNode(isLeaf: boolean, relationship: any, otherPath: string): TreeNode
+function addToTree(tree: Record<string, TreeNode>, displayPath: string, otherPath: string, relationship: any): void
+```
+
+**Automatic Tree Sorting Integration**:
+```typescript
+// Tree sorting now integrated into generation process
+export function generateTree(viewMode: ViewMode): Record<string, TreeNode> {
+  // ... tree building logic ...
+  const sortedTree = sortTree(tree)
+  return sortedTree
+}
+```
+
+**Breaking Changes**:
+- **Config Interface**: Now requires `configPath` field for each directory and file entry
+- **Import Paths**: Tree provider imports updated to use new `generate` module structure
+- **Function Names**: `buildDiffTree` renamed to `generateTree` for clarity
+
+**Benefits of Refactoring**:
+- **Modularity**: Tree building logic separated into focused, testable modules
+- **Type Safety**: Proper TypeScript typing throughout the tree system
+- **Maintainability**: Helper functions make code easier to understand and modify
+- **User Experience**: Enhanced tooltips provide better context for symlink relationships
+- **Cross-Platform**: Reliable path processing across Windows, macOS, and Linux
+- **Performance**: Optimized tree generation with integrated sorting
+
 ## Current Status
 
-**Phase**: Phase 1.21 Complete - Interactive Symlink Creation & Context-Aware Config Opening  
+**Phase**: Phase 1.22 Complete - Tree View Architecture Refactoring and Config Path Tracking  
 **Branch**: `main`  
-**Latest**: Interactive two-step symlink creation, dynamic context menus, tree auto-refresh, and context-aware config file opening  
+**Latest**: Modular tree generation architecture, enhanced type system, per-entry config path tracking, and improved tooltips  
 **Next**: Testing and refinement (Phase 2)
 
 **Technical Foundation**:
