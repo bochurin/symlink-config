@@ -352,3 +352,140 @@ const symlinkConfigWatcher = useFileWatcher({
 - Advanced validation and conflict detection
 - Performance optimization for large workspaces
 - VSCode Marketplace preparation
+
+## Session 4: Tree View Architecture Refactoring & Config Path Tracking (08.10.2025)
+
+### Context
+- Continued from Phase 1.21 completion
+- Focus on code organization, maintainability, and enhanced user experience
+- Major refactoring of tree building architecture with improved type safety
+
+### Key Developments
+
+#### Modular Tree Architecture
+- **Folder Restructuring**: Moved tree building logic to `src/views/symlink-tree/generate/` structure
+- **Function Decomposition**: Split monolithic `buildDiffTree` (68+ lines) into focused helper functions
+- **Clean Separation**: `config-to-entries.ts`, `generate.ts`, `sort-tree.ts`, `index.ts`
+- **Better Testability**: Individual functions can be unit tested independently
+
+#### Enhanced Type System
+- **Union Types**: Introduced `ElementType = 'root' | 'dir' | 'file'` and `SymlinkStatus = 'new' | 'deleted' | 'unchanged'`
+- **Type Consolidation**: Replaced separate boolean flags (`isRoot`, `isDir`) with single `type` property
+- **Interface Updates**: Enhanced `Config`, `SymlinkEntry`, and `TreeNode` interfaces
+- **Type Safety**: Eliminated `any` types with proper TypeScript typing throughout
+
+#### Per-Entry Config Path Tracking
+- **Granular Tracking**: Each symlink entry tracks its source config file via `configPath` property
+- **Enhanced Tooltips**: Multi-line tooltips showing config source: `"Defined in: path/to/config.json"`
+- **User Context**: Users can see which config file defines each symlink relationship
+- **Debugging Aid**: Easier troubleshooting of symlink configurations
+
+#### Cross-Platform Path Processing
+- **Node.js Integration**: Replaced string manipulation with `path.posix.normalize()`
+- **Reliability Fix**: Handles Windows backslashes, mixed separators, edge cases
+- **Consistent Behavior**: Predictable path processing across all platforms
+- **Regex Improvements**: Proper `@` prefix removal with `/^@/` instead of global replace
+
+### Technical Implementation
+
+#### Function Extraction Pattern
+```typescript
+// Before: Monolithic function
+export function buildDiffTree(viewMode) { /* 68+ lines */ }
+
+// After: Focused helpers
+function processPath(inputPath: string): string[]
+function createNode(isLeaf: boolean, relationship: any, otherPath: string): TreeNode
+function addToTree(tree, displayPath, otherPath, relationship): void
+export function generateTree(viewMode: ViewMode): Record<string, TreeNode>
+```
+
+#### Enhanced Config Interface
+```typescript
+// Per-entry config path tracking
+export interface Config {
+  directories?: Array<{
+    target: string
+    source: string
+    configPath: string  // Source config file
+  }>
+  files?: Array<{
+    target: string
+    source: string
+    configPath: string  // Source config file
+  }>
+}
+```
+
+#### Tooltip Enhancement
+```typescript
+// Multi-line tooltips with config source
+if (node.status === 'new') {
+  item.tooltip = `New symlink in next configuration\nDefined in: ${node.configPath}`
+} else if (node.configPath) {
+  item.tooltip = `Defined in: ${node.configPath}`
+}
+```
+
+### Code Quality Improvements
+
+#### Maintainability Enhancements
+- **Single Responsibility**: Each function has one clear purpose
+- **Reduced Complexity**: Helper functions eliminate nested conditionals
+- **Better Organization**: Logical file structure with clear module boundaries
+- **Documentation**: Comprehensive comments explaining algorithm steps
+
+#### Performance Optimizations
+- **Integrated Sorting**: Tree sorting now part of generation process
+- **Efficient Path Processing**: Centralized path normalization
+- **Reduced Redundancy**: Eliminated repeated conditional evaluations
+- **Memory Efficiency**: Cleaner object creation patterns
+
+#### Breaking Changes
+- **Config Interface**: Now requires `configPath` field for each entry
+- **Import Paths**: Tree provider imports updated to use new `generate` module
+- **Function Names**: `buildDiffTree` renamed to `generateTree` for clarity
+- **Type System**: Replaced boolean flags with union type `ElementType`
+
+### User Experience Enhancements
+
+#### Enhanced Tooltips
+- **Config Source Display**: Shows which file defines each symlink
+- **Multi-line Format**: Status + config path on separate lines
+- **Context Awareness**: Only shows config path for actual symlinks
+- **Debugging Aid**: Easier identification of configuration sources
+
+#### Improved Reliability
+- **Cross-Platform**: Consistent behavior on Windows, macOS, Linux
+- **Path Handling**: Robust processing of various path formats
+- **Error Prevention**: Better type safety prevents runtime errors
+- **Maintainability**: Easier to modify and extend functionality
+
+### Technical Achievements
+- ✅ **Modular Architecture**: Clean separation of concerns with focused modules
+- ✅ **Enhanced Type Safety**: Proper TypeScript typing throughout tree system
+- ✅ **Config Path Tracking**: Granular source file identification for each symlink
+- ✅ **Cross-Platform Reliability**: Robust path processing using Node.js utilities
+- ✅ **Code Quality**: Extracted helper functions for better maintainability
+- ✅ **User Experience**: Enhanced tooltips with config source information
+- ✅ **Performance**: Integrated sorting and optimized tree generation
+
+### Version Progression
+- **0.0.22**: Tree view architecture refactoring with enhanced type system and config path tracking
+
+### Current Status
+**Phase 1.22 Complete** - Tree View Architecture Refactoring and Config Path Tracking
+
+- Modular tree generation architecture with `generate/` folder structure
+- Enhanced type system with `ElementType` and `SymlinkStatus` union types
+- Per-entry config path tracking for granular source identification
+- Enhanced tooltips displaying source config file for each symlink
+- Cross-platform path processing using Node.js `path.posix`
+- Extracted helper functions for better maintainability and testability
+- Integrated tree sorting for optimized performance
+
+### Next Development Focus
+- Testing and refinement (Phase 2)
+- Core symlink operations implementation
+- Performance testing with large projects
+- VSCode Marketplace preparation
