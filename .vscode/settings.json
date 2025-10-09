@@ -10,7 +10,7 @@
     "dist": true,
     "node_modules": true,
     "out": true,
-    ".docs": true,
+    ".docs": false,
     ".vscode": true
   },
   "search.exclude": {

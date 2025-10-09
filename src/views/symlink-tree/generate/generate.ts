@@ -1,42 +1,39 @@
 import * as path from 'path'
+import * as state from '../../../state'
 
-import { ElementType, SymlinkStatus, TreeNode, ViewMode } from '../types'
+import { SymlinkConfigEntry, TreeNode, treeBase } from '../types'
 
 import * as nextConfigManager from '../../../managers/next-config'
 import * as currentConfigManager from '../../../managers/current-config'
 
-import { configToEntries } from './config-to-entries'
+import { parseConfig } from './parse-config'
 import { sortTree } from './sort-tree'
 
-export function generateTree(viewMode: ViewMode): Record<string, TreeNode> {
-  const nextEntries = configToEntries(nextConfigManager.read())
-  const currentEntries = configToEntries(currentConfigManager.read())
+export function generateTree(treeBase: treeBase): Record<string, TreeNode> {
+  // Read next and current configs and parse them to arrays of symlink configs
+  const nextConfigs = parseConfig(nextConfigManager.read())
+  const currentConfigs = parseConfig(currentConfigManager.read())
 
-  const relationships = new Map()
+  const configRelationships = new Map<string, SymlinkConfigEntry>()
 
-  for (const entry of currentEntries) {
-    const key = `${entry.target}:${entry.source}`
-    relationships.set(key, { ...entry, status: 'deleted' })
+  for (const config of currentConfigs) {
+    const key = `${config.target}:${config.source}`
+    configRelationships.set(key, { ...config, symlinkStatus: 'deleted' })
   }
 
-  for (const entry of nextEntries) {
-    const key = `${entry.target}:${entry.source}`
-    if (relationships.has(key)) {
-      relationships.set(key, { ...entry, status: 'unchanged' })
+  for (const config of nextConfigs) {
+    const key = `${config.target}:${config.source}`
+    if (configRelationships.has(key)) {
+      configRelationships.set(key, { ...config, symlinkStatus: 'unchanged' })
     } else {
-      relationships.set(key, { ...entry, status: 'new' })
+      configRelationships.set(key, { ...config, symlinkStatus: 'new' })
     }
   }
 
   const tree: Record<string, TreeNode> = {}
 
-  for (const relationship of relationships.values()) {
-    const displayPath =
-      viewMode === 'targets' ? relationship.target : relationship.source
-    const otherPath =
-      viewMode === 'targets' ? relationship.source : relationship.target
-
-    addToTree(tree, displayPath, otherPath, relationship)
+  for (const configEntry of configRelationships.values()) {
+    addToTree(tree, treeBase, configEntry)
   }
 
   const sortedTree = sortTree(tree)
@@ -46,40 +43,34 @@ export function generateTree(viewMode: ViewMode): Record<string, TreeNode> {
 
 function addToTree(
   tree: Record<string, TreeNode>,
-  displayPath: string,
-  otherPath: string,
-  relationship: any
+  treeBase: treeBase,
+  configEntry: SymlinkConfigEntry,
 ): void {
-  const pathParts = processPath(displayPath)
-  let currentTree: Record<string, TreeNode> = tree
+  const pathParts = (
+    treeBase === 'targets' ? configEntry.target : configEntry.source
+  ).split('/')
 
+  let currentTree: Record<string, TreeNode> = tree
+  let iconPath = '.'
   for (let i = 0; i < pathParts.length; i++) {
     const pathPart = pathParts[i]
-    const isLeaf = i === pathParts.length - 1
+    // the last part of splited path is symlink
+    const isSymlinkLeaf = i === pathParts.length - 1
+    iconPath = path.posix.join(iconPath, pathPart)
 
-    if (!currentTree[pathPart]) {
-      currentTree[pathPart] = createNode(isLeaf, relationship, otherPath)
+    if (!currentTree[iconPath]) {
+      currentTree[iconPath] = {
+        children: {},
+        type: isSymlinkLeaf ? configEntry.type : 'dir',
+        isSymlinkLeaf: isSymlinkLeaf,
+        linkedPath:
+          treeBase === 'sources' ? configEntry.target : configEntry.source,
+        iconPath: isSymlinkLeaf ? configEntry.source : iconPath,
+        configPath: isSymlinkLeaf ? configEntry.configPath : undefined,
+        symlinkStatus: isSymlinkLeaf ? configEntry.symlinkStatus : 'unchanged',
+      }
     }
 
-    currentTree = currentTree[pathPart].children
+    currentTree = currentTree[iconPath].children
   }
-}
-
-function createNode(
-  isLeaf: boolean,
-  relationship: any,
-  otherPath: string
-): TreeNode {
-  return {
-    children: {},
-    isLeaf,
-    other: isLeaf ? otherPath : undefined,
-    type: (isLeaf ? relationship.type : 'dir') as ElementType,
-    configPath: isLeaf ? relationship.configPath : undefined,
-    status: (isLeaf ? relationship.status : 'unchanged') as SymlinkStatus
-  }
-}
-
-function processPath(inputPath: string): string[] {
-  return path.posix.normalize(inputPath).split('/')
 }
