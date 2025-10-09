@@ -61,17 +61,6 @@
 ### Current Status
 **Phase 1 Complete** - TypeScript Implementation & Development Tools Setup
 
-- All CVHere symlink management logic preserved in TypeScript
-- VSCode extension fully functional with commands and UI
-- Documentation properly organized
-- Development utilities from CVHere integrated
-- Repository published and ready for next development phase
-
-### Next Steps
-- Phase 2: Testing and refinement
-- VSCode Marketplace preparation
-- Community feedback integration
-
 ## Session 2: Advanced Architecture Development (06.10.2025)
 
 ### Context
@@ -116,27 +105,6 @@ type GitignoreRecord = Record<string, { spacing: string; active: boolean }>
 }
 ```
 
-#### Shared Gitignore Operations
-- **`parseGitignore(content)`**: Converts .gitignore content to record format
-- **`buildGitignore(records)`**: Converts records back to .gitignore content
-- **Empty Line Handling**: Special keys (`__EMPTY_LINE_N`) for empty lines
-- **Comment Detection**: Prevents duplicate # symbols in commented lines
-
-#### VSCode Explorer Panel System
-- **Interactive Tree View**: Shows symlinks from next-config with proper hierarchy
-- **Toggle View Mode**: Switch between Targets/Sources view with title bar button
-- **Visual Icons**: Special symlink icons (🔗📁/🔗📄) vs standard icons (📁/📄)
-- **Direction Arrows**: Source → target relationships clearly displayed
-- **Context Menu**: Duplicate actions with proper grouping
-
-#### Right-Click Symlink Creation
-- **Two-Click Workflow**: Select source → select target folder → config opens
-- **Smart Detection**: Automatically determines file vs directory
-- **@-Syntax Generation**: Proper workspace-relative paths with Linux-style slashes
-- **Config Integration**: Updates existing or creates new `symlink.config.json`
-
-### Architecture Patterns Established
-
 #### Manager Pattern
 ```typescript
 // All managers follow identical structure:
@@ -147,78 +115,13 @@ type GitignoreRecord = Record<string, { spacing: string; active: boolean }>
 // - handle-event.ts: Event processing logic
 ```
 
-#### Hook Pattern
-```typescript
-// Auto-detecting file watcher
-useFileWatcher({
-  pattern: '**/.gitignore',
-  onChange: () => handler(), // Automatically watches CHANGE
-  onDelete: () => handler()   // Automatically watches DELETE
-  // No onCreate = automatically IGNORES CREATE
-})
-```
-
-#### Sequential Processing
-```typescript
-// Promise chain queue for race condition prevention
-let processingQueue = Promise.resolve()
-onChange: (payload) => {
-  processingQueue = processingQueue.then(() =>
-    manager.handleEvent(payload)
-  )
-}
-```
-
-### User Experience Enhancements
-
-#### Visual Feedback System
-- **Info Messages**: Clear status updates during operations
-- **Warning Messages**: Alerts for configuration issues
-- **Progress Indicators**: Visual feedback for long operations
-- **Error Handling**: Graceful degradation with user-friendly messages
-
-#### Explorer Integration
-- **Tree Structure**: Hierarchical display of symlink relationships
-- **Interactive Controls**: Title bar buttons for quick actions
-- **Context Menus**: Right-click actions for symlink creation
-- **Direction Indicators**: Clear source → target relationship display
-
-#### Configuration Management
-- **Silent Mode**: Option to reduce notification verbosity
-- **Auto-Gitignore**: Configurable service file gitignoring
-- **File Hiding**: Optional hiding of service files from Explorer
-- **Format Preservation**: Maintains original file formatting
-
 ### Technical Achievements Summary
 - ✅ **Functional Architecture**: Clean, composable code structure
 - ✅ **Record-Based Management**: Flexible gitignore manipulation
 - ✅ **Format Preservation**: Non-destructive file operations
-- ✅ **Visual Integration**: Professional VSCode Explorer panel
-- ✅ **Interactive Workflow**: Right-click symlink creation
 - ✅ **Sequential Processing**: Race condition prevention
 - ✅ **Modern Patterns**: Async/await, hooks, type safety
 - ✅ **User Experience**: Clear feedback and intuitive controls
-
-### Current Status
-**Phase 1.20+ Complete** - Advanced Architecture & User Experience
-
-- Record-based gitignore management with format preservation
-- Interactive VSCode Explorer panel with tree view and controls
-- Right-click symlink creation workflow
-- Sequential event processing with race condition prevention
-- Modern JavaScript patterns and comprehensive error handling
-- Professional user experience with clear visual feedback
-
-### Version Progression
-- **0.0.9**: Type system improvements and configuration fixes
-- **0.0.13-0.0.18**: Architecture refactoring and user experience enhancements
-- **Current**: Advanced symlink management with professional VSCode integration
-
-### Next Development Areas
-- Command implementation (Create All, Clean All, Dry Run)
-- Advanced symlink validation and conflict detection
-- Performance optimization for large projects
-- VSCode Marketplace preparation and publishing
 
 ## Session 3: Interactive Symlink Creation & Context-Aware Operations (07.10.2025)
 
@@ -247,83 +150,6 @@ onChange: (payload) => {
 - **Native Array Handlers**: Leveraged useFileWatcher's built-in array handler support
 - **Efficient Architecture**: Single watcher setup without duplication
 
-#### Unsaved Config Generation
-- **Preview Before Save**: Creates unsaved documents for user review
-- **JSON Syntax Highlighting**: Proper language detection for editing experience
-- **User Control**: Standard VSCode save/discard workflow
-- **Edit Opportunity**: Users can modify before committing to disk
-
-### Technical Implementation Details
-
-#### Dynamic Context Menu System
-```typescript
-// Context variable management
-function updateContext() {
-  vscode.commands.executeCommand('setContext', 'symlink-config.sourceSelected', !!selectedSource)
-}
-
-// Package.json when clauses
-"when": "(!explorerResourceIsFolder || explorerResourceIsFolder) && !symlink-config.sourceSelected"
-"when": "explorerResourceIsFolder && symlink-config.sourceSelected"
-```
-
-#### Status Bar Integration
-```typescript
-// Persistent indicator with cancel functionality
-if (selectedSource) {
-  statusBarItem.text = `$(link) Source: ${path.basename(selectedSource.fsPath)} (click to cancel)`
-  statusBarItem.command = 'symlink-config.cancelSymlinkCreation'
-  statusBarItem.show()
-}
-```
-
-#### Context-Aware Operations
-```typescript
-// SymlinkEntry enhancement for path tracking
-export interface SymlinkEntry {
-  target: string
-  source: string
-  targetPath?: string  // New: tracks source folder
-}
-
-// Smart config opening
-const targetFolder = treeItem?.targetPath || ''
-const configPath = path.join(workspaceRoot, targetFolder, 'symlink.config.json')
-```
-
-#### Tree Auto-Refresh Architecture
-```typescript
-// Native array handler usage
-const symlinkConfigWatcher = useFileWatcher({
-  pattern: '**/symlink.config.json',
-  onCreate: [
-    () => queue(() => nextConfigManager.handleEvent('modified')),
-    () => treeProvider?.refresh()
-  ]
-})
-```
-
-### User Experience Improvements
-
-#### Interactive Creation Benefits
-- **No Manual JSON**: Click-based source and target selection
-- **Visual Feedback**: Clear status indicators and progress messages
-- **Error Prevention**: Automatic path resolution and @-syntax generation
-- **Flexible Cancellation**: Multiple ways to abort the process
-- **Context Awareness**: Commands appear only when appropriate
-
-#### Smart Config Management
-- **Location Awareness**: Opens correct config file based on tree context
-- **Preview Workflow**: Review changes before saving to disk
-- **Path Intelligence**: Automatic workspace-relative path handling
-- **Integration Consistency**: Uses shared info system for messaging
-
-#### Architecture Refinements
-- **Single Watcher Setup**: Eliminated duplicate file watchers
-- **Native Handler Support**: Leveraged built-in array capabilities
-- **Clean Integration**: Tree provider properly connected to existing system
-- **Type Safety**: Enhanced interfaces with optional properties
-
 ### Technical Achievements
 - ✅ **Interactive Workflow**: Two-step symlink creation with visual feedback
 - ✅ **Dynamic UI**: Context-sensitive command visibility
@@ -331,27 +157,6 @@ const symlinkConfigWatcher = useFileWatcher({
 - ✅ **Real-Time Updates**: Automatic tree refresh on config changes
 - ✅ **User Control**: Preview-before-save workflow
 - ✅ **Clean Architecture**: Efficient watcher integration without duplication
-
-### Version Progression
-- **0.0.19**: Interactive symlink creation with two-step UI and tree auto-refresh
-- **0.0.20**: Context-aware symlink config opening from tree view
-
-### Current Status
-**Phase 1.21 Complete** - Interactive Symlink Creation & Context-Aware Config Opening
-
-- Interactive two-step symlink creation workflow
-- Dynamic context menus with state-based visibility
-- Status bar integration for persistent feedback
-- Context-aware config file opening from tree items
-- Real-time tree updates with file watcher integration
-- Unsaved document generation for user review
-- Clean architecture leveraging native VSCode capabilities
-
-### Next Development Focus
-- Core symlink operations (Create All, Clean All, Dry Run)
-- Advanced validation and conflict detection
-- Performance optimization for large workspaces
-- VSCode Marketplace preparation
 
 ## Session 4: Tree View Architecture Refactoring & Config Path Tracking (08.10.2025)
 
@@ -384,82 +189,6 @@ const symlinkConfigWatcher = useFileWatcher({
 - **Node.js Integration**: Replaced string manipulation with `path.posix.normalize()`
 - **Reliability Fix**: Handles Windows backslashes, mixed separators, edge cases
 - **Consistent Behavior**: Predictable path processing across all platforms
-- **Regex Improvements**: Proper `@` prefix removal with `/^@/` instead of global replace
-
-### Technical Implementation
-
-#### Function Extraction Pattern
-```typescript
-// Before: Monolithic function
-export function buildDiffTree(viewMode) { /* 68+ lines */ }
-
-// After: Focused helpers
-function processPath(inputPath: string): string[]
-function createNode(isLeaf: boolean, relationship: any, otherPath: string): TreeNode
-function addToTree(tree, displayPath, otherPath, relationship): void
-export function generateTree(viewMode: ViewMode): Record<string, TreeNode>
-```
-
-#### Enhanced Config Interface
-```typescript
-// Per-entry config path tracking
-export interface Config {
-  directories?: Array<{
-    target: string
-    source: string
-    configPath: string  // Source config file
-  }>
-  files?: Array<{
-    target: string
-    source: string
-    configPath: string  // Source config file
-  }>
-}
-```
-
-#### Tooltip Enhancement
-```typescript
-// Multi-line tooltips with config source
-if (node.status === 'new') {
-  item.tooltip = `New symlink in next configuration\nDefined in: ${node.configPath}`
-} else if (node.configPath) {
-  item.tooltip = `Defined in: ${node.configPath}`
-}
-```
-
-### Code Quality Improvements
-
-#### Maintainability Enhancements
-- **Single Responsibility**: Each function has one clear purpose
-- **Reduced Complexity**: Helper functions eliminate nested conditionals
-- **Better Organization**: Logical file structure with clear module boundaries
-- **Documentation**: Comprehensive comments explaining algorithm steps
-
-#### Performance Optimizations
-- **Integrated Sorting**: Tree sorting now part of generation process
-- **Efficient Path Processing**: Centralized path normalization
-- **Reduced Redundancy**: Eliminated repeated conditional evaluations
-- **Memory Efficiency**: Cleaner object creation patterns
-
-#### Breaking Changes
-- **Config Interface**: Now requires `configPath` field for each entry
-- **Import Paths**: Tree provider imports updated to use new `generate` module
-- **Function Names**: `buildDiffTree` renamed to `generateTree` for clarity
-- **Type System**: Replaced boolean flags with union type `ElementType`
-
-### User Experience Enhancements
-
-#### Enhanced Tooltips
-- **Config Source Display**: Shows which file defines each symlink
-- **Multi-line Format**: Status + config path on separate lines
-- **Context Awareness**: Only shows config path for actual symlinks
-- **Debugging Aid**: Easier identification of configuration sources
-
-#### Improved Reliability
-- **Cross-Platform**: Consistent behavior on Windows, macOS, Linux
-- **Path Handling**: Robust processing of various path formats
-- **Error Prevention**: Better type safety prevents runtime errors
-- **Maintainability**: Easier to modify and extend functionality
 
 ### Technical Achievements
 - ✅ **Modular Architecture**: Clean separation of concerns with focused modules
@@ -468,24 +197,131 @@ if (node.status === 'new') {
 - ✅ **Cross-Platform Reliability**: Robust path processing using Node.js utilities
 - ✅ **Code Quality**: Extracted helper functions for better maintainability
 - ✅ **User Experience**: Enhanced tooltips with config source information
-- ✅ **Performance**: Integrated sorting and optimized tree generation
+
+## Session 5: Tree View Development and VSCode Icon Integration (09.10.2025)
+
+### Context
+- Continued from Phase 1.22 completion
+- Focus on tree view implementation, VSCode icon integration, and code quality improvements
+- Discovery of VSCode TreeItem icon behavior dependency on CollapsibleState
+
+### Key Developments
+
+#### Tree View Implementation
+- **Complete Tree Provider**: Implemented VSCode TreeDataProvider with targets/sources mode switching
+- **Modular Architecture**: Decomposed tree provider into separate components (tree-item, tree-render, generate/)
+- **View Mode Toggle**: Title bar button to switch between targets and sources perspectives
+- **Real-Time Updates**: Integrated with existing file watcher system for automatic refresh
+
+#### VSCode Icon Integration Discovery
+- **Critical Finding**: VSCode TreeItem icon behavior depends on CollapsibleState, not just resourceUri
+- **Directory Icons**: Require CollapsibleState.Collapsed or Expanded to display as folders
+- **File Icons**: Use CollapsibleState.None with resourceUri for theme-based file type icons
+- **Documentation Gap**: Official VSCode docs don't mention CollapsibleState dependency
+
+#### Type Safety Improvements
+- **Map Typing**: Replaced `Map<any>` with proper `Map<string, SymlinkEntry & { status: SymlinkStatus }>`
+- **Function Parameters**: Eliminated all `any` types with proper TypeScript interfaces
+- **Union Types**: Used `treeBase = 'targets' | 'sources'` instead of ViewMode enum
+- **Interface Consistency**: Unified SymlinkEntry vs SymlinkConfigEntry naming
+
+#### Code Organization
+- **Function Extraction**: Moved `treeToItems` to separate `tree-render.ts` module
+- **Single Responsibility**: Each module has one clear purpose
+- **Clean Imports**: Organized module boundaries and dependencies
+- **Error Handling**: Proper handling of undefined values in tree generation
+
+### Technical Implementation
+
+#### VSCode Icon System Discovery
+```typescript
+// Files: CollapsibleState.None + resourceUri → theme file icon
+resourceUri: vscode.Uri.file('/path/to/file.js')
+collapsibleState: vscode.TreeItemCollapsibleState.None
+// Result: JavaScript file icon
+
+// Directories: CollapsibleState.Collapsed/Expanded + resourceUri → theme folder icon
+resourceUri: vscode.Uri.file('/path/to/folder/')
+collapsibleState: vscode.TreeItemCollapsibleState.Collapsed
+// Result: Folder icon
+
+// Critical: CollapsibleState.None + folder path → treated as file!
+```
+
+#### Proper Icon Implementation
+```typescript
+const collapsibleState = hasChildren
+  ? vscode.TreeItemCollapsibleState.Expanded      // Has children → Expanded
+  : treeNode.type === 'dir'
+    ? vscode.TreeItemCollapsibleState.Collapsed   // Directory without children → Collapsed
+    : vscode.TreeItemCollapsibleState.None        // File → None
+```
+
+#### Type Safety Enhancement
+```typescript
+// Before: Untyped Map
+const configEntries = new Map()
+
+// After: Properly typed
+const configEntries = new Map<string, SymlinkEntry & { status: SymlinkStatus }>()
+```
+
+#### Tooltip Management
+- **Conditional Assignment**: Only set tooltips when meaningful content exists
+- **Fallback Prevention**: Avoid setting tooltip to undefined to prevent "undefined" display
+- **Status-Based Content**: Different tooltips for new/deleted/unchanged symlinks
+
+### Code Quality Improvements
+
+#### Modular Tree Architecture
+- **tree-data-provider.ts**: Main VSCode integration and tree root management
+- **tree-render.ts**: Pure function for converting tree structure to display items
+- **tree-item.ts**: VSCode TreeItem wrapper with icon and tooltip handling
+- **generate/**: Tree building logic (generate.ts, sort-tree.ts, parse-config.ts)
+
+#### Breaking Changes
+- **Tree Provider**: Refactored from monolithic class to modular architecture
+- **Icon Handling**: Changed from emoji-based to VSCode theme icon system
+- **Type System**: Stricter typing throughout tree components
+
+### User Experience Enhancements
+
+#### Native VSCode Experience
+- **Theme Icons**: Icons match user's current theme and file associations
+- **Consistent Behavior**: Visual experience consistent with VSCode's native file explorer
+- **Performance**: Efficient tree rendering with proper VSCode integration
+- **Accessibility**: Proper tooltip handling and screen reader support
+
+#### Visual Improvements
+- **Clear Relationships**: Source → target relationships clearly displayed
+- **Status Indicators**: Visual distinction between new/deleted/unchanged symlinks
+- **Context Awareness**: Tooltips show config source for debugging
+- **Professional Appearance**: Native VSCode styling throughout
+
+### Technical Achievements
+- ✅ **Complete Tree View**: Full symlink configuration display with mode switching
+- ✅ **VSCode Icon Integration**: Proper theme icon usage with CollapsibleState dependency
+- ✅ **Type Safety**: Eliminated all 'any' types with proper TypeScript interfaces
+- ✅ **Modular Architecture**: Clean separation of concerns with focused components
+- ✅ **Code Quality**: Extracted helper functions and organized module boundaries
+- ✅ **User Experience**: Native VSCode experience with theme icon integration
+- ✅ **Documentation**: Recorded VSCode TreeItem icon behavior discovery
 
 ### Version Progression
-- **0.0.22**: Tree view architecture refactoring with enhanced type system and config path tracking
+- **0.0.23**: Tree view development with VSCode icon integration and modular architecture
 
 ### Current Status
-**Phase 1.22 Complete** - Tree View Architecture Refactoring and Config Path Tracking
+**Phase 1.23 Complete** - Tree View Development and VSCode Icon Integration
 
-- Modular tree generation architecture with `generate/` folder structure
-- Enhanced type system with `ElementType` and `SymlinkStatus` union types
-- Per-entry config path tracking for granular source identification
-- Enhanced tooltips displaying source config file for each symlink
-- Cross-platform path processing using Node.js `path.posix`
-- Extracted helper functions for better maintainability and testability
-- Integrated tree sorting for optimized performance
+- Complete symlink configuration tree view with targets/sources mode switching
+- Proper VSCode theme icon integration with CollapsibleState dependency discovery
+- Modular tree architecture with single-responsibility components
+- Type safety improvements eliminating all 'any' types
+- Enhanced tooltip management preventing "undefined" tooltips
+- Code organization with extracted helper functions and clean module boundaries
 
 ### Next Development Focus
+- Core symlink operations implementation (Create All, Clean All, Dry Run)
 - Testing and refinement (Phase 2)
-- Core symlink operations implementation
-- Performance testing with large projects
+- Performance optimization for large projects
 - VSCode Marketplace preparation
