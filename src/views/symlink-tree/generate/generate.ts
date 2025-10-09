@@ -1,4 +1,5 @@
 import * as path from 'path'
+// TODO: Remove unused import - state is imported but never used
 import * as state from '../../../state'
 
 import { SymlinkConfigEntry, TreeNode, treeBase } from '../types'
@@ -58,8 +59,9 @@ function addToTree(
     const isSymlinkLeaf = i === pathParts.length - 1
     iconPath = path.posix.join(iconPath, pathPart)
 
-    if (!currentTree[iconPath]) {
-      currentTree[iconPath] = {
+    // TODO: Fix critical bug - using iconPath as key instead of pathPart
+    if (!currentTree[pathPart]) {
+      currentTree[pathPart] = {
         children: {},
         type: isSymlinkLeaf ? configEntry.type : 'dir',
         isSymlinkLeaf: isSymlinkLeaf,
@@ -71,6 +73,7 @@ function addToTree(
       }
     }
 
-    currentTree = currentTree[iconPath].children
+    // TODO: Fix critical bug - using iconPath instead of pathPart for tree navigation
+    currentTree = currentTree[pathPart].children
   }
 }
