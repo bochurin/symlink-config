@@ -2,7 +2,9 @@ import * as vscode from 'vscode'
 
 import * as state from './state'
 
-import { initGitignore, initNextConfig, initFileExclude } from './managers'
+import { init as initGitignore } from './managers/gitignore-file'
+import { init as initNextConfig } from './managers/next-config-file'
+import { init as initFileExclude } from './managers/file-exclude-settings'
 
 import { setWatchers } from './set-watchers'
 import { SymlinkTreeProvider } from './views/symlink-tree'

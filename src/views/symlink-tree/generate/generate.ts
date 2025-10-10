@@ -4,7 +4,7 @@ import * as state from '../../../state'
 
 import { SymlinkConfigEntry, TreeNode, treeBase } from '../types'
 
-import * as nextConfigManager from '../../../managers/next-config'
+import * as nextConfigManager from '../../../managers/next-config-file'
 import * as currentConfigManager from '../../../managers/current-config'
 
 import { parseConfig } from './parse-config'

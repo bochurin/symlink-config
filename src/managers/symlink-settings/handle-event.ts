@@ -1,5 +1,5 @@
-import * as gitignoreManager from '../gitignore'
-import * as fileExcludeManager from '../file-exclude'
+import { make as makeGitignore } from '../gitignore-file'
+import { make as makeExclusion, ExclusionPart } from '../file-exclude-settings'
 import { info } from '../../shared/vscode'
 
 export async function handleEvent(
@@ -12,7 +12,7 @@ export async function handleEvent(
       info(
         `Gitignoring service files ${payload.value ? 'enabled' : 'disabled'}.`,
       )
-      await gitignoreManager.make()
+      await makeGitignore()
       break
 
     case 'hideServiceFiles':
@@ -22,10 +22,10 @@ export async function handleEvent(
       const action = payload.value ? 'enabled' : 'disabled'
       const mode =
         parameter === 'hideServiceFiles'
-          ? fileExcludeManager.GenerationMode.ServiceFiles
-          : fileExcludeManager.GenerationMode.SymlinkConfigs
+          ? ExclusionPart.ServiceFiles
+          : ExclusionPart.SymlinkConfigs
       info(`Hiding ${object} ${action}.`)
-      await fileExcludeManager.make(mode)
+      await makeExclusion(mode)
       break
   }
 }

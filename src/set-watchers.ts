@@ -2,12 +2,10 @@ import * as vscode from 'vscode'
 import { useFileWatcher, FileWatchEvent } from './hooks/use-file-watcher'
 import { useConfigWatcher } from './hooks/use-config-watcher'
 import { getWorkspaceRoot } from './state'
-import { 
-  handleGitignoreEvent, 
-  handleNextConfigEvent, 
-  handleSymlinkConfigEvent, 
-  handleFileExcludeEvent 
-} from './managers'
+import { handleEvent as handleGitignoreEvent } from './managers/gitignore-file'
+import { handleEvent as handleNextConfigEvent } from './managers/next-config-file'
+import { handleEvent as handleFileExcludeEvent } from './managers/file-exclude-settings'
+import { handleEvent as handleSymlinkConfigEvent } from './managers/symlink-settings'
 
 export function setWatchers(treeProvider?: any) {
   let processingQueue = Promise.resolve()
@@ -30,8 +28,7 @@ export function setWatchers(treeProvider?: any) {
         FileWatchEvent.Deleted,
       ],
       handler: [
-        () =>
-          queue(() => handleNextConfigEvent(FileWatchEvent.Modified)),
+        () => queue(() => handleNextConfigEvent(FileWatchEvent.Modified)),
         () => treeProvider?.refresh(),
       ],
     },
@@ -71,8 +68,7 @@ export function setWatchers(treeProvider?: any) {
     events: {
       on: [FileWatchEvent.Modified, FileWatchEvent.Deleted],
       handler: (uri) =>
-        isRootFile(uri, '.gitignore') &&
-        queue(() => handleGitignoreEvent()),
+        isRootFile(uri, '.gitignore') && queue(() => handleGitignoreEvent()),
     },
   })
 
@@ -84,25 +80,19 @@ export function setWatchers(treeProvider?: any) {
           {
             parameter: 'gitignoreServiceFiles',
             onChange: (section, parameter, payload) => {
-              queue(() =>
-                handleSymlinkConfigEvent(section, parameter, payload),
-              )
+              queue(() => handleSymlinkConfigEvent(section, parameter, payload))
             },
           },
           {
             parameter: 'hideServiceFiles',
             onChange: (section, parameter, payload) => {
-              queue(() =>
-                handleSymlinkConfigEvent(section, parameter, payload),
-              )
+              queue(() => handleSymlinkConfigEvent(section, parameter, payload))
             },
           },
           {
             parameter: 'hideSymlinkConfigs',
             onChange: (section, parameter, payload) => {
-              queue(() =>
-                handleSymlinkConfigEvent(section, parameter, payload),
-              )
+              queue(() => handleSymlinkConfigEvent(section, parameter, payload))
             },
           },
         ],
