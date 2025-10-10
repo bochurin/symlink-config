@@ -8,11 +8,18 @@ let selectedSource: vscode.Uri | undefined
 let statusBarItem: vscode.StatusBarItem | undefined
 
 function updateContext() {
-  vscode.commands.executeCommand('setContext', 'symlink-config.sourceSelected', !!selectedSource)
-  
+  vscode.commands.executeCommand(
+    'setContext',
+    'symlink-config.sourceSelected',
+    !!selectedSource,
+  )
+
   if (selectedSource) {
     if (!statusBarItem) {
-      statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100)
+      statusBarItem = vscode.window.createStatusBarItem(
+        vscode.StatusBarAlignment.Left,
+        100,
+      )
       statusBarItem.command = 'symlink-config.cancelSymlinkCreation'
     }
     statusBarItem.text = `$(link) Source: ${path.basename(selectedSource.fsPath)} (click to cancel)`
@@ -27,7 +34,9 @@ export async function createSymlink(uri: vscode.Uri) {
     // First click - select source
     selectedSource = uri
     updateContext()
-    info(`Source selected: ${path.basename(uri.fsPath)}. Now right-click target folder and select "Select symlink target folder".`)
+    info(
+      `Source selected: ${path.basename(uri.fsPath)}. Now right-click target folder and select "Select symlink target folder".`,
+    )
     return
   }
 
@@ -45,17 +54,19 @@ export async function createSymlink(uri: vscode.Uri) {
 
 export function selectSymlinkTarget(uri: vscode.Uri) {
   if (!selectedSource) {
-    vscode.window.showWarningMessage('No source selected. First use "Create Symlink" on a file or folder.')
+    vscode.window.showWarningMessage(
+      'No source selected. First use "Create Symlink" on a file or folder.',
+    )
     return
   }
-  
+
   // Use the same logic as second click in createSymlink
   const targetFolder = uri
   const source = selectedSource
   selectedSource = undefined // Reset
   updateContext()
 
-  createSymlinkConfig(source, targetFolder).catch(error => {
+  createSymlinkConfig(source, targetFolder).catch((error) => {
     vscode.window.showErrorMessage(`Failed to create symlink config: ${error}`)
   })
 }
@@ -70,20 +81,27 @@ export function cancelSymlinkCreation() {
   }
 }
 
-async function createSymlinkConfig(source: vscode.Uri, targetFolder: vscode.Uri) {
+async function createSymlinkConfig(
+  source: vscode.Uri,
+  targetFolder: vscode.Uri,
+) {
   const workspaceRoot = getWorkspaceRoot()
-  const sourcePath = path.relative(workspaceRoot, source.fsPath).replace(/\\/g, '/')
-  const targetFolderPath = path.relative(workspaceRoot, targetFolder.fsPath).replace(/\\/g, '/')
+  const sourcePath = path
+    .relative(workspaceRoot, source.fsPath)
+    .replace(/\\/g, '/')
+  const targetFolderPath = path
+    .relative(workspaceRoot, targetFolder.fsPath)
+    .replace(/\\/g, '/')
   const sourceName = path.basename(source.fsPath)
-  
+
   const configPath = path.join(targetFolder.fsPath, 'symlink.config.json')
-  
+
   // Read existing config or create new
   let config: any = {
     directories: [],
-    files: []
+    files: [],
   }
-  
+
   try {
     const existing = await fs.readFile(configPath, 'utf8')
     config = JSON.parse(existing)
@@ -94,10 +112,10 @@ async function createSymlinkConfig(source: vscode.Uri, targetFolder: vscode.Uri)
   // Determine if source is directory or file
   const stats = await fs.stat(source.fsPath)
   const isDirectory = stats.isDirectory()
-  
+
   const entry = {
     target: sourceName,
-    source: `@${sourcePath}`
+    source: `@${sourcePath}`,
   }
 
   // Add to appropriate array
@@ -113,9 +131,9 @@ async function createSymlinkConfig(source: vscode.Uri, targetFolder: vscode.Uri)
   const configContent = JSON.stringify(config, null, 2)
   const document = await vscode.workspace.openTextDocument({
     content: configContent,
-    language: 'json'
+    language: 'json',
   })
   await vscode.window.showTextDocument(document)
-  
+
   info(`Symlink config created: ${sourceName} → @${sourcePath}`)
 }

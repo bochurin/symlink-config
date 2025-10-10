@@ -5,12 +5,12 @@ import { info } from '../../shared/vscode'
 export async function handleEvent(
   section: string,
   parameter: string,
-  payload: { value: any; old_value: any }
+  payload: { value: any; old_value: any },
 ) {
   switch (parameter) {
     case 'gitignoreServiceFiles':
       info(
-        `Gitignoring service files ${payload.value ? 'enabled' : 'disabled'}.`
+        `Gitignoring service files ${payload.value ? 'enabled' : 'disabled'}.`,
       )
       await gitignoreManager.make()
       break
@@ -21,7 +21,9 @@ export async function handleEvent(
         parameter === 'hideServiceFiles' ? 'service files' : 'symlink configs'
       const action = payload.value ? 'enabled' : 'disabled'
       const mode =
-        parameter === 'hideServiceFiles' ? 'serviceFiles' : 'symlinkConfigs'
+        parameter === 'hideServiceFiles'
+          ? fileExcludeManager.GenerationMode.ServiceFiles
+          : fileExcludeManager.GenerationMode.SymlinkConfigs
       info(`Hiding ${object} ${action}.`)
       await fileExcludeManager.make(mode)
       break

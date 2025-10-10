@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { SymlinkConfig, SymlinkEntry } from './types'
+import { Config, ConfigEntry } from './types'
 import { getWorkspaceRoot } from '../../state'
 
 export function generate(): string {
@@ -37,10 +37,10 @@ function findConfigFiles(): string[] {
   return configFiles
 }
 
-function createMasterConfig(configFiles: string[]): SymlinkConfig {
-  const masterConfig: SymlinkConfig = {
+function createMasterConfig(configFiles: string[]): Config {
+  const masterConfig: Config = {
     directories: [],
-    files: []
+    files: [],
   }
 
   for (const configFile of configFiles) {
@@ -53,16 +53,14 @@ function createMasterConfig(configFiles: string[]): SymlinkConfig {
     if (config.directories) {
       for (const entry of config.directories) {
         masterConfig.directories!.push(
-          convertToAtSyntax(entry, relativeConfigDir)
+          convertToAtSyntax(entry, relativeConfigDir),
         )
       }
     }
 
     if (config.files) {
       for (const entry of config.files) {
-        masterConfig.files!.push(
-          convertToAtSyntax(entry, relativeConfigDir)
-        )
+        masterConfig.files!.push(convertToAtSyntax(entry, relativeConfigDir))
       }
     }
   }
@@ -70,15 +68,12 @@ function createMasterConfig(configFiles: string[]): SymlinkConfig {
   return masterConfig
 }
 
-function convertToAtSyntax(
-  entry: SymlinkEntry,
-  configDir: string
-): SymlinkEntry {
+function convertToAtSyntax(entry: ConfigEntry, configDir: string): ConfigEntry {
   return {
     target: pathToAtSyntax(entry.target, configDir),
     source: pathToAtSyntax(entry.source, configDir),
-    configPath: '@' + configDir.replace(/\\/g, '/')
-  } as SymlinkEntry
+    configPath: '@' + configDir.replace(/\\/g, '/'),
+  } as ConfigEntry
 }
 
 function pathToAtSyntax(originalPath: string, configDir: string): string {
@@ -88,19 +83,19 @@ function pathToAtSyntax(originalPath: string, configDir: string): string {
 
   const absolutePath = path.resolve(
     path.join(getWorkspaceRoot(), configDir),
-    originalPath
+    originalPath,
   )
   const relativePath = path.relative(getWorkspaceRoot(), absolutePath)
 
   return '@' + relativePath.replace(/\\/g, '/')
 }
 
-function loadConfig(configPath: string): SymlinkConfig | null {
+function loadConfig(configPath: string): Config | null {
   try {
     const content = fs.readFileSync(configPath, 'utf8')
     return JSON.parse(content)
   } catch (error) {
     console.error(`Failed to load config ${configPath}:`, error)
-    return null
+    return null //TODO: not nulls returning refactoring needed
   }
 }

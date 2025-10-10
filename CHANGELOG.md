@@ -1,4 +1,4 @@
-# Change Log
+# Change Log //TDO: why is it in the root?
 
 All notable changes to the "symlink-config" extension will be documented in this file.
 

@@ -1,5 +1,6 @@
 import { handleEvent } from './handle-event'
+import { FileEvent } from './types'
 
 export async function init() {
-  await handleEvent('modified')
+  await handleEvent(FileEvent.Modified)
 }

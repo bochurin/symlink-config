@@ -1,4 +1,4 @@
-# Welcome to your VS Code Extension
+# Welcome to your VS Code Extension //TODO: why is it in the root?
 
 ## What's in the folder
 

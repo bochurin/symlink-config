@@ -9,7 +9,7 @@ import { renderTree } from './tree-render'
 
 export class TreeProvider implements vscode.TreeDataProvider<TreeItem> {
   private _onDidChangeTreeData = new vscode.EventEmitter<
-    TreeItem | undefined | null | void
+    TreeItem | undefined | null | void //Why not just TreeItem
   >()
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event
   private viewMode: treeBase = 'targets'

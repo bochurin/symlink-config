@@ -2,9 +2,9 @@ import { info } from '../../shared/vscode'
 import * as symlinkConfigManager from '../symlink-config'
 import { make } from './make'
 
-export async function handleEvent(event: 'modified' | 'deleted') {
+export async function handleEvent() {
   const gitignoreServiceFiles = symlinkConfigManager.read(
-    'gitignoreServiceFiles'
+    'gitignoreServiceFiles',
   )
   if (gitignoreServiceFiles) {
     info('.gitignore was modified. Checking ...')

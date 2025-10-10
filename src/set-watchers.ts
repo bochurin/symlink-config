@@ -21,33 +21,46 @@ export function setWatchers(treeProvider?: any) {
   const symlinkConfigWatcher = useFileWatcher({
     pattern: '**/symlink.config.json',
     onCreate: [
-      () => queue(() => nextConfigManager.handleEvent('modified')),
-      () => treeProvider?.refresh()
+      () =>
+        queue(() =>
+          nextConfigManager.handleEvent(nextConfigManager.FileEvent.Modified),
+        ),
+      () => treeProvider?.refresh(),
     ],
     onChange: [
-      () => queue(() => nextConfigManager.handleEvent('modified')),
-      () => treeProvider?.refresh()
+      () =>
+        queue(() =>
+          nextConfigManager.handleEvent(nextConfigManager.FileEvent.Modified),
+        ),
+      () => treeProvider?.refresh(),
     ],
     onDelete: [
-      () => queue(() => nextConfigManager.handleEvent('modified')),
-      () => treeProvider?.refresh()
-    ]
+      () =>
+        queue(() =>
+          nextConfigManager.handleEvent(nextConfigManager.FileEvent.Modified),
+        ),
+      () => treeProvider?.refresh(),
+    ],
   })
 
   const nextConfigWatcher = useFileWatcher({
     pattern: '**/next.symlink.config.json',
     onChange: (uri) => {
       if (isRootFile(uri, 'next.symlink.config.json')) {
-        queue(() => nextConfigManager.handleEvent('modified'))
+        queue(() =>
+          nextConfigManager.handleEvent(nextConfigManager.FileEvent.Modified),
+        )
         treeProvider?.refresh()
       }
     },
     onDelete: (uri) => {
       if (isRootFile(uri, 'next.symlink.config.json')) {
-        queue(() => nextConfigManager.handleEvent('deleted'))
+        queue(() =>
+          nextConfigManager.handleEvent(nextConfigManager.FileEvent.Deleted),
+        )
         treeProvider?.refresh()
       }
-    }
+    },
   })
 
   const currentConfigWatcher = useFileWatcher({
@@ -66,17 +79,17 @@ export function setWatchers(treeProvider?: any) {
       if (isRootFile(uri, 'current-symlink.config.json')) {
         treeProvider?.refresh()
       }
-    }
+    },
   })
 
   const gitignoreWatcher = useFileWatcher({
     pattern: '**/.gitignore',
     onChange: (uri) =>
       isRootFile(uri, '.gitignore') &&
-      queue(() => gitignoreManager.handleEvent('modified')),
+      queue(() => gitignoreManager.handleEvent()),
     onDelete: (uri) =>
       isRootFile(uri, '.gitignore') &&
-      queue(() => gitignoreManager.handleEvent('deleted'))
+      queue(() => gitignoreManager.handleEvent()),
   })
 
   const configWatcher = useConfigWatcher({
@@ -88,27 +101,27 @@ export function setWatchers(treeProvider?: any) {
             parameter: 'gitignoreServiceFiles',
             onChange: (section, parameter, payload) => {
               queue(() =>
-                symlinkConfigManager.handleEvent(section, parameter, payload)
+                symlinkConfigManager.handleEvent(section, parameter, payload),
               )
-            }
+            },
           },
           {
             parameter: 'hideServiceFiles',
             onChange: (section, parameter, payload) => {
               queue(() =>
-                symlinkConfigManager.handleEvent(section, parameter, payload)
+                symlinkConfigManager.handleEvent(section, parameter, payload),
               )
-            }
+            },
           },
           {
             parameter: 'hideSymlinkConfigs',
             onChange: (section, parameter, payload) => {
               queue(() =>
-                symlinkConfigManager.handleEvent(section, parameter, payload)
+                symlinkConfigManager.handleEvent(section, parameter, payload),
               )
-            }
-          }
-        ]
+            },
+          },
+        ],
       },
       {
         section: 'files',
@@ -116,10 +129,10 @@ export function setWatchers(treeProvider?: any) {
           parameter: 'exclude',
           onChange: () => {
             queue(() => fileExcludeManager.handleEvent())
-          }
-        }
-      }
-    ]
+          },
+        },
+      },
+    ],
   })
 
   // set watcher disposals

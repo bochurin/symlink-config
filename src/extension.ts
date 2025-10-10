@@ -11,7 +11,7 @@ import { SymlinkTreeProvider } from './views/symlink-tree'
 import {
   createSymlink,
   selectSymlinkTarget,
-  cancelSymlinkCreation
+  cancelSymlinkCreation,
 } from './commands/create-symlink'
 import { openSymlinkConfig } from './commands/open-symlink-config'
 import { applyConfiguration } from './commands/apply-configuration'
@@ -35,7 +35,7 @@ async function initializeExtension(treeProvider?: any) {
   await Promise.all([
     fileExcludeManager.init(), //
     gitignoreManager.init(), //
-    nextConfigManager.init() //
+    nextConfigManager.init(), //
   ])
 
   const dispose = setWatchers(treeProvider)
@@ -49,7 +49,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // Register tree view
   const treeProvider = new SymlinkTreeProvider()
   vscode.window.createTreeView('symlink-config', {
-    treeDataProvider: treeProvider
+    treeDataProvider: treeProvider,
   })
 
   // Register openSettings command
@@ -58,9 +58,9 @@ export async function activate(context: vscode.ExtensionContext) {
     () => {
       vscode.commands.executeCommand(
         'workbench.action.openSettings',
-        'symlink-config'
+        'symlink-config',
       )
-    }
+    },
   )
   context.subscriptions.push(openSettingsCommand)
 
@@ -69,34 +69,34 @@ export async function activate(context: vscode.ExtensionContext) {
     'symlink-config.toggleView',
     () => {
       treeProvider.toggleViewMode()
-    }
+    },
   )
   context.subscriptions.push(toggleViewCommand)
 
   // Register createSymlink commands
   const createSymlinkCommand = vscode.commands.registerCommand(
     'symlink-config.createSymlink',
-    createSymlink
+    createSymlink,
   )
   const selectTargetCommand = vscode.commands.registerCommand(
     'symlink-config.selectSymlinkTarget',
-    selectSymlinkTarget
+    selectSymlinkTarget,
   )
   const cancelCommand = vscode.commands.registerCommand(
     'symlink-config.cancelSymlinkCreation',
-    cancelSymlinkCreation
+    cancelSymlinkCreation,
   )
   const openConfigCommand = vscode.commands.registerCommand(
     'symlink-config.openSymlinkConfig',
-    openSymlinkConfig
+    openSymlinkConfig,
   )
   const applyConfigCommand = vscode.commands.registerCommand(
     'symlink-config.applyConfiguration',
-    applyConfiguration
+    applyConfiguration,
   )
   const collapseAllCommand = vscode.commands.registerCommand(
     'symlink-config.collapseAll',
-    collapseAll
+    collapseAll,
   )
   context.subscriptions.push(
     createSymlinkCommand,
@@ -104,7 +104,7 @@ export async function activate(context: vscode.ExtensionContext) {
     cancelCommand,
     openConfigCommand,
     applyConfigCommand,
-    collapseAllCommand
+    collapseAllCommand,
   )
 
   // Try to initialize immediately
@@ -121,7 +121,7 @@ export async function activate(context: vscode.ExtensionContext) {
       if (dispose) {
         context.subscriptions.push({ dispose })
       }
-    }
+    },
   )
 
   context.subscriptions.push(workspaceListener)
