@@ -2,7 +2,7 @@
   "name": "@bochurin/symlink-config",
   "displayName": "symlink.config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.29",
+  "version": "0.0.30",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -195,7 +195,7 @@
       "view/item/context": [
         {
           "command": "symlink-config.openSymlinkConfig",
-          "when": "view == symlink-config",
+          "when": "view == symlink-config && viewItem == symlinkLeaf",
           "group": "navigation"
         }
       ]

@@ -60,6 +60,9 @@ export function renderTree(
       },
     )
 
+    // Set context value for menu visibility
+    item.contextValue = treeNode.isSymlinkLeaf ? 'symlinkLeaf' : 'directory'
+
     if (hasChildren) {
       item.children = renderTree(treeNode.children, treeBase)
     }
