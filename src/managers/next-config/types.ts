@@ -1,8 +1,3 @@
-export enum FileEvent {
-  Modified = 'Modified',
-  Deleted = 'Deleted',
-}
-
 export interface Config {
   directories?: ConfigEntry[]
   files?: ConfigEntry[]

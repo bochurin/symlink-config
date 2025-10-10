@@ -5,6 +5,7 @@ import * as gitignoreManager from './managers/gitignore'
 import * as nextConfigManager from './managers/next-config'
 import * as symlinkConfigManager from './managers/symlink-config'
 import * as fileExcludeManager from './managers/file-exclude'
+import { FileEvent } from './managers'
 
 export function setWatchers(treeProvider?: any) {
   let processingQueue = Promise.resolve()
@@ -21,24 +22,15 @@ export function setWatchers(treeProvider?: any) {
   const symlinkConfigWatcher = useFileWatcher({
     pattern: '**/symlink.config.json',
     onCreate: [
-      () =>
-        queue(() =>
-          nextConfigManager.handleEvent(nextConfigManager.FileEvent.Modified),
-        ),
+      () => queue(() => nextConfigManager.handleEvent(FileEvent.Modified)),
       () => treeProvider?.refresh(),
     ],
     onChange: [
-      () =>
-        queue(() =>
-          nextConfigManager.handleEvent(nextConfigManager.FileEvent.Modified),
-        ),
+      () => queue(() => nextConfigManager.handleEvent(FileEvent.Modified)),
       () => treeProvider?.refresh(),
     ],
     onDelete: [
-      () =>
-        queue(() =>
-          nextConfigManager.handleEvent(nextConfigManager.FileEvent.Modified),
-        ),
+      () => queue(() => nextConfigManager.handleEvent(FileEvent.Modified)),
       () => treeProvider?.refresh(),
     ],
   })
@@ -47,17 +39,13 @@ export function setWatchers(treeProvider?: any) {
     pattern: '**/next.symlink.config.json',
     onChange: (uri) => {
       if (isRootFile(uri, 'next.symlink.config.json')) {
-        queue(() =>
-          nextConfigManager.handleEvent(nextConfigManager.FileEvent.Modified),
-        )
+        queue(() => nextConfigManager.handleEvent(FileEvent.Modified))
         treeProvider?.refresh()
       }
     },
     onDelete: (uri) => {
       if (isRootFile(uri, 'next.symlink.config.json')) {
-        queue(() =>
-          nextConfigManager.handleEvent(nextConfigManager.FileEvent.Deleted),
-        )
+        queue(() => nextConfigManager.handleEvent(FileEvent.Deleted))
         treeProvider?.refresh()
       }
     },

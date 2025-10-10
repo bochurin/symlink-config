@@ -1,9 +1,11 @@
 import { info } from '../../shared/vscode'
 import { make } from './make'
 import { needsRegenerate } from './needs-regenerate'
-import { FileEvent } from './types'
+import { FileEvent } from '../shared/types'
 
-export async function handleEvent(event: FileEvent) {
+export async function handleEvent(
+  event: FileEvent.Modified | FileEvent.Deleted,
+) {
   const needsRegen = event === FileEvent.Deleted || needsRegenerate()
 
   if (needsRegen) {
