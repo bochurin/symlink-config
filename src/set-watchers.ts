@@ -1,11 +1,11 @@
 import * as vscode from 'vscode'
-import { useFileWatcher, useConfigWatcher } from './hooks'
+import { useFileWatcher, FileWatchEvent } from './hooks/use-file-watcher'
+import { useConfigWatcher } from './hooks/use-config-watcher'
 import { getWorkspaceRoot } from './state'
 import * as gitignoreManager from './managers/gitignore'
 import * as nextConfigManager from './managers/next-config'
 import * as symlinkConfigManager from './managers/symlink-config'
 import * as fileExcludeManager from './managers/file-exclude'
-import { FileEvent } from './managers'
 
 export function setWatchers(treeProvider?: any) {
   let processingQueue = Promise.resolve()
@@ -21,63 +21,57 @@ export function setWatchers(treeProvider?: any) {
 
   const symlinkConfigWatcher = useFileWatcher({
     pattern: '**/symlink.config.json',
-    onCreate: [
-      () => queue(() => nextConfigManager.handleEvent(FileEvent.Modified)),
-      () => treeProvider?.refresh(),
-    ],
-    onChange: [
-      () => queue(() => nextConfigManager.handleEvent(FileEvent.Modified)),
-      () => treeProvider?.refresh(),
-    ],
-    onDelete: [
-      () => queue(() => nextConfigManager.handleEvent(FileEvent.Modified)),
-      () => treeProvider?.refresh(),
-    ],
+    events: {
+      on: [
+        FileWatchEvent.Created,
+        FileWatchEvent.Modified,
+        FileWatchEvent.Deleted,
+      ],
+      handler: [
+        () =>
+          queue(() => nextConfigManager.handleEvent(FileWatchEvent.Modified)),
+        () => treeProvider?.refresh(),
+      ],
+    },
   })
 
   const nextConfigWatcher = useFileWatcher({
     pattern: '**/next.symlink.config.json',
-    onChange: (uri) => {
-      if (isRootFile(uri, 'next.symlink.config.json')) {
-        queue(() => nextConfigManager.handleEvent(FileEvent.Modified))
-        treeProvider?.refresh()
-      }
-    },
-    onDelete: (uri) => {
-      if (isRootFile(uri, 'next.symlink.config.json')) {
-        queue(() => nextConfigManager.handleEvent(FileEvent.Deleted))
-        treeProvider?.refresh()
-      }
+    events: {
+      on: [FileWatchEvent.Modified, FileWatchEvent.Deleted],
+      handler: (uri, event) => {
+        if (isRootFile(uri, 'next.symlink.config.json')) {
+          queue(() => nextConfigManager.handleEvent(event))
+          treeProvider?.refresh()
+        }
+      },
     },
   })
 
   const currentConfigWatcher = useFileWatcher({
     pattern: '**/current-symlink.config.json',
-    onCreate: (uri) => {
-      if (isRootFile(uri, 'current-symlink.config.json')) {
-        treeProvider?.refresh()
-      }
-    },
-    onChange: (uri) => {
-      if (isRootFile(uri, 'current-symlink.config.json')) {
-        treeProvider?.refresh()
-      }
-    },
-    onDelete: (uri) => {
-      if (isRootFile(uri, 'current-symlink.config.json')) {
-        treeProvider?.refresh()
-      }
+    events: {
+      on: [
+        FileWatchEvent.Created,
+        FileWatchEvent.Modified,
+        FileWatchEvent.Deleted,
+      ],
+      handler: (uri) => {
+        if (isRootFile(uri, 'current-symlink.config.json')) {
+          treeProvider?.refresh()
+        }
+      },
     },
   })
 
   const gitignoreWatcher = useFileWatcher({
     pattern: '**/.gitignore',
-    onChange: (uri) =>
-      isRootFile(uri, '.gitignore') &&
-      queue(() => gitignoreManager.handleEvent()),
-    onDelete: (uri) =>
-      isRootFile(uri, '.gitignore') &&
-      queue(() => gitignoreManager.handleEvent()),
+    events: {
+      on: [FileWatchEvent.Modified, FileWatchEvent.Deleted],
+      handler: (uri) =>
+        isRootFile(uri, '.gitignore') &&
+        queue(() => gitignoreManager.handleEvent()),
+    },
   })
 
   const configWatcher = useConfigWatcher({

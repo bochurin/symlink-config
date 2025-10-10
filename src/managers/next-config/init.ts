@@ -1,6 +1,6 @@
+import { FileWatchEvent } from '../../hooks/use-file-watcher'
 import { handleEvent } from './handle-event'
-import { FileEvent } from '../shared/types'
 
 export async function init() {
-  await handleEvent(FileEvent.Modified)
+  await handleEvent(FileWatchEvent.Modified)
 }

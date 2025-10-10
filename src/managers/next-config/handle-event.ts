@@ -1,12 +1,10 @@
+import { FileWatchEvent } from '../../hooks/use-file-watcher'
 import { info } from '../../shared/vscode'
 import { make } from './make'
 import { needsRegenerate } from './needs-regenerate'
-import { FileEvent } from '../shared/types'
 
-export async function handleEvent(
-  event: FileEvent.Modified | FileEvent.Deleted,
-) {
-  const needsRegen = event === FileEvent.Deleted || needsRegenerate()
+export async function handleEvent(event: FileWatchEvent) {
+  const needsRegen = event === FileWatchEvent.Deleted || needsRegenerate()
 
   if (needsRegen) {
     info(`next.symlink.config.json was ${event}. Regenerating...`)
