@@ -2,9 +2,7 @@ import * as vscode from 'vscode'
 
 import * as state from './state'
 
-import * as gitignoreManager from './managers/gitignore'
-import * as nextConfigManager from './managers/next-config'
-import * as fileExcludeManager from './managers/file-exclude'
+import { initGitignore, initNextConfig, initFileExclude } from './managers'
 
 import { setWatchers } from './set-watchers'
 import { SymlinkTreeProvider } from './views/symlink-tree'
@@ -33,9 +31,9 @@ async function initializeExtension(treeProvider?: any) {
   console.log('ROOT:', workspaceRoot)
 
   await Promise.all([
-    fileExcludeManager.init(), //
-    gitignoreManager.init(), //
-    nextConfigManager.init(), //
+    initFileExclude(), //
+    initGitignore(), //
+    initNextConfig(), //
   ])
 
   const dispose = setWatchers(treeProvider)

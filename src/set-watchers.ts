@@ -2,10 +2,12 @@ import * as vscode from 'vscode'
 import { useFileWatcher, FileWatchEvent } from './hooks/use-file-watcher'
 import { useConfigWatcher } from './hooks/use-config-watcher'
 import { getWorkspaceRoot } from './state'
-import * as gitignoreManager from './managers/gitignore'
-import * as nextConfigManager from './managers/next-config'
-import * as symlinkConfigManager from './managers/symlink-config'
-import * as fileExcludeManager from './managers/file-exclude'
+import { 
+  handleGitignoreEvent, 
+  handleNextConfigEvent, 
+  handleSymlinkConfigEvent, 
+  handleFileExcludeEvent 
+} from './managers'
 
 export function setWatchers(treeProvider?: any) {
   let processingQueue = Promise.resolve()
@@ -29,7 +31,7 @@ export function setWatchers(treeProvider?: any) {
       ],
       handler: [
         () =>
-          queue(() => nextConfigManager.handleEvent(FileWatchEvent.Modified)),
+          queue(() => handleNextConfigEvent(FileWatchEvent.Modified)),
         () => treeProvider?.refresh(),
       ],
     },
@@ -41,7 +43,7 @@ export function setWatchers(treeProvider?: any) {
       on: [FileWatchEvent.Modified, FileWatchEvent.Deleted],
       handler: (uri, event) => {
         if (isRootFile(uri, 'next.symlink.config.json')) {
-          queue(() => nextConfigManager.handleEvent(event))
+          queue(() => handleNextConfigEvent(event))
           treeProvider?.refresh()
         }
       },
@@ -70,7 +72,7 @@ export function setWatchers(treeProvider?: any) {
       on: [FileWatchEvent.Modified, FileWatchEvent.Deleted],
       handler: (uri) =>
         isRootFile(uri, '.gitignore') &&
-        queue(() => gitignoreManager.handleEvent()),
+        queue(() => handleGitignoreEvent()),
     },
   })
 
@@ -83,7 +85,7 @@ export function setWatchers(treeProvider?: any) {
             parameter: 'gitignoreServiceFiles',
             onChange: (section, parameter, payload) => {
               queue(() =>
-                symlinkConfigManager.handleEvent(section, parameter, payload),
+                handleSymlinkConfigEvent(section, parameter, payload),
               )
             },
           },
@@ -91,7 +93,7 @@ export function setWatchers(treeProvider?: any) {
             parameter: 'hideServiceFiles',
             onChange: (section, parameter, payload) => {
               queue(() =>
-                symlinkConfigManager.handleEvent(section, parameter, payload),
+                handleSymlinkConfigEvent(section, parameter, payload),
               )
             },
           },
@@ -99,7 +101,7 @@ export function setWatchers(treeProvider?: any) {
             parameter: 'hideSymlinkConfigs',
             onChange: (section, parameter, payload) => {
               queue(() =>
-                symlinkConfigManager.handleEvent(section, parameter, payload),
+                handleSymlinkConfigEvent(section, parameter, payload),
               )
             },
           },
@@ -110,7 +112,7 @@ export function setWatchers(treeProvider?: any) {
         parameters: {
           parameter: 'exclude',
           onChange: () => {
-            queue(() => fileExcludeManager.handleEvent())
+            queue(() => handleFileExcludeEvent())
           },
         },
       },
