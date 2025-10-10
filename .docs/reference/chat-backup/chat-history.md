@@ -325,3 +325,143 @@ const configEntries = new Map<string, SymlinkEntry & { status: SymlinkStatus }>(
 - Testing and refinement (Phase 2)
 - Performance optimization for large projects
 - VSCode Marketplace preparation
+
+## Session 6: Manager Architecture Refactoring and Import System Improvements (10.10.2025)
+
+### Context
+- Continued from Phase 1.23 completion
+- Focus on code organization, import system improvements, and manager architecture refactoring
+- Major restructuring of manager folders and import patterns
+
+### Key Developments
+
+#### Manager Folder Renaming
+- **Descriptive Naming**: Renamed all manager folders with descriptive suffixes for better clarity
+- **Self-Documenting Structure**: Folder names now clearly indicate their purpose and responsibilities
+- **Consistent Patterns**: Applied uniform naming convention across all managers
+
+```
+managers/gitignore/           → managers/gitignore-file/
+managers/next-config/         → managers/next-config-file/
+managers/file-exclude/        → managers/file-exclude-settings/
+managers/symlink-config/      → managers/symlink-settings/
+```
+
+#### Import System Refactoring
+- **Eliminated Namespace Imports**: Replaced `* as managerName` pattern with direct function imports
+- **Clean Function Access**: Direct imports with descriptive aliases for better clarity
+- **Better Tree Shaking**: Webpack can now optimize imports more effectively
+- **Consistent Patterns**: Unified import style across all modules
+
+```typescript
+// Before: Artificial namespacing
+import * as gitignoreManager from './managers/gitignore'
+gitignoreManager.handleEvent()
+
+// After: Direct imports
+import { handleEvent as handleGitignoreEvent } from './managers/gitignore-file'
+handleGitignoreEvent()
+```
+
+#### File Watcher Hook Enhancements
+- **Event Parameter Passing**: Enhanced Handler type to pass actual event information to handlers
+- **Flexible Syntax**: Support for both single object and array syntax in event configuration
+- **Type Safety**: Improved type definitions with FileWatchEvent enum
+- **Better API**: More intuitive and powerful file watching interface
+
+```typescript
+// Enhanced Handler with event parameter
+type Handler = (uri: vscode.Uri, event: FileWatchEvent) => void
+
+// Flexible event syntax
+events?: {
+  on: FileWatchEvent | FileWatchEvent[]
+  handler: Handler | Handler[]
+} | Array<{...}>
+```
+
+#### Type System Improvements
+- **Semantic Naming**: Renamed types for better clarity and self-documentation
+- **FileEvent → FileWatchEvent**: More descriptive enum name for file system events
+- **GenerationMode → ExclusionPart**: Better semantic meaning for file exclusion types
+- **Consistent Conventions**: Applied uniform naming patterns across type system
+
+#### Cross-Manager Dependencies
+- **Clean Imports**: Updated all cross-manager imports to use new folder structure
+- **Direct Function Access**: Eliminated artificial namespacing in favor of explicit imports
+- **Maintained Functionality**: All existing functionality preserved during refactoring
+
+### Technical Achievements
+
+#### Code Quality Improvements
+- **Self-Documenting Code**: Folder names clearly indicate manager responsibilities
+- **Cleaner Imports**: No artificial namespacing, direct function access
+- **Better Maintainability**: Clear separation of concerns with descriptive naming
+- **Consistent Patterns**: Unified import style across all modules
+
+#### Performance Enhancements
+- **Better Tree Shaking**: Webpack optimization with explicit imports
+- **Reduced Bundle Size**: Elimination of unused code through direct imports
+- **Faster Compilation**: Direct imports are more efficient than namespace imports
+
+#### Developer Experience
+- **Intuitive Navigation**: Descriptive folder names aid code understanding
+- **Explicit Dependencies**: Clear function imports show what's being used
+- **Better IntelliSense**: Direct imports provide superior autocomplete support
+
+### Implementation Process
+
+#### Phase 1: Folder Structure Refactoring
+1. Renamed all manager folders with descriptive suffixes
+2. Updated all import paths throughout the codebase
+3. Verified compilation and functionality preservation
+
+#### Phase 2: Import System Modernization
+1. Replaced namespace imports with direct function imports
+2. Updated all usage sites to use new import patterns
+3. Enhanced file watcher hook with event parameter passing
+
+#### Phase 3: Type System Enhancement
+1. Renamed enums for better semantic clarity
+2. Updated all references to use new type names
+3. Improved type safety throughout the system
+
+### Migration Impact
+
+#### Breaking Changes
+- All import paths changed due to folder renaming
+- Type names updated for better semantics
+- Import style changed from namespace to direct imports
+
+#### Compatibility Preservation
+- All functionality maintained during refactoring
+- No changes to public API or user-facing features
+- Successful compilation verification
+
+### Technical Achievements
+- ✅ **Descriptive Architecture**: Self-documenting folder structure with clear responsibilities
+- ✅ **Modern Import System**: Direct function imports replacing artificial namespacing
+- ✅ **Enhanced File Watchers**: Event parameter passing with flexible syntax support
+- ✅ **Improved Type Safety**: Semantic type naming and better TypeScript integration
+- ✅ **Performance Optimization**: Better tree-shaking and reduced bundle size
+- ✅ **Developer Experience**: Intuitive navigation and explicit dependency management
+
+### Version Progression
+- **0.0.28**: Import path fixes and manager re-export completion
+- **0.0.29**: Manager folder renaming and import system refactoring
+
+### Current Status
+**Phase 1.24 Complete** - Manager Architecture Refactoring and Import System Improvements
+
+- Complete manager folder renaming with descriptive suffixes
+- Direct function imports replacing namespace imports throughout codebase
+- Enhanced file watcher hook with event parameter passing
+- Improved type system with semantic naming conventions
+- Better webpack tree-shaking and performance optimization
+- Maintained all existing functionality while improving code organization
+
+### Next Development Focus
+- Core symlink operations testing and validation
+- Cross-platform compatibility verification
+- Performance testing with large projects
+- VSCode Marketplace preparation and publishing
