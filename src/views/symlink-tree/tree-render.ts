@@ -43,7 +43,7 @@ export function renderTree(
     let tooltip: string | undefined
     if (treeNode.isSymlinkLeaf) {
       switch (treeNode.symlinkStatus) {
-        case 'new': //TODO: Why it's always "new"
+        case 'new':
           tooltip = 'New symlink will be created by next configuration'
           break
         case 'deleted':
