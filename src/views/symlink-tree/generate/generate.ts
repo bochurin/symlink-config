@@ -53,13 +53,22 @@ function addToTree(
   let iconPath = '.'
   for (let i = 0; i < pathParts.length; i++) {
     const pathPart = pathParts[i]
-    // the last part of splited path is symlink
     const isSymlinkLeaf = i === pathParts.length - 1
     iconPath = path.posix.join(iconPath, pathPart)
 
-    // Using pathPart as key to ensure unique tree nodes
-    if (!currentTree[pathPart]) {
-      currentTree[pathPart] = {
+    let key = pathPart
+    // For source tree base, make unique keys for leaves to handle multiple targets per source
+    if (isSymlinkLeaf && treeBase === 'sources') {
+      let counter = 1
+      const baseKey = pathPart
+      while (currentTree[key]) {
+        key = `${baseKey}#${counter}`
+        counter++
+      }
+    }
+
+    if (!currentTree[key]) {
+      currentTree[key] = {
         children: {},
         type: isSymlinkLeaf ? configEntry.type : 'dir',
         isSymlinkLeaf: isSymlinkLeaf,
@@ -68,10 +77,10 @@ function addToTree(
         iconPath: isSymlinkLeaf ? configEntry.source : iconPath,
         configPath: isSymlinkLeaf ? configEntry.configPath : undefined,
         symlinkStatus: isSymlinkLeaf ? configEntry.symlinkStatus : 'unchanged',
+        displayName: pathPart, // Store original name without suffix
       }
     }
 
-    // Using pathPart for tree navigation to maintain correct structure
-    currentTree = currentTree[pathPart].children
+    currentTree = currentTree[key].children
   }
 }

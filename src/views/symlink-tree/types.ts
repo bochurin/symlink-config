@@ -34,4 +34,5 @@ export interface TreeNode {
   iconPath?: string
   configPath?: string
   symlinkStatus?: SymlinkStatus
+  displayName?: string
 }

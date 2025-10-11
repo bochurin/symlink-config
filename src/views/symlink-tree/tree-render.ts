@@ -11,6 +11,7 @@ export function renderTree(
 
   for (const [key, treeNode] of Object.entries(tree)) {
     const hasChildren = Object.keys(treeNode.children).length > 0
+    const displayName = treeNode.displayName || key
 
     let label: string
     if (treeNode.isSymlinkLeaf) {
@@ -24,13 +25,13 @@ export function renderTree(
 
       if (treeBase === 'targets') {
         // Target view: source → target (symlink)
-        label = `${key} ←🔗${statusIcon}← ${treeNode.linkedPath}`
+        label = `${displayName} ←🔗${statusIcon}← ${treeNode.linkedPath}`
       } else {
         // Source view: source → target (symlink)
-        label = `${key} →${statusIcon}🔗→ ${treeNode.linkedPath}`
+        label = `${displayName} →${statusIcon}🔗→ ${treeNode.linkedPath}`
       }
     } else {
-      label = `${key}`
+      label = `${displayName}`
     }
 
     const collapsibleState = hasChildren
