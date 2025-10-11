@@ -3,6 +3,8 @@ export const FILE_NAMES = {
   SYMLINK_CONFIG: 'symlink.config.json',
   NEXT_SYMLINK_CONFIG: 'next.symlink.config.json',
   CURRENT_SYMLINK_CONFIG: 'current.symlink.config.json',
+  APPLY_SYMLINKS_BAT: 'apply.symlinks.config.bat',
+  RUN_ADMIN_BAT: 'admin.symlink.config.bat',
   GITIGNORE: '.gitignore',
 } as const
 

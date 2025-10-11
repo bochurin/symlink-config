@@ -1,4 +1,5 @@
 import * as symlinkConfigManager from '../symlink-settings'
+import { FILE_NAMES } from '../../shared/constants'
 
 export async function generate(): Promise<
   Record<string, { spacing: string; active: boolean }>
@@ -10,7 +11,19 @@ export async function generate(): Promise<
     const gitignoreServiceFiles = symlinkConfigManager.read(
       'gitignoreServiceFiles',
     )
-    generatedEntries['next.symlink.config.json'] = {
+    generatedEntries[FILE_NAMES.NEXT_SYMLINK_CONFIG] = {
+      spacing: '',
+      active: gitignoreServiceFiles,
+    }
+    generatedEntries[FILE_NAMES.CURRENT_SYMLINK_CONFIG] = {
+      spacing: '',
+      active: gitignoreServiceFiles,
+    }
+    generatedEntries[FILE_NAMES.APPLY_SYMLINKS_BAT] = {
+      spacing: '',
+      active: gitignoreServiceFiles,
+    }
+    generatedEntries[FILE_NAMES.RUN_ADMIN_BAT] = {
       spacing: '',
       active: gitignoreServiceFiles,
     }

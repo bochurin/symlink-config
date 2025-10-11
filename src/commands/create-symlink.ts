@@ -127,12 +127,11 @@ async function createSymlinkConfig(
     config.files.push(entry)
   }
 
-  // Open config as unsaved document
+  // Write config to file then open it
   const configContent = JSON.stringify(config, null, 2)
-  const document = await vscode.workspace.openTextDocument({
-    content: configContent,
-    language: 'json',
-  })
+  await fs.writeFile(configPath, configContent, 'utf8')
+  
+  const document = await vscode.workspace.openTextDocument(configPath)
   await vscode.window.showTextDocument(document)
 
   info(`Symlink config created: ${sourceName} → @${sourcePath}`)
