@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 import { getWorkspaceRoot } from '../state'
+import { FILE_NAMES } from '../shared/constants'
 
 export async function openSymlinkConfig(treeItem: any) {
   const workspaceRoot = getWorkspaceRoot()
@@ -10,7 +11,7 @@ export async function openSymlinkConfig(treeItem: any) {
   const configPath = path.join(
     workspaceRoot,
     targetFolder,
-    'symlink.config.json',
+    FILE_NAMES.SYMLINK_CONFIG,
   )
 
   try {
@@ -18,7 +19,7 @@ export async function openSymlinkConfig(treeItem: any) {
     await vscode.window.showTextDocument(document)
   } catch (error) {
     vscode.window.showErrorMessage(
-      `Could not open symlink.config.json: ${error}`,
+      `Could not open ${FILE_NAMES.SYMLINK_CONFIG}: ${error}`,
     )
   }
 }

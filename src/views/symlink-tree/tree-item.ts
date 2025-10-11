@@ -40,8 +40,7 @@ export class TreeItem extends vscode.TreeItem {
     if (props.tooltip) {
       this.tooltip = props.tooltip
     } else {
-      // TODO: Fix tooltip fallback - should not set tooltip to iconPath, leave undefined instead
-      this.tooltip = props.iconPath
+      this.tooltip = ''
     }
   }
 }

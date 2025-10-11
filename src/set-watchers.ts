@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import { useFileWatcher, FileWatchEvent } from './hooks/use-file-watcher'
 import { useConfigWatcher } from './hooks/use-config-watcher'
 import { getWorkspaceRoot } from './state'
+import { FILE_NAMES, CONFIG_SECTIONS, CONFIG_PARAMETERS } from './shared/constants'
 import { handleEvent as handleGitignoreEvent } from './managers/gitignore-file'
 import { handleEvent as handleNextConfigEvent } from './managers/next-config-file'
 import { handleEvent as handleFileExcludeEvent } from './managers/file-exclude-settings'
@@ -20,7 +21,7 @@ export function setWatchers(treeProvider?: any) {
     (processingQueue = processingQueue.then(fn))
 
   const symlinkConfigWatcher = useFileWatcher({
-    pattern: '**/symlink.config.json',
+    pattern: `**/${FILE_NAMES.SYMLINK_CONFIG}`,
     events: {
       on: [
         FileWatchEvent.Created,
@@ -35,11 +36,11 @@ export function setWatchers(treeProvider?: any) {
   })
 
   const nextConfigWatcher = useFileWatcher({
-    pattern: '**/next.symlink.config.json',
+    pattern: `**/${FILE_NAMES.NEXT_SYMLINK_CONFIG}`,
     events: {
       on: [FileWatchEvent.Modified, FileWatchEvent.Deleted],
       handler: (uri, event) => {
-        if (isRootFile(uri, 'next.symlink.config.json')) {
+        if (isRootFile(uri, FILE_NAMES.NEXT_SYMLINK_CONFIG)) {
           queue(() => handleNextConfigEvent(event))
           treeProvider?.refresh()
         }
@@ -48,7 +49,7 @@ export function setWatchers(treeProvider?: any) {
   })
 
   const currentConfigWatcher = useFileWatcher({
-    pattern: '**/current-symlink.config.json',
+    pattern: `**/${FILE_NAMES.CURRENT_SYMLINK_CONFIG}`,
     events: {
       on: [
         FileWatchEvent.Created,
@@ -56,7 +57,7 @@ export function setWatchers(treeProvider?: any) {
         FileWatchEvent.Deleted,
       ],
       handler: (uri) => {
-        if (isRootFile(uri, 'current-symlink.config.json')) {
+        if (isRootFile(uri, FILE_NAMES.CURRENT_SYMLINK_CONFIG)) {
           treeProvider?.refresh()
         }
       },
@@ -64,33 +65,33 @@ export function setWatchers(treeProvider?: any) {
   })
 
   const gitignoreWatcher = useFileWatcher({
-    pattern: '**/.gitignore',
+    pattern: `**/${FILE_NAMES.GITIGNORE}`,
     events: {
       on: [FileWatchEvent.Modified, FileWatchEvent.Deleted],
       handler: (uri) =>
-        isRootFile(uri, '.gitignore') && queue(() => handleGitignoreEvent()),
+        isRootFile(uri, FILE_NAMES.GITIGNORE) && queue(() => handleGitignoreEvent()),
     },
   })
 
   const configWatcher = useConfigWatcher({
     sections: [
       {
-        section: 'symlink-config',
+        section: CONFIG_SECTIONS.SYMLINK_CONFIG,
         parameters: [
           {
-            parameter: 'gitignoreServiceFiles',
+            parameter: CONFIG_PARAMETERS.GITIGNORE_SERVICE_FILES,
             onChange: (section, parameter, payload) => {
               queue(() => handleSymlinkConfigEvent(section, parameter, payload))
             },
           },
           {
-            parameter: 'hideServiceFiles',
+            parameter: CONFIG_PARAMETERS.HIDE_SERVICE_FILES,
             onChange: (section, parameter, payload) => {
               queue(() => handleSymlinkConfigEvent(section, parameter, payload))
             },
           },
           {
-            parameter: 'hideSymlinkConfigs',
+            parameter: CONFIG_PARAMETERS.HIDE_SYMLINK_CONFIGS,
             onChange: (section, parameter, payload) => {
               queue(() => handleSymlinkConfigEvent(section, parameter, payload))
             },
@@ -98,9 +99,9 @@ export function setWatchers(treeProvider?: any) {
         ],
       },
       {
-        section: 'files',
+        section: CONFIG_SECTIONS.FILES,
         parameters: {
-          parameter: 'exclude',
+          parameter: CONFIG_PARAMETERS.EXCLUDE,
           onChange: () => {
             queue(() => handleFileExcludeEvent())
           },

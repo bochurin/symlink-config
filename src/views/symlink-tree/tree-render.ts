@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import { treeBase, TreeNode } from './types'
 import { TreeItem } from './tree-item'
+import { FILE_NAMES } from '../../shared/constants'
 
 export function renderTree(
   tree: Record<string, TreeNode>,
@@ -12,18 +13,23 @@ export function renderTree(
     const hasChildren = Object.keys(treeNode.children).length > 0
 
     let label: string
-    // let icon: string
     if (treeNode.isSymlinkLeaf) {
-      // icon = node.type === 'dir' ? '📁' : '📄'
+      // Add status icons for symlink leaves
+      const statusIcon =
+        treeNode.symlinkStatus === 'new'
+          ? '➕'
+          : treeNode.symlinkStatus === 'deleted'
+            ? '❌'
+            : ''
+
       if (treeBase === 'targets') {
         // Target view: source → target (symlink)
-        label = ` ${key} ←🔗← ${treeNode.linkedPath}`
+        label = `${key} ←🔗${statusIcon}← ${treeNode.linkedPath}`
       } else {
         // Source view: source → target (symlink)
-        label = `${key} →🔗→ ${treeNode.linkedPath}`
+        label = `${key} →${statusIcon}🔗→ ${treeNode.linkedPath}`
       }
     } else {
-      // icon = '📂'
       label = `${key}`
     }
 
@@ -33,19 +39,24 @@ export function renderTree(
         ? vscode.TreeItemCollapsibleState.Collapsed
         : vscode.TreeItemCollapsibleState.None
 
-    let tooltip = ''
-    switch (treeNode.symlinkStatus) {
-      case 'new':
-        tooltip = 'New symlink will be created by next configuration'
-        break
-      case 'deleted':
-        tooltip = 'Will be removed when next configuration is applied'
-        break
-      case 'unchanged':
-      default:
+    let tooltip: string | undefined
+    if (treeNode.isSymlinkLeaf) {
+      switch (treeNode.symlinkStatus) {
+        case 'new': //TODO: Why it's always "new"
+          tooltip = 'New symlink will be created by next configuration'
+          break
+        case 'deleted':
+          tooltip = 'Will be removed when next configuration is applied'
+          break
+        case 'unchanged':
+          tooltip = 'Symlink is up to date'
+          break
+        default:
+          tooltip = ''
+      }
     }
     if (treeNode.configPath) {
-      tooltip = `${tooltip}\nDefined in: ${treeNode.configPath}/symlink.config.json`
+      tooltip = `${tooltip}\nDefined in: ${treeNode.configPath}/${FILE_NAMES.SYMLINK_CONFIG}`
     }
 
     const item = new TreeItem(
