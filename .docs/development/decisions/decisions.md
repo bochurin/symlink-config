@@ -11,6 +11,7 @@
 - **[Hook Interface Improvements](hook-interface-improvements.md)** - Simplified hooks with automatic detection and cleaner APIs
 - **[Shared Configuration Operations](shared-configuration-operations.md)** - Centralized workspace configuration management with type safety
 - **[Async File Operations](async-file-operations.md)** - Migration to async file operations for consistency and performance
+- **[Windows Batch Script Optimization](windows-batch-script-optimization.md)** - Array-based script generation with proper line endings and error handling
 
 ## Development Process
 
