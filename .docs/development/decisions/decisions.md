@@ -12,6 +12,7 @@
 - **[Shared Configuration Operations](shared-configuration-operations.md)** - Centralized workspace configuration management with type safety
 - **[Async File Operations](async-file-operations.md)** - Migration to async file operations for consistency and performance
 - **[Windows Batch Script Optimization](windows-batch-script-optimization.md)** - Array-based script generation with proper line endings and error handling
+- **[Unix Script Generation](unix-script-generation.md)** - Cross-platform script consistency with standalone usage capability
 
 ## Development Process
 
