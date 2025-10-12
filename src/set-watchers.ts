@@ -1,8 +1,12 @@
-import * as vscode from 'vscode'
 import { useFileWatcher, FileWatchEvent } from './hooks/use-file-watcher'
+import { isRootFile, isSymlink } from './shared/file-ops'
 import { useConfigWatcher } from './hooks/use-config-watcher'
-import { getWorkspaceRoot } from './state'
-import { FILE_NAMES, CONFIG_SECTIONS, CONFIG_PARAMETERS } from './shared/constants'
+
+import {
+  FILE_NAMES,
+  CONFIG_SECTIONS,
+  CONFIG_PARAMETERS,
+} from './shared/constants'
 import { handleEvent as handleGitignoreEvent } from './managers/gitignore-file'
 import { handleEvent as handleNextConfigEvent } from './managers/next-config-file'
 import { handleEvent as handleCurrentConfigEvent } from './managers/current-config'
@@ -11,12 +15,6 @@ import { handleEvent as handleSymlinkConfigEvent } from './managers/symlink-sett
 
 export function setWatchers(treeProvider?: any) {
   let processingQueue = Promise.resolve()
-
-  const isRootFile = (uri: vscode.Uri, filename: string) => {
-    const root = getWorkspaceRoot()
-    const path = uri.fsPath.split('\\').join('/') + '/'
-    return path === root + filename + '/'
-  }
 
   const queue = (fn: () => Promise<void>) =>
     (processingQueue = processingQueue.then(fn))
@@ -38,60 +36,47 @@ export function setWatchers(treeProvider?: any) {
 
   const nextConfigWatcher = useFileWatcher({
     pattern: `**/${FILE_NAMES.NEXT_SYMLINK_CONFIG}`,
+    filter: (uri, event) => isRootFile(uri),
     events: {
       on: [FileWatchEvent.Modified, FileWatchEvent.Deleted],
       handler: (uri, event) => {
-        if (isRootFile(uri, FILE_NAMES.NEXT_SYMLINK_CONFIG)) {
-          queue(() => handleNextConfigEvent(event))
-          treeProvider?.refresh()
-        }
+        queue(() => handleNextConfigEvent(event))
+        treeProvider?.refresh()
       },
     },
   })
 
   const currentConfigWatcher = useFileWatcher({
     pattern: `**/${FILE_NAMES.CURRENT_SYMLINK_CONFIG}`,
+    filter: (uri, event) => isRootFile(uri),
     events: {
       on: [
         FileWatchEvent.Created,
         FileWatchEvent.Modified,
         FileWatchEvent.Deleted,
       ],
-      handler: (uri) => {
-        if (isRootFile(uri, FILE_NAMES.CURRENT_SYMLINK_CONFIG)) {
-          treeProvider?.refresh()
-        }
-      },
+      handler: () => treeProvider?.refresh(),
     },
   })
 
   const gitignoreWatcher = useFileWatcher({
     pattern: `**/${FILE_NAMES.GITIGNORE}`,
+    filter: (uri, event) => isRootFile(uri),
     events: {
       on: [FileWatchEvent.Modified, FileWatchEvent.Deleted],
-      handler: (uri) =>
-        isRootFile(uri, FILE_NAMES.GITIGNORE) && queue(() => handleGitignoreEvent()),
+      handler: () => queue(() => handleGitignoreEvent()),
     },
   })
 
-  // Watch all files for symlink changes
+  // Watch all files for symlink changes with debouncing
   const symlinkWatcher = useFileWatcher({
     pattern: '**/*',
+    debounce: 1000, // 1 second debounce
+    filter: (uri, event) => isSymlink(uri),
     events: {
       on: [FileWatchEvent.Created, FileWatchEvent.Deleted],
-      handler: async (uri) => {
-        try {
-          const stats = await vscode.workspace.fs.stat(uri)
-          if (stats.type === vscode.FileType.SymbolicLink) {
-            queue(() => handleCurrentConfigEvent('modified'))
-          }
-        } catch {
-          // File might be deleted, check if it was a symlink by triggering regeneration
-          // since we can't check deleted files
-          queue(() => handleCurrentConfigEvent('modified'))
-        }
-      }
-    }
+      handler: () => queue(() => handleCurrentConfigEvent('modified')),
+    },
   })
 
   const configWatcher = useConfigWatcher({

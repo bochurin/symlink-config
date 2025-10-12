@@ -1,3 +1,5 @@
 export * from './read-file'
 export * from './write-file'
 export * from './full-path'
+export * from './is-root-file'
+export * from './is-symlink'

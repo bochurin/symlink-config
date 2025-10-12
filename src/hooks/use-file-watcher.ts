@@ -7,9 +7,15 @@ export enum FileWatchEvent {
 }
 
 type Handler = (uri: vscode.Uri, event: FileWatchEvent) => void
+type Filter = (
+  uri: vscode.Uri,
+  event: FileWatchEvent,
+) => Promise<boolean> | boolean
 
 export interface WatcherConfig {
   pattern: string
+  debounce?: number // milliseconds, if undefined no debouncing
+  filter?: Filter | Filter[] // function(s) to filter events, all must return true
   // Legacy syntax (backward compatibility)
   onCreate?: Handler | Handler[]
   onChange?: Handler | Handler[]
@@ -90,23 +96,51 @@ export function useFileWatcher(
     deleteHandlers.length === 0, // ignoreDeleteEvents
   )
 
+  // Filter and debouncing logic
+  let debounceTimeout: NodeJS.Timeout | undefined
+  const executeHandlers = async (
+    handlers: Handler[],
+    uri: vscode.Uri,
+    event: FileWatchEvent,
+  ) => {
+    // Apply filters if defined
+    if (config.filter) {
+      const filters = Array.isArray(config.filter)
+        ? config.filter
+        : [config.filter]
+      for (const filter of filters) {
+        const passed = await filter(uri, event)
+        if (!passed) return // Skip if any filter returns false
+      }
+    }
+
+    const runHandlers = () => handlers.forEach((handler) => handler(uri, event))
+
+    if (config.debounce) {
+      if (debounceTimeout) {
+        clearTimeout(debounceTimeout)
+      }
+      debounceTimeout = setTimeout(runHandlers, config.debounce)
+    } else {
+      runHandlers()
+    }
+  }
+
   if (createHandlers.length > 0) {
     watcher.onDidCreate((uri) =>
-      createHandlers.forEach((handler) => handler(uri, FileWatchEvent.Created)),
+      executeHandlers(createHandlers, uri, FileWatchEvent.Created),
     )
   }
 
   if (changeHandlers.length > 0) {
     watcher.onDidChange((uri) =>
-      changeHandlers.forEach((handler) =>
-        handler(uri, FileWatchEvent.Modified),
-      ),
+      executeHandlers(changeHandlers, uri, FileWatchEvent.Modified),
     )
   }
 
   if (deleteHandlers.length > 0) {
     watcher.onDidDelete((uri) =>
-      deleteHandlers.forEach((handler) => handler(uri, FileWatchEvent.Deleted)),
+      executeHandlers(deleteHandlers, uri, FileWatchEvent.Deleted),
     )
   }
 
