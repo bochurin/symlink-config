@@ -2,7 +2,7 @@
   "name": "@bochurin/symlink-config",
   "displayName": "symlink.config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.32",
+  "version": "0.0.33",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -89,6 +89,12 @@
           "type": "boolean",
           "default": false,
           "description": "Automatically hide symlink.config.json files from VSCode Explorer."
+        },
+        "symlink-config.scriptGeneration": {
+          "type": "string",
+          "enum": ["windows-only", "unix-only", "both", "auto"],
+          "default": "auto",
+          "description": "Which platforms to generate scripts for. Auto detects current platform."
         }
       }
     },

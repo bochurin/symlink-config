@@ -10,7 +10,7 @@ export async function generate(): Promise<
   try {
     const gitignoreServiceFiles = symlinkConfigManager.read(
       'gitignoreServiceFiles',
-    )
+    ) as boolean
     generatedEntries[FILE_NAMES.NEXT_SYMLINK_CONFIG] = {
       spacing: '',
       active: gitignoreServiceFiles,
@@ -20,6 +20,10 @@ export async function generate(): Promise<
       active: gitignoreServiceFiles,
     }
     generatedEntries[FILE_NAMES.APPLY_SYMLINKS_BAT] = {
+      spacing: '',
+      active: gitignoreServiceFiles,
+    }
+    generatedEntries[FILE_NAMES.APPLY_SYMLINKS_SH] = {
       spacing: '',
       active: gitignoreServiceFiles,
     }

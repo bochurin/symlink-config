@@ -1,0 +1,1 @@
+export { applyConfiguration } from './apply-configuration'

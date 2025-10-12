@@ -4,6 +4,7 @@ export const FILE_NAMES = {
   NEXT_SYMLINK_CONFIG: 'next.symlink.config.json',
   CURRENT_SYMLINK_CONFIG: 'current.symlink.config.json',
   APPLY_SYMLINKS_BAT: 'apply.symlinks.config.bat',
+  APPLY_SYMLINKS_SH: 'apply.symlinks.config.sh',
   RUN_ADMIN_BAT: 'admin.symlink.config.bat',
   GITIGNORE: '.gitignore',
 } as const
@@ -18,5 +19,13 @@ export const CONFIG_PARAMETERS = {
   GITIGNORE_SERVICE_FILES: 'gitignoreServiceFiles',
   HIDE_SERVICE_FILES: 'hideServiceFiles',
   HIDE_SYMLINK_CONFIGS: 'hideSymlinkConfigs',
+  SCRIPT_GENERATION: 'scriptGeneration',
   EXCLUDE: 'exclude',
+} as const
+
+export const SYMLINK_SETTINGS_DEFAULTS = {
+  [CONFIG_PARAMETERS.SCRIPT_GENERATION]: 'auto' as const,
+  [CONFIG_PARAMETERS.GITIGNORE_SERVICE_FILES]: true,
+  [CONFIG_PARAMETERS.HIDE_SERVICE_FILES]: false,
+  [CONFIG_PARAMETERS.HIDE_SYMLINK_CONFIGS]: false,
 } as const
