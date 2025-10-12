@@ -2,6 +2,7 @@ import * as fs from 'fs/promises'
 import * as path from 'path'
 import { getWorkspaceRoot } from '../../state'
 
+
 interface ExistingSymlink {
   target: string
   source: string
@@ -46,13 +47,14 @@ async function scanWorkspaceSymlinks(): Promise<ExistingSymlink[]> {
             const linkTarget = await fs.readlink(fullPath)
             const stats = await fs.stat(fullPath)
             
-            // Convert absolute target to relative from workspace root
-            const absoluteTarget = path.resolve(path.dirname(fullPath), linkTarget)
-            const relativeTarget = path.relative(workspaceRoot, absoluteTarget)
+            // Convert to workspace root relative (@-path)
+            const absoluteSource = path.resolve(path.dirname(fullPath), linkTarget)
+            const relativeSource = path.relative(workspaceRoot, absoluteSource)
+            const sourceTarget = relativeSource.startsWith('..') ? relativeSource : `@${relativeSource.replace(/\\/g, '/')}`
             
             symlinks.push({
               target: `@${relativeEntryPath}`,
-              source: relativeTarget.startsWith('..') ? relativeTarget : `@${relativeTarget.replace(/\\/g, '/')}`,
+              source: sourceTarget,
               type: stats.isDirectory() ? 'dir' : 'file'
             })
           } catch {

@@ -3,7 +3,8 @@ import * as path from 'path'
 import * as fs from 'fs/promises'
 import * as os from 'os'
 import { info } from '../../shared/vscode/info'
-import { FILE_NAMES } from '../../shared/constants'
+import { read as readSymlinkSettings } from '../../managers/symlink-settings'
+import { FILE_NAMES, CONFIG_PARAMETERS } from '../../shared/constants'
 import { SymlinkOperation } from './types'
 
 export async function generateUnixScript(
@@ -28,9 +29,24 @@ export async function generateUnixScript(
       lines.push(`  rm -rf "${targetPath}"`)
       lines.push('fi')
     } else if (op.type === 'create' && op.source) {
-      const sourcePath = op.source.startsWith('@')
-        ? path.join(workspaceRoot, op.source.slice(1))
-        : path.join(workspaceRoot, op.source)
+      // Get path mode setting
+      const pathMode = readSymlinkSettings(CONFIG_PARAMETERS.SYMLINK_PATH_MODE)
+      
+      let sourcePath: string
+      let symlinkSource: string
+      
+      if (pathMode === 'absolute') {
+        sourcePath = op.source.startsWith('@')
+          ? path.join(workspaceRoot, op.source.slice(1))
+          : path.join(workspaceRoot, op.source)
+        symlinkSource = sourcePath
+      } else {
+        // Relative mode - calculate relative path from target to source
+        sourcePath = op.source.startsWith('@')
+          ? path.join(workspaceRoot, op.source.slice(1))
+          : path.join(workspaceRoot, op.source)
+        symlinkSource = path.relative(path.dirname(targetPath), sourcePath)
+      }
 
       // Create target directory if it doesn't exist
       lines.push(`if [ ! -d "${targetDir}" ]; then`)
@@ -41,7 +57,7 @@ export async function generateUnixScript(
       // Check if source exists before creating symlink
       lines.push(`if [ -e "${sourcePath}" ]; then`)
       lines.push(`  echo "Creating ${op.target} -> ${op.source}"`)
-      lines.push(`  ln -sf "${sourcePath}" "${targetPath}"`)
+      lines.push(`  ln -sf "${symlinkSource}" "${targetPath}"`)
       lines.push('else')
       lines.push(`  echo "ERROR: Source not found: ${sourcePath}"`)
       lines.push('fi')

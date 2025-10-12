@@ -3,7 +3,8 @@ import * as path from 'path'
 import * as fs from 'fs/promises'
 import * as os from 'os'
 import { warning } from '../../shared/vscode/warning'
-import { FILE_NAMES } from '../../shared/constants'
+import { read as readSymlinkSettings } from '../../managers/symlink-settings'
+import { FILE_NAMES, CONFIG_PARAMETERS } from '../../shared/constants'
 import { SymlinkOperation } from './types'
 
 export async function generateWindowsScript(
@@ -28,9 +29,24 @@ export async function generateWindowsScript(
       lines.push(`  rmdir "${targetPath}" 2>nul || del "${targetPath}" 2>nul`)
       lines.push(')')
     } else if (op.type === 'create' && op.source) {
-      const sourcePath = op.source.startsWith('@')
-        ? path.join(workspaceRoot, op.source.slice(1))
-        : path.join(workspaceRoot, op.source)
+      // Get path mode setting
+      const pathMode = readSymlinkSettings(CONFIG_PARAMETERS.SYMLINK_PATH_MODE)
+      
+      let sourcePath: string
+      let symlinkSource: string
+      
+      if (pathMode === 'absolute') {
+        sourcePath = op.source.startsWith('@')
+          ? path.join(workspaceRoot, op.source.slice(1))
+          : path.join(workspaceRoot, op.source)
+        symlinkSource = sourcePath
+      } else {
+        // Relative mode - calculate relative path from target to source
+        sourcePath = op.source.startsWith('@')
+          ? path.join(workspaceRoot, op.source.slice(1))
+          : path.join(workspaceRoot, op.source)
+        symlinkSource = path.relative(path.dirname(targetPath), sourcePath)
+      }
 
       // Create target directory if it doesn't exist
       lines.push(`if not exist "${targetDir}" (`)
@@ -42,7 +58,7 @@ export async function generateWindowsScript(
       lines.push(`if exist "${sourcePath}" (`)
       const linkType = op.isDirectory ? '/D' : ''
       lines.push(`  echo Creating ${op.target} -> ${op.source}`)
-      lines.push(`  mklink ${linkType} "${targetPath}" "${sourcePath}"`)
+      lines.push(`  mklink ${linkType} "${targetPath}" "${symlinkSource}"`)
       lines.push(') else (')
       lines.push(`  echo ERROR: Source not found: ${sourcePath}`)
       lines.push(')')

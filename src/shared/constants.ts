@@ -20,11 +20,13 @@ export const CONFIG_PARAMETERS = {
   HIDE_SERVICE_FILES: 'hideServiceFiles',
   HIDE_SYMLINK_CONFIGS: 'hideSymlinkConfigs',
   SCRIPT_GENERATION: 'scriptGeneration',
+  SYMLINK_PATH_MODE: 'symlinkPathMode',
   EXCLUDE: 'exclude',
 } as const
 
 export const SYMLINK_SETTINGS_DEFAULTS = {
   [CONFIG_PARAMETERS.SCRIPT_GENERATION]: 'auto' as const,
+  [CONFIG_PARAMETERS.SYMLINK_PATH_MODE]: 'relative' as const,
   [CONFIG_PARAMETERS.GITIGNORE_SERVICE_FILES]: true,
   [CONFIG_PARAMETERS.HIDE_SERVICE_FILES]: false,
   [CONFIG_PARAMETERS.HIDE_SYMLINK_CONFIGS]: false,

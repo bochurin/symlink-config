@@ -16,6 +16,8 @@ export function read(
       case CONFIG_PARAMETERS.HIDE_SERVICE_FILES:
       case CONFIG_PARAMETERS.HIDE_SYMLINK_CONFIGS:
         return readConfig<boolean>(configKey, SYMLINK_SETTINGS_DEFAULTS[parameter])
+      case CONFIG_PARAMETERS.SYMLINK_PATH_MODE:
+        return readConfig<string>(configKey, SYMLINK_SETTINGS_DEFAULTS[parameter])
     }
   } catch {
     // Return package.json defaults on error

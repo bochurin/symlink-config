@@ -2,7 +2,7 @@
   "name": "@bochurin/symlink-config",
   "displayName": "symlink.config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.34",
+  "version": "0.0.35",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -95,6 +95,12 @@
           "enum": ["windows-only", "unix-only", "both", "auto"],
           "default": "auto",
           "description": "Which platforms to generate scripts for. Auto detects current platform."
+        },
+        "symlink-config.symlinkPathMode": {
+          "type": "string",
+          "enum": ["relative", "absolute"],
+          "default": "relative",
+          "description": "Generate symlinks with relative paths from workspace root or absolute paths."
         }
       }
     },
