@@ -4,6 +4,7 @@ import * as state from './state'
 
 import { init as initGitignore } from './managers/gitignore-file'
 import { init as initNextConfig } from './managers/next-config-file'
+import { init as initCurrentConfig } from './managers/current-config'
 import { init as initFileExclude } from './managers/file-exclude-settings'
 
 import { setWatchers } from './set-watchers'
@@ -36,6 +37,7 @@ async function initializeExtension(treeProvider?: any) {
     initFileExclude(), //
     initGitignore(), //
     initNextConfig(), //
+    initCurrentConfig(), //
   ])
 
   const dispose = setWatchers(treeProvider)

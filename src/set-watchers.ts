@@ -5,6 +5,7 @@ import { getWorkspaceRoot } from './state'
 import { FILE_NAMES, CONFIG_SECTIONS, CONFIG_PARAMETERS } from './shared/constants'
 import { handleEvent as handleGitignoreEvent } from './managers/gitignore-file'
 import { handleEvent as handleNextConfigEvent } from './managers/next-config-file'
+import { handleEvent as handleCurrentConfigEvent } from './managers/current-config'
 import { handleEvent as handleFileExcludeEvent } from './managers/file-exclude-settings'
 import { handleEvent as handleSymlinkConfigEvent } from './managers/symlink-settings'
 
@@ -73,6 +74,26 @@ export function setWatchers(treeProvider?: any) {
     },
   })
 
+  // Watch all files for symlink changes
+  const symlinkWatcher = useFileWatcher({
+    pattern: '**/*',
+    events: {
+      on: [FileWatchEvent.Created, FileWatchEvent.Deleted],
+      handler: async (uri) => {
+        try {
+          const stats = await vscode.workspace.fs.stat(uri)
+          if (stats.type === vscode.FileType.SymbolicLink) {
+            queue(() => handleCurrentConfigEvent('modified'))
+          }
+        } catch {
+          // File might be deleted, check if it was a symlink by triggering regeneration
+          // since we can't check deleted files
+          queue(() => handleCurrentConfigEvent('modified'))
+        }
+      }
+    }
+  })
+
   const configWatcher = useConfigWatcher({
     sections: [
       {
@@ -117,5 +138,6 @@ export function setWatchers(treeProvider?: any) {
     nextConfigWatcher.dispose()
     currentConfigWatcher.dispose()
     symlinkConfigWatcher.dispose()
+    symlinkWatcher.dispose()
   }
 }

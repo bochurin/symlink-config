@@ -16,7 +16,7 @@ export function parseConfig(configText: string): SymlinkConfigEntry[] {
               type: 'dir',
               target: normalizePath(entry.target),
               source: normalizePath(entry.source),
-              configPath: normalizePath(entry.configPath),
+              configPath: entry.configPath ? normalizePath(entry.configPath) : '',
             }) as SymlinkConfigEntry,
         ),
       )
@@ -29,7 +29,7 @@ export function parseConfig(configText: string): SymlinkConfigEntry[] {
               type: 'file',
               target: normalizePath(entry.target),
               source: normalizePath(entry.source),
-              configPath: normalizePath(entry.configPath),
+              configPath: entry.configPath ? normalizePath(entry.configPath) : '',
             }) as SymlinkConfigEntry,
         ),
       )
