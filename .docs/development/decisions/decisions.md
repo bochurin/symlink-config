@@ -13,6 +13,7 @@
 - **[Async File Operations](async-file-operations.md)** - Migration to async file operations for consistency and performance
 - **[Windows Batch Script Optimization](windows-batch-script-optimization.md)** - Array-based script generation with proper line endings and error handling
 - **[Unix Script Generation](unix-script-generation.md)** - Cross-platform script consistency with standalone usage capability
+- **[File Watcher Filter System](file-watcher-filter-system.md)** - Enhanced filtering with debouncing and shared utilities
 
 ## Development Process
 

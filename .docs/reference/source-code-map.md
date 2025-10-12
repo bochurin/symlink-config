@@ -90,11 +90,15 @@
 - `read-file.ts`
 - `write-file.ts`
 - `full-path.ts`
+- `is-root-file.ts`
+- `is-symlink.ts`
 
 **Functions:**
 - `readFile(file: string): string`
 - `writeFile(file: string, content: string): Promise<void>`
 - `fullPath(endPath: string): string`
+- `isRootFile(uri: vscode.Uri): boolean`
+- `isSymlink(uri: vscode.Uri): Promise<boolean>`
 
 ### `src/shared/gitignore-ops/`
 **Files:**
@@ -228,7 +232,8 @@
 **Types:**
 - `FileWatchEvent` enum with Created, Modified, Deleted values
 - `Handler` type: `(uri: vscode.Uri, event: FileWatchEvent) => void`
-- `WatcherConfig` interface with pattern, onCreate?, onChange?, onDelete?, events? properties
+- `Filter` type: `(uri: vscode.Uri, event: FileWatchEvent) => Promise<boolean> | boolean`
+- `WatcherConfig` interface with pattern, debounce?, filter?, onCreate?, onChange?, onDelete?, events? properties
 
 ### `src/hooks/use-config-watcher.ts`
 **Functions:**
@@ -325,7 +330,8 @@
 **Key Patterns:**
 - Manager modules follow consistent structure: generate, handle-event, init, make, read
 - Shared modules provide reusable utilities for config, file, gitignore, and vscode operations
-- Hook modules provide reusable patterns for file watching and configuration watching
+- Hook modules provide reusable patterns for file watching and configuration watching with filtering and debouncing
+- Filter functions use intermediate callbacks to adapt signatures: `(uri, event) => isRootFile(uri)`
 - Type definitions are distributed across modules with clear interfaces
 - Constants are centralized in shared/constants.ts for maintainability
 
@@ -335,3 +341,5 @@
 - Optional properties are marked with ?
 - Union types and enums are documented with their possible values
 - File structure shows clear module boundaries and dependencies
+- Filter functions moved from hooks to shared/file-ops for reusability
+- File watcher enhanced with debouncing and filtering capabilities
