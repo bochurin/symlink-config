@@ -406,11 +406,24 @@ sl-package.json
   - **Type-Safe Manager**: Enhanced symlink-settings manager with union types and centralized defaults
   - **Consistent Workflow**: Same script generation approach across Windows, macOS, and Linux
 
+### ✅ Phase 1.27: Symlink Path Mode Implementation and Documentation Fixes (Completed - 12.10.2025)
+
+- **Date**: 12.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Symlink Path Mode Setting**: Added `symlinkPathMode` configuration with "relative" and "absolute" options
+  - **Current-Config Consistency**: Fixed current-config generator to always use @-paths from workspace root
+  - **Apply-Configuration Enhancement**: Updated script generators to respect path mode setting for actual symlink creation
+  - **Symlink Status Detection**: Fixed tree view to properly show unchanged/new/deleted status instead of all "new"
+  - **Type Safety Improvements**: Removed CONFIG_PARAMETERS.EXCLUDE from SymlinkSettingsParameter type
+  - **Documentation Actualization**: Fixed function name inconsistencies across all documentation files
+  - **Manager Architecture Updates**: Corrected outdated file names and function references in decision documents
+
 ## Current Status
 
-**Phase**: Phase 1.26 Complete - Unix Script Generation and Modular Architecture  
+**Phase**: Phase 1.27 Complete - Symlink Path Mode Implementation and Documentation Fixes  
 **Branch**: `main`  
-**Latest**: Cross-platform script generation with modular architecture and type safety  
+**Latest**: Complete symlink path mode support with documentation consistency  
 **Next**: Cross-platform testing and validation (Phase 2)
 
 **Technical Foundation**:

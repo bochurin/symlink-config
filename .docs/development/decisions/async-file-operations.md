@@ -90,7 +90,7 @@ export async function handleFileEvent(action: string) {
 ```typescript
 // Already async due to VSCode config.update()
 export async function handleConfigChange(section: string, parameter: string, payload: any) {
-  await writeToConfig('files.exclude', newExclusions)
+  await writeConfig('files.exclude', newExclusions)
 }
 ```
 

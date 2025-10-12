@@ -16,21 +16,20 @@ Rewrite gitignore manager to follow identical architecture patterns as next-conf
 
 ### Architecture Consistency
 
-- **build-section.ts**: Pure function returning section content
-- **make-file.ts**: File I/O and state management only
-- **handle-file-event.ts**: Manual change detection using state comparison
-- **read-from-file.ts**: File content extraction
-- **memo.ts**: State synchronization
+- **generate.ts**: Pure function returning section content
+- **make.ts**: File I/O and content writing
+- **handle-event.ts**: Event handling and regeneration logic
+- **read.ts**: File content reading
 - **init.ts**: Initialization wrapper
 
 ### State-Based Change Detection
 
 ```typescript
 // Write Pattern
-makeFile() → buildSection() → writeFile() → memo() → setState()
+make() → generate() → writeFile()
 
 // Change Detection Pattern
-handleFileEvent() → readFromFile() → compare with getState() → regenerate if different
+handleEvent() → read() → compare with generated content → regenerate if different
 ```
 
 ### Section Management

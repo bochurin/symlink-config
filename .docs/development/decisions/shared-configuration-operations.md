@@ -21,10 +21,10 @@ Create shared configuration operations in `src/shared/config-ops/` with generic,
 
 ### Shared Configuration Functions
 
-#### `readFromConfig<T>(parameter: string, defaultValue: T): T`
+#### `readConfig<T>(parameter: string, defaultValue: T): T`
 
 ```typescript
-export function readFromConfig<T>(parameter: string, defaultValue: T): T {
+export function readConfig<T>(parameter: string, defaultValue: T): T {
   try {
     const config = vscode.workspace.getConfiguration()
     return config.get<T>(parameter, defaultValue)
@@ -34,10 +34,10 @@ export function readFromConfig<T>(parameter: string, defaultValue: T): T {
 }
 ```
 
-#### `writeToConfig<T>(parameter: string, value: T): Promise<void>`
+#### `writeConfig<T>(parameter: string, value: T): Promise<void>`
 
 ```typescript
-export async function writeToConfig<T>(parameter: string, value: T): Promise<void> {
+export async function writeConfig<T>(parameter: string, value: T): Promise<void> {
   const config = vscode.workspace.getConfiguration()
   await config.update(parameter, value, vscode.ConfigurationTarget.Workspace)
 }
@@ -47,18 +47,18 @@ export async function writeToConfig<T>(parameter: string, value: T): Promise<voi
 
 ```typescript
 // Type-safe configuration reading
-const manageGitignore = readFromConfig('symlink-config.manageGitignore', true)
-const excludes = readFromConfig<Record<string, boolean>>('files.exclude', {})
+const manageGitignore = readConfig('symlink-config.manageGitignore', true)
+const excludes = readConfig<Record<string, boolean>>('files.exclude', {})
 
 // Consistent configuration writing
-await writeToConfig('files.exclude', newExclusions)
-await writeToConfig('symlink-config.hideServiceFiles', false)
+await writeConfig('files.exclude', newExclusions)
+await writeConfig('symlink-config.hideServiceFiles', false)
 ```
 
 ### Manager Integration
 
-- **Extension.ts**: Uses `readFromConfig()` for startup configuration checks
-- **Set-watchers.ts**: Uses `readFromConfig()` for conditional watcher setup
+- **Extension.ts**: Uses `readConfig()` for startup configuration checks
+- **Set-watchers.ts**: Uses `readConfig()` for conditional watcher setup
 - **Workspace Manager**: Uses both functions for all configuration operations
 - **All Managers**: Export shared config functions through their index files
 
@@ -91,27 +91,27 @@ await writeToConfig('symlink-config.hideServiceFiles', false)
 
 ```typescript
 // Extension-specific settings with dot notation
-readFromConfig('symlink-config.manageGitignore', true)
-readFromConfig('symlink-config.hideServiceFiles', false)
+readConfig('symlink-config.manageGitignore', true)
+readConfig('symlink-config.hideServiceFiles', false)
 ```
 
 ### VSCode Settings
 
 ```typescript
 // Built-in VSCode settings
-readFromConfig<Record<string, boolean>>('files.exclude', {})
-readFromConfig('editor.fontSize', 14)
+readConfig<Record<string, boolean>>('files.exclude', {})
+readConfig('editor.fontSize', 14)
 ```
 
 ### Type Safety Examples
 
 ```typescript
 // Explicit type for complex objects
-const excludes = readFromConfig<Record<string, boolean>>('files.exclude', {})
+const excludes = readConfig<Record<string, boolean>>('files.exclude', {})
 
 // Inferred types for primitives
-const enabled = readFromConfig('symlink-config.manageGitignore', true) // boolean
-const fontSize = readFromConfig('editor.fontSize', 14) // number
+const enabled = readConfig('symlink-config.manageGitignore', true) // boolean
+const fontSize = readConfig('editor.fontSize', 14) // number
 ```
 
 ## Validation Strategy
