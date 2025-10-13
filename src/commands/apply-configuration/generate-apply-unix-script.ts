@@ -1,8 +1,8 @@
 import * as path from 'path'
-import * as fs from 'fs/promises'
 import { read as readSymlinkSettings } from '../../managers/symlink-settings'
 import { FILE_NAMES, CONFIG_PARAMETERS } from '../../shared/constants'
 import { SymlinkOperation } from './types'
+import { writeFile } from '../../shared/file-ops'
 
 export async function generateApplyUnixScript(
   operations: SymlinkOperation[],
@@ -61,5 +61,6 @@ export async function generateApplyUnixScript(
   lines.push('echo "Done!"')
 
   const content = lines.join('\n')
-  await fs.writeFile(scriptPath, content, { encoding: 'utf8', mode: 0o755 })
+  const relativePath = path.relative(workspaceRoot, scriptPath)
+  await writeFile(relativePath, content, 0o755)
 }

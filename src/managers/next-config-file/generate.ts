@@ -1,7 +1,7 @@
-import * as fs from 'fs'
 import * as path from 'path'
 import { Config, ConfigEntry } from './types'
 import { getWorkspaceRoot } from '../../state'
+import { readDir, readFile } from '../../shared/file-ops'
 
 export function generate(): string {
   try {
@@ -19,7 +19,8 @@ function findConfigFiles(): string[] {
 
   function scanDirectory(dir: string) {
     try {
-      const entries = fs.readdirSync(dir, { withFileTypes: true })
+      const relativePath = path.relative(workspaceRoot, dir)
+      const entries = readDir(relativePath || '.')
       for (const entry of entries) {
         const fullPath = path.join(dir, entry.name)
         if (entry.isDirectory()) {
@@ -92,7 +93,8 @@ function pathToAtSyntax(originalPath: string, configDir: string): string {
 
 function loadConfig(configPath: string): Config | null {
   try {
-    const content = fs.readFileSync(configPath, 'utf8')
+    const relativePath = path.relative(getWorkspaceRoot(), configPath)
+    const content = readFile(relativePath)
     return JSON.parse(content)
   } catch (error) {
     console.error(`Failed to load config ${configPath}:`, error)

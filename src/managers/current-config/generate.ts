@@ -1,6 +1,6 @@
-import * as fs from 'fs'
 import * as path from 'path'
 import { getWorkspaceRoot } from '../../state'
+import { readDir, readSymlink, statFile } from '../../shared/file-ops'
 
 
 interface ExistingSymlink {
@@ -35,7 +35,7 @@ function scanWorkspaceSymlinks(): ExistingSymlink[] {
 
   function scanDirectory(dirPath: string, relativePath: string = '') {
     try {
-      const entries = fs.readdirSync(dirPath, { withFileTypes: true })
+      const entries = readDir(relativePath || '.')
       
       for (const entry of entries) {
         const fullPath = path.join(dirPath, entry.name)
@@ -43,8 +43,8 @@ function scanWorkspaceSymlinks(): ExistingSymlink[] {
         
         if (entry.isSymbolicLink()) {
           try {
-            const linkTarget = fs.readlinkSync(fullPath)
-            const stats = fs.statSync(fullPath)
+            const linkTarget = readSymlink(relativeEntryPath)
+            const stats = statFile(relativeEntryPath)
             
             // Convert to workspace root relative (@-path)
             const absoluteSource = path.resolve(path.dirname(fullPath), linkTarget)

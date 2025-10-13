@@ -1,7 +1,7 @@
 import * as path from 'path'
-import * as fs from 'fs/promises'
 import { FILE_NAMES } from '../../shared/constants'
 import { read as readCurrentConfig } from '../../managers/current-config'
+import { writeFile } from '../../shared/file-ops'
 
 export async function generateClearUnixScript(workspaceRoot: string) {
   const scriptPath = path.join(workspaceRoot, FILE_NAMES.CLEAR_SYMLINKS_SH)
@@ -36,5 +36,6 @@ export async function generateClearUnixScript(workspaceRoot: string) {
   lines.push('echo "Done!"')
 
   const content = lines.join('\n')
-  await fs.writeFile(scriptPath, content, { encoding: 'utf8', mode: 0o755 })
+  const relativePath = path.relative(workspaceRoot, scriptPath)
+  await writeFile(relativePath, content, 0o755)
 }
