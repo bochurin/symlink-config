@@ -2,7 +2,7 @@
   "name": "@bochurin/symlink-config",
   "displayName": "symlink.config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.36",
+  "version": "0.0.37",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -60,6 +60,11 @@
         "command": "symlink-config.applyConfiguration",
         "title": "Apply configuration",
         "icon": "$(play)"
+      },
+      {
+        "command": "symlink-config.clearConfiguration",
+        "title": "Clear symlinks",
+        "icon": "$(trash)"
       },
       {
         "command": "symlink-config.collapseAll",
@@ -145,21 +150,27 @@
           "icon": "$(play)"
         },
         {
-          "command": "symlink-config.toggleView",
+          "command": "symlink-config.clearConfiguration",
           "when": "view == symlink-config",
           "group": "navigation@2",
+          "icon": "$(trash)"
+        },
+        {
+          "command": "symlink-config.toggleView",
+          "when": "view == symlink-config",
+          "group": "navigation@3",
           "icon": "$(arrow-swap)"
         },
         {
           "command": "symlink-config.collapseAll",
           "when": "view == symlink-config",
-          "group": "navigation@3",
+          "group": "navigation@4",
           "icon": "$(collapse-all)"
         },
         {
           "command": "symlink-config.openSettings",
           "when": "view == symlink-config",
-          "group": "navigation@4",
+          "group": "navigation@5",
           "icon": "$(gear)"
         },
         {

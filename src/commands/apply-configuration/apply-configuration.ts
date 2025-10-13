@@ -1,16 +1,29 @@
 import * as vscode from 'vscode'
 import * as os from 'os'
+import * as path from 'path'
 import { getWorkspaceRoot } from '../../state'
 import { info } from '../../shared/vscode/info'
 import { generateTree } from '../../views/symlink-tree/generate'
 import { collectSymlinkOperations } from './collect-operations'
-import { generateWindowsScript } from './generate-windows-script'
-import { generateUnixScript } from './generate-unix-script'
+import { generateApplyWindowsScript } from './generate-apply-windows-script'
+import { generateApplyUnixScript } from './generate-apply-unix-script'
 import { read as readSymlinkSettings } from '../../managers/symlink-settings'
-import { CONFIG_PARAMETERS } from '../../shared/constants'
+import { CONFIG_PARAMETERS, FILE_NAMES } from '../../shared/constants'
+import { confirm } from '../../shared/vscode'
+import { generateAdminScript } from './generate-admin-script'
 
 export async function applyConfiguration() {
   const workspaceRoot = getWorkspaceRoot()
+
+  // Confirmation dialog
+  const confirmed = await confirm(
+    'Generate symlink scripts based on configuration?',
+    'Yes, Generate Scripts',
+  )
+
+  if (!confirmed) {
+    return
+  }
 
   try {
     // Generate tree to get symlink operations
@@ -22,18 +35,67 @@ export async function applyConfiguration() {
       return
     }
 
-    const scriptGeneration = readSymlinkSettings(CONFIG_PARAMETERS.SCRIPT_GENERATION)
+    const scriptGeneration = readSymlinkSettings(
+      CONFIG_PARAMETERS.SCRIPT_GENERATION,
+    )
     const isWindows = os.platform() === 'win32'
 
-    const shouldGenerateWindows = scriptGeneration === 'windows-only' || scriptGeneration === 'both' || (scriptGeneration === 'auto' && isWindows)
-    const shouldGenerateUnix = scriptGeneration === 'unix-only' || scriptGeneration === 'both' || (scriptGeneration === 'auto' && !isWindows)
+    const shouldGenerateWindows =
+      scriptGeneration === 'windows-only' ||
+      scriptGeneration === 'both' ||
+      (scriptGeneration === 'auto' && isWindows)
+    const shouldGenerateUnix =
+      scriptGeneration === 'unix-only' ||
+      scriptGeneration === 'both' ||
+      (scriptGeneration === 'auto' && !isWindows)
 
     if (shouldGenerateWindows) {
-      await generateWindowsScript(operations, workspaceRoot)
+      await generateApplyWindowsScript(operations, workspaceRoot)
+      await generateAdminScript(workspaceRoot)
+      const scriptPath = path.join(workspaceRoot, FILE_NAMES.APPLY_SYMLINKS_BAT)
+
+      await vscode.env.clipboard.writeText(path.basename(scriptPath))
+
+      const options = ['Open in Code', 'Run as Admin']
+      const choice = await vscode.window.showInformationMessage(
+        `Apply script generated: ${path.basename(scriptPath)}`,
+        { modal: true },
+        ...options,
+      )
+
+      if (choice === 'Open in Code') {
+        const document = await vscode.workspace.openTextDocument(scriptPath)
+        await vscode.window.showTextDocument(document)
+      } else if (choice === 'Run as Admin') {
+        const adminBatPath = path.join(workspaceRoot, FILE_NAMES.RUN_ADMIN_BAT)
+        const applyBatPath = path.join(workspaceRoot, FILE_NAMES.APPLY_SYMLINKS_BAT)
+        const terminal = vscode.window.createTerminal({ name: 'Run as Admin', cwd: workspaceRoot })
+        terminal.sendText(`"${adminBatPath}" "${applyBatPath}"`)
+        terminal.show()
+      }
     }
-    
+
     if (shouldGenerateUnix) {
-      await generateUnixScript(operations, workspaceRoot)
+      await generateApplyUnixScript(operations, workspaceRoot)
+      const scriptPath = path.join(workspaceRoot, FILE_NAMES.APPLY_SYMLINKS_SH)
+
+      const options = ['Open in Code', 'Run Now']
+      const choice = await vscode.window.showInformationMessage(
+        `Apply script generated: ${path.basename(scriptPath)}`,
+        { modal: true },
+        ...options,
+      )
+
+      if (choice === 'Open in Code') {
+        const document = await vscode.workspace.openTextDocument(scriptPath)
+        await vscode.window.showTextDocument(document)
+      } else if (choice === 'Run Now') {
+        const terminal = vscode.window.createTerminal('Apply Symlinks')
+        terminal.show()
+        terminal.sendText(
+          `cd "${workspaceRoot}" && chmod +x "${path.basename(scriptPath)}" && "./${path.basename(scriptPath)}"`,
+        )
+      }
     }
   } catch (error) {
     vscode.window.showErrorMessage(`Failed to apply configuration: ${error}`)

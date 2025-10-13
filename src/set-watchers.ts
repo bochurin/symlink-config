@@ -39,8 +39,8 @@ export function setWatchers(treeProvider?: any) {
     filter: (uri, event) => isRootFile(uri),
     events: {
       on: [FileWatchEvent.Modified, FileWatchEvent.Deleted],
-      handler: (uri, event) => {
-        queue(() => handleNextConfigEvent(event))
+      handler: (events) => {
+        queue(() => handleNextConfigEvent(events[0].event))
         treeProvider?.refresh()
       },
     },
@@ -71,7 +71,7 @@ export function setWatchers(treeProvider?: any) {
   // Watch all files for symlink changes with debouncing
   const symlinkWatcher = useFileWatcher({
     pattern: '**/*',
-    debounce: 1000, // 1 second debounce
+    debounce: 500,
     filter: (uri, event) => isSymlink(uri),
     events: {
       on: [FileWatchEvent.Created, FileWatchEvent.Deleted],

@@ -6,7 +6,8 @@ export enum FileWatchEvent {
   Deleted = 'Deleted',
 }
 
-type Handler = (uri: vscode.Uri, event: FileWatchEvent) => void
+type FileEventData = { uri: vscode.Uri; event: FileWatchEvent }
+type Handler = (events: FileEventData[]) => void
 type Filter = (
   uri: vscode.Uri,
   event: FileWatchEvent,
@@ -98,6 +99,8 @@ export function useFileWatcher(
 
   // Filter and debouncing logic
   let debounceTimeout: NodeJS.Timeout | undefined
+  let accumulatedEvents: FileEventData[] = []
+  
   const executeHandlers = async (
     handlers: Handler[],
     uri: vscode.Uri,
@@ -114,15 +117,18 @@ export function useFileWatcher(
       }
     }
 
-    const runHandlers = () => handlers.forEach((handler) => handler(uri, event))
-
     if (config.debounce) {
+      accumulatedEvents.push({ uri, event })
       if (debounceTimeout) {
         clearTimeout(debounceTimeout)
       }
-      debounceTimeout = setTimeout(runHandlers, config.debounce)
+      debounceTimeout = setTimeout(() => {
+        const events = [...accumulatedEvents]
+        accumulatedEvents = []
+        handlers.forEach((handler) => handler(events))
+      }, config.debounce)
     } else {
-      runHandlers()
+      handlers.forEach((handler) => handler([{ uri, event }]))
     }
   }
 

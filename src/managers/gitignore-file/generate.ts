@@ -27,6 +27,14 @@ export async function generate(): Promise<
       spacing: '',
       active: gitignoreServiceFiles,
     }
+    generatedEntries[FILE_NAMES.CLEAR_SYMLINKS_BAT] = {
+      spacing: '',
+      active: gitignoreServiceFiles,
+    }
+    generatedEntries[FILE_NAMES.CLEAR_SYMLINKS_SH] = {
+      spacing: '',
+      active: gitignoreServiceFiles,
+    }
     generatedEntries[FILE_NAMES.RUN_ADMIN_BAT] = {
       spacing: '',
       active: gitignoreServiceFiles,

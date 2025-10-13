@@ -5,6 +5,8 @@ export const FILE_NAMES = {
   CURRENT_SYMLINK_CONFIG: 'current.symlink.config.json',
   APPLY_SYMLINKS_BAT: 'apply.symlinks.config.bat',
   APPLY_SYMLINKS_SH: 'apply.symlinks.config.sh',
+  CLEAR_SYMLINKS_BAT: 'clear.symlinks.config.bat',
+  CLEAR_SYMLINKS_SH: 'clear.symlinks.config.sh',
   RUN_ADMIN_BAT: 'admin.symlink.config.bat',
   GITIGNORE: '.gitignore',
 } as const

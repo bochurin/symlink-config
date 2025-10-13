@@ -15,7 +15,11 @@ import {
   cancelSymlinkCreation,
 } from './commands/create-symlink'
 import { openSymlinkConfig } from './commands/open-symlink-config'
-import { applyConfiguration } from './commands/apply-configuration'
+import {
+  applyConfiguration,
+  clearConfiguration,
+} from './commands/apply-configuration'
+
 import { collapseAll } from './commands/tree-operations'
 
 let isInitialized = false
@@ -96,6 +100,10 @@ export async function activate(context: vscode.ExtensionContext) {
     'symlink-config.applyConfiguration',
     applyConfiguration,
   )
+  const clearConfigCommand = vscode.commands.registerCommand(
+    'symlink-config.clearConfiguration',
+    clearConfiguration,
+  )
   const collapseAllCommand = vscode.commands.registerCommand(
     'symlink-config.collapseAll',
     collapseAll,
@@ -106,6 +114,7 @@ export async function activate(context: vscode.ExtensionContext) {
     cancelCommand,
     openConfigCommand,
     applyConfigCommand,
+    clearConfigCommand,
     collapseAllCommand,
   )
 

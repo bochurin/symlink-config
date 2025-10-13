@@ -12,6 +12,8 @@ export function generate(mode: ExclusionPart): Record<string, boolean> {
       generatedExclusions[FILE_NAMES.CURRENT_SYMLINK_CONFIG] = hideServiceFiles
       generatedExclusions[FILE_NAMES.APPLY_SYMLINKS_BAT] = hideServiceFiles
       generatedExclusions[FILE_NAMES.APPLY_SYMLINKS_SH] = hideServiceFiles
+      generatedExclusions[FILE_NAMES.CLEAR_SYMLINKS_BAT] = hideServiceFiles
+      generatedExclusions[FILE_NAMES.CLEAR_SYMLINKS_SH] = hideServiceFiles
       generatedExclusions[FILE_NAMES.RUN_ADMIN_BAT] = hideServiceFiles
     }
 
