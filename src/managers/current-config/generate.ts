@@ -1,4 +1,4 @@
-import * as fs from 'fs/promises'
+import * as fs from 'fs'
 import * as path from 'path'
 import { getWorkspaceRoot } from '../../state'
 
@@ -9,9 +9,8 @@ interface ExistingSymlink {
   type: 'dir' | 'file'
 }
 
-export async function generate(): Promise<string> {
-  const workspaceRoot = getWorkspaceRoot()
-  const symlinks = await scanWorkspaceSymlinks()
+export function generate(): string {
+  const symlinks = scanWorkspaceSymlinks()
   
   const directories = symlinks.filter(s => s.type === 'dir').map(s => ({
     target: s.target,
@@ -30,13 +29,13 @@ export async function generate(): Promise<string> {
   return JSON.stringify(config, null, 2)
 }
 
-async function scanWorkspaceSymlinks(): Promise<ExistingSymlink[]> {
+function scanWorkspaceSymlinks(): ExistingSymlink[] {
   const workspaceRoot = getWorkspaceRoot()
   const symlinks: ExistingSymlink[] = []
 
-  async function scanDirectory(dirPath: string, relativePath: string = '') {
+  function scanDirectory(dirPath: string, relativePath: string = '') {
     try {
-      const entries = await fs.readdir(dirPath, { withFileTypes: true })
+      const entries = fs.readdirSync(dirPath, { withFileTypes: true })
       
       for (const entry of entries) {
         const fullPath = path.join(dirPath, entry.name)
@@ -44,8 +43,8 @@ async function scanWorkspaceSymlinks(): Promise<ExistingSymlink[]> {
         
         if (entry.isSymbolicLink()) {
           try {
-            const linkTarget = await fs.readlink(fullPath)
-            const stats = await fs.stat(fullPath)
+            const linkTarget = fs.readlinkSync(fullPath)
+            const stats = fs.statSync(fullPath)
             
             // Convert to workspace root relative (@-path)
             const absoluteSource = path.resolve(path.dirname(fullPath), linkTarget)
@@ -61,7 +60,7 @@ async function scanWorkspaceSymlinks(): Promise<ExistingSymlink[]> {
             // Skip broken symlinks
           }
         } else if (entry.isDirectory() && !entry.name.startsWith('.')) {
-          await scanDirectory(fullPath, relativeEntryPath)
+          scanDirectory(fullPath, relativeEntryPath)
         }
       }
     } catch {
@@ -69,6 +68,6 @@ async function scanWorkspaceSymlinks(): Promise<ExistingSymlink[]> {
     }
   }
 
-  await scanDirectory(workspaceRoot)
+  scanDirectory(workspaceRoot)
   return symlinks
 }

@@ -1,9 +1,9 @@
 import { generate } from './generate'
 import { read } from './read'
 
-export async function needsRegenerate(): Promise<boolean> {
+export function needsRegenerate(): boolean {
   try {
-    const generated = await generate()
+    const generated = generate()
     const fromFile = read()
     return generated !== fromFile
   } catch {

@@ -7,6 +7,7 @@ import {
   CONFIG_SECTIONS,
   CONFIG_PARAMETERS,
 } from './shared/constants'
+
 import { handleEvent as handleGitignoreEvent } from './managers/gitignore-file'
 import { handleEvent as handleNextConfigEvent } from './managers/next-config-file'
 import { handleEvent as handleCurrentConfigEvent } from './managers/current-config'
@@ -28,8 +29,8 @@ export function setWatchers(treeProvider?: any) {
         FileWatchEvent.Deleted,
       ],
       handler: [
-        () => queue(() => handleNextConfigEvent(FileWatchEvent.Modified)),
-        () => treeProvider?.refresh(),
+        (events) => queue(() => handleNextConfigEvent(FileWatchEvent.Modified)),
+        (events) => treeProvider?.refresh(),
       ],
     },
   })
@@ -55,7 +56,10 @@ export function setWatchers(treeProvider?: any) {
         FileWatchEvent.Modified,
         FileWatchEvent.Deleted,
       ],
-      handler: () => treeProvider?.refresh(),
+      handler: (events) => {
+        queue(() => handleCurrentConfigEvent(events[0].event))
+        treeProvider?.refresh()
+      },
     },
   })
 
@@ -64,7 +68,7 @@ export function setWatchers(treeProvider?: any) {
     filter: (uri, event) => isRootFile(uri),
     events: {
       on: [FileWatchEvent.Modified, FileWatchEvent.Deleted],
-      handler: () => queue(() => handleGitignoreEvent()),
+      handler: (events) => queue(() => handleGitignoreEvent()),
     },
   })
 
@@ -75,7 +79,7 @@ export function setWatchers(treeProvider?: any) {
     filter: (uri, event) => isSymlink(uri),
     events: {
       on: [FileWatchEvent.Created, FileWatchEvent.Deleted],
-      handler: () => queue(() => handleCurrentConfigEvent('modified')),
+      handler: (events) => queue(() => handleCurrentConfigEvent('modified')),
     },
   })
 
