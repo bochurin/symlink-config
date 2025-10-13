@@ -381,6 +381,7 @@ sl-package.json
 - **Settings Panel** - Extension configuration options
 - **Workspace Detection** - Auto-detect symlink configurations
 - **Batch Operations** - Multi-workspace symlink management
+- **NPM Package** - Extract file watcher hooks (`useFileWatcher`, `useConfigWatcher`) into standalone npm package for VSCode extension developers
 
 ### ✅ Phase 1.25: Windows Batch Script Optimization (Completed - 10.10.2025)
 
@@ -431,11 +432,78 @@ sl-package.json
   - **Performance Optimization**: Added filtering capabilities to reduce unnecessary event processing during script execution
   - **Code Organization**: Centralized filter functions in shared utilities for better maintainability
 
+### ✅ Phase 1.29: Clear Configuration Feature (Completed - 12.10.2025)
+
+- **Date**: 12.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Clear Command**: Added clearConfiguration command to remove symlinks based on current.symlink.config.json
+  - **Clear Scripts**: Implemented generateClearWindowsScript and generateClearUnixScript for cross-platform support
+  - **UI Integration**: Added trash icon button to tree view title bar next to apply button
+  - **Confirmation Dialogs**: Added modal confirmation dialogs for both apply and clear operations
+  - **Shared Utilities**: Created confirm() and confirmWarning() functions in shared/vscode for reusable dialogs
+  - **File Management**: Updated gitignore and file-exclude managers to handle clear script files
+  - **Parameterized Admin Script**: Single admin.symlinks.bat script accepts script name as parameter for both apply and clear operations
+  - **Script Generation**: Admin launcher generated automatically with apply scripts
+  - **Execution Options**: Modal dialogs with "Open in Code" and "Run as Admin/Now" options
+  - **Clipboard Integration**: Script names copied to clipboard on Windows for easy access
+
+### ✅ Phase 1.30: File Watcher Event Accumulation and Symlink Detection Fix (Completed - 13.10.2025)
+
+- **Date**: 13.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Symlink Detection Fix**: Fixed isSymlink to use bitwise AND for type checking (handles 66 = SymbolicLink|Directory)
+  - **Event Accumulation**: Enhanced file watcher to accumulate events during debounce window
+  - **Handler Signature**: Changed handler signature to always receive array of events for consistency
+  - **Admin Script Utility**: Extracted admin script generation into shared utility function
+  - **Architecture Improvement**: Moved user interaction logic from generate functions to main command functions
+  - **Script Optimization**: Removed redundant config copying from apply scripts (extension watches real symlinks)
+  - **Clear Script Fix**: Fixed Windows clear script to properly remove symlinks
+  - **Future Planning**: Added npm package plan for file watcher hooks to future enhancements
+
+#### Technical Implementation Details
+
+**Symlink Detection Fix**:
+```typescript
+// Before: Exact equality check
+return stats.type === vscode.FileType.SymbolicLink
+
+// After: Bitwise AND check
+return (stats.type & vscode.FileType.SymbolicLink) !== 0
+// Handles: 65 (64|1) = file symlink, 66 (64|2) = directory symlink
+```
+
+**Event Accumulation**:
+```typescript
+// Handler signature changed
+type Handler = (events: FileEventData[]) => void
+
+// With debouncing: accumulates all filtered events
+accumulatedEvents.push({ uri, event })
+handlers.forEach((handler) => handler(events))
+
+// Without debouncing: single-item array
+handlers.forEach((handler) => handler([{ uri, event }]))
+```
+
+**Architecture Improvements**:
+- **Generate functions**: Only create scripts (no user interaction)
+- **Command functions**: Handle dialogs, clipboard, terminal execution
+- **Shared utilities**: `generateAdminScript()` used by both apply and clear
+
+**Benefits**:
+- **Reliable Symlink Detection**: Correctly identifies both file and directory symlinks
+- **Event Processing**: Can process all accumulated events if needed
+- **Consistent API**: Handlers always receive arrays for uniform processing
+- **Better Organization**: Clear separation between script generation and user interaction
+- **Code Reusability**: Shared admin script generation eliminates duplication
+
 ## Current Status
 
-**Phase**: Phase 1.28 Complete - File Watcher Enhancement and Filter System  
+**Phase**: Phase 1.30 Complete - File Watcher Event Accumulation and Symlink Detection Fix  
 **Branch**: `main`  
-**Latest**: Enhanced file watcher with filtering, debouncing, and shared filter functions  
+**Latest**: Enhanced file watcher with event accumulation and fixed symlink detection  
 **Extension Status**: Core development complete, ready for comprehensive testing  
 **Next**: Cross-platform testing and validation (Phase 2)
 
@@ -448,7 +516,8 @@ sl-package.json
 - ✅ File watcher system with filtering and debouncing
 - ✅ Configuration management with user preferences
 - ✅ Interactive symlink creation workflow
-- ✅ Script generation for both Windows and Unix platforms
+- ✅ Script generation for both Windows and Unix platforms (apply and clear)
+- ✅ Confirmation dialogs for destructive operations
 - ✅ Comprehensive documentation and decision tracking
 
 **Ready for Phase 2**: Comprehensive testing, performance validation, and marketplace preparation

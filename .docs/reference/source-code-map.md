@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 12.10.2025  
-**Version**: 0.0.35  
+**Generated**: 13.10.2025  
+**Version**: 0.0.37  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -52,7 +52,9 @@
   - `CURRENT_SYMLINK_CONFIG: 'current.symlink.config.json'`
   - `APPLY_SYMLINKS_BAT: 'apply.symlinks.config.bat'`
   - `APPLY_SYMLINKS_SH: 'apply.symlinks.config.sh'`
-  - `RUN_ADMIN_BAT: 'admin.symlink.config.bat'`
+  - `CLEAR_SYMLINKS_BAT: 'clear.symlinks.config.bat'`
+  - `CLEAR_SYMLINKS_SH: 'clear.symlinks.config.sh'`
+  - `RUN_ADMIN_BAT: 'admin.symlink.config.bat'` (parameterized: accepts script name)
   - `GITIGNORE: '.gitignore'`
 
 - `CONFIG_SECTIONS` object with properties:
@@ -98,7 +100,11 @@
 - `writeFile(file: string, content: string): Promise<void>`
 - `fullPath(endPath: string): string`
 - `isRootFile(uri: vscode.Uri): boolean`
-- `isSymlink(uri: vscode.Uri): Promise<boolean>`
+- `isSymlink(uri: vscode.Uri): Promise<boolean>` (uses bitwise AND for type checking)
+
+**Implementation Details:**
+- `isSymlink` uses `(stats.type & vscode.FileType.SymbolicLink) !== 0` to detect symlinks
+- Handles both file symlinks (65 = 64|1) and directory symlinks (66 = 64|2)
 
 ### `src/shared/gitignore-ops/`
 **Files:**
@@ -115,10 +121,14 @@
 - `index.ts` (exports all)
 - `info.ts`
 - `warning.ts`
+- `confirm.ts`
+- `confirm-warning.ts`
 
 **Functions:**
 - `info(message: string): void`
 - `warning(message: string): void`
+- `confirm(message: string, confirmText: string): Promise<boolean>` (info icon, positive actions)
+- `confirmWarning(message: string, confirmText: string): Promise<boolean>` (warning icon, destructive actions)
 
 ## Manager Modules
 
@@ -231,9 +241,16 @@
 
 **Types:**
 - `FileWatchEvent` enum with Created, Modified, Deleted values
-- `Handler` type: `(uri: vscode.Uri, event: FileWatchEvent) => void`
+- `FileEventData` type: `{ uri: vscode.Uri; event: FileWatchEvent }`
+- `Handler` type: `(events: FileEventData[]) => void` (always receives array)
 - `Filter` type: `(uri: vscode.Uri, event: FileWatchEvent) => Promise<boolean> | boolean`
 - `WatcherConfig` interface with pattern, debounce?, filter?, onCreate?, onChange?, onDelete?, events? properties
+
+**Implementation Details:**
+- Handlers always receive array of events for consistency
+- With debouncing: accumulates all filtered events during debounce window
+- Without debouncing: passes single-item array `[{uri, event}]`
+- Filters work per-event before accumulation
 
 ### `src/hooks/use-config-watcher.ts`
 **Functions:**
@@ -291,27 +308,41 @@
 
 ### `src/commands/apply-configuration/`
 **Files:**
-- `index.ts` (exports: applyConfiguration)
+- `index.ts` (exports: applyConfiguration, clearConfiguration)
 - `apply-configuration.ts`
+- `clear-configuration.ts`
 - `collect-operations.ts`
-- `generate-windows-script.ts`
-- `generate-unix-script.ts`
+- `generate-admin-script.ts`
+- `generate-apply-windows-script.ts`
+- `generate-apply-unix-script.ts`
+- `generate-clear-windows-script.ts`
+- `generate-clear-unix-script.ts`
 - `types.ts`
 
 **Functions:**
-- `applyConfiguration(): Promise<void>`
-- `collectOperations(operations: SymlinkOperation[], workspaceRoot: string): Promise<SymlinkOperation[]>`
-- `generateWindowsScript(operations: SymlinkOperation[], workspaceRoot: string): Promise<void>`
-- `generateUnixScript(operations: SymlinkOperation[], workspaceRoot: string): Promise<void>`
+- `applyConfiguration(): Promise<void>` (includes user interaction logic)
+- `clearConfiguration(): Promise<void>` (includes user interaction logic)
+- `collectSymlinkOperations(tree: Record<string, TreeNode>): SymlinkOperation[]`
+- `generateAdminScript(workspaceRoot: string): Promise<void>` (shared utility)
+- `generateApplyWindowsScript(operations: SymlinkOperation[], workspaceRoot: string): Promise<void>` (script generation only)
+- `generateApplyUnixScript(operations: SymlinkOperation[], workspaceRoot: string): Promise<void>` (script generation only)
+- `generateClearWindowsScript(workspaceRoot: string): Promise<void>`
+- `generateClearUnixScript(workspaceRoot: string): Promise<void>`
 
 **Types:**
 - `SymlinkOperation` interface with type, target, source?, isDirectory properties
+
+**Architecture:**
+- Generate functions only create scripts (no user interaction)
+- Main command functions handle dialogs, clipboard, terminal execution
+- Shared admin script generation utility for both apply and clear
 
 ### `src/commands/`
 **Files:**
 - `create-symlink.ts`
 - `open-symlink-config.ts`
 - `tree-operations.ts`
+- `clear-configuration.ts`
 
 **Functions:**
 - `createSymlink(): Promise<void>`
@@ -319,6 +350,7 @@
 - `cancelSymlinkCreation(): void`
 - `openSymlinkConfig(treeItem: any): Promise<void>`
 - `collapseAll(): void`
+- `clearConfiguration(): Promise<void>`
 
 ## Summary
 
@@ -331,7 +363,10 @@
 - Manager modules follow consistent structure: generate, handle-event, init, make, read
 - Shared modules provide reusable utilities for config, file, gitignore, and vscode operations
 - Hook modules provide reusable patterns for file watching and configuration watching with filtering and debouncing
-- Filter functions use intermediate callbacks to adapt signatures: `(uri, event) => isRootFile(uri)`
+- Filter functions work per-event: `(uri, event) => boolean` before accumulation
+- Handler functions always receive arrays: `(events: FileEventData[]) => void`
+- Admin script is parameterized: `admin.symlink.config.bat [script-name]` for both apply and clear operations
+- User interaction logic in main command functions, not in generate functions
 - Type definitions are distributed across modules with clear interfaces
 - Constants are centralized in shared/constants.ts for maintainability
 
@@ -341,5 +376,7 @@
 - Optional properties are marked with ?
 - Union types and enums are documented with their possible values
 - File structure shows clear module boundaries and dependencies
-- Filter functions moved from hooks to shared/file-ops for reusability
-- File watcher enhanced with debouncing and filtering capabilities
+- Filter functions in shared/file-ops for reusability across modules
+- File watcher enhanced with event accumulation during debounce windows
+- Handler signature changed to always receive array for consistency
+- Symlink detection uses bitwise AND to handle combined file types
