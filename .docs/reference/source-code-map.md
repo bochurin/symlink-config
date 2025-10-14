@@ -1,38 +1,63 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 13.10.2025  
-**Version**: 0.0.42  
+**Generated**: 14.10.2025  
+**Version**: 0.0.45  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
 
-### `src/extension.ts`
+### `src/main.ts`
+**Purpose:** Entry point that re-exports from extension module
+**Exports:**
+- `activate` (from `./extension`)
+- `deactivate` (from `./extension`)
+
+## Extension Module
+
+### `src/extension/`
+**Purpose:** Core extension lifecycle and initialization
+
+#### `src/extension/index.ts`
+**Exports:**
+- `activate` (from `./activate`)
+- `deactivate` (from `./activate`)
+
+#### `src/extension/activate.ts`
 **Functions:**
-- `initializeExtension(treeProvider?: any): Promise<(() => void) | undefined>`
 - `activate(context: vscode.ExtensionContext): Promise<void>`
 - `deactivate(): void`
-
-**Variables:**
-- `isInitialized: boolean`
 
 **Registered Commands:**
 - `symlink-config.openSettings` - Opens extension settings
 - `symlink-config.toggleView` - Toggles tree view mode
-- `symlink-config.selectSymlinkSource` - Selects source for symlink (renamed from createSymlink)
+- `symlink-config.selectSymlinkSource` - Selects source for symlink
 - `symlink-config.selectSymlinkTarget` - Selects target folder for symlink
 - `symlink-config.cancelSymlinkCreation` - Cancels symlink creation
 - `symlink-config.openSymlinkConfig` - Opens symlink config file
 - `symlink-config.applyConfiguration` - Applies symlink configuration
-- `symlink-config.cleanConfiguration` - Cleans symlinks (renamed from clearConfiguration)
+- `symlink-config.cleanConfiguration` - Cleans symlinks
 - `symlink-config.collapseAll` - Collapses all tree nodes
 
-### `src/set-watchers.ts`
+#### `src/extension/initialize.ts`
+**Functions:**
+- `initializeExtension(treeProvider?: any): Promise<(() => void) | undefined>`
+- `resetInitialization(): void`
+
+**Variables:**
+- `isInitialized: boolean` (internal)
+
+#### `src/extension/register-commands.ts`
+**Functions:**
+- `registerCommands(context: vscode.ExtensionContext, treeProvider: any): void`
+
+#### `src/extension/set-watchers.ts`
 **Functions:**
 - `setWatchers(treeProvider?: any): () => void`
-- `isRootFile(uri: vscode.Uri, filename: string): boolean` (internal)
 - `queue(fn: () => Promise<void>): Promise<void>` (internal)
 
-### `src/state.ts`
+## Shared State Module
+
+### `src/shared/state.ts`
 **Functions:**
 - `setWorkspaceRoot(path: string): void`
 - `getWorkspaceRoot(): string`
@@ -58,34 +83,35 @@
 ### `src/shared/constants.ts`
 **Constants:**
 - `FILE_NAMES` object with properties:
-  - `SYMLINK_CONFIG: 'symlink.config.json'`
-  - `NEXT_SYMLINK_CONFIG: 'next.symlink.config.json'`
-  - `CURRENT_SYMLINK_CONFIG: 'current.symlink.config.json'`
-  - `APPLY_SYMLINKS_BAT: 'apply.symlinks.config.bat'`
-  - `APPLY_SYMLINKS_SH: 'apply.symlinks.config.sh'`
-  - `CLEAN_SYMLINKS_BAT: 'clean.symlinks.config.bat'`
-  - `CLEAN_SYMLINKS_SH: 'clean.symlinks.config.sh'`
-  - `RUN_ADMIN_BAT: 'admin.symlink.config.bat'` (parameterized: accepts script name)
+  - `SYMLINK_CONFIG: 'symlink-config.json'`
+  - `NEXT_SYMLINK_CONFIG: 'next.symlink-config.json'`
+  - `CURRENT_SYMLINK_CONFIG: 'current.symlink-config.json'`
+  - `APPLY_SYMLINKS_BAT: 'apply.symlink-config.bat'`
+  - `APPLY_SYMLINKS_SH: 'apply.symlink-config.sh'`
+  - `CLEAR_SYMLINKS_BAT: 'clear.symlink-config.bat'`
+  - `CLEAR_SYMLINKS_SH: 'clear.symlink-config.sh'`
+  - `RUN_ADMIN_BAT: 'admin.symlink-config.bat'` (parameterized: accepts script name)
   - `GITIGNORE: '.gitignore'`
 
-- `CONFIG_SECTIONS` object with properties:
-  - `SYMLINK_CONFIG: 'symlink-config'`
-  - `FILES: 'files'`
-
-- `CONFIG_PARAMETERS` object with properties:
-  - `GITIGNORE_SERVICE_FILES: 'gitignoreServiceFiles'`
-  - `HIDE_SERVICE_FILES: 'hideServiceFiles'`
-  - `HIDE_SYMLINK_CONFIGS: 'hideSymlinkConfigs'`
-  - `SCRIPT_GENERATION: 'scriptGeneration'`
-  - `SYMLINK_PATH_MODE: 'symlinkPathMode'`
-  - `EXCLUDE: 'exclude'`
-
-- `SYMLINK_SETTINGS_DEFAULTS` object with properties:
-  - `scriptGeneration: 'auto'`
-  - `symlinkPathMode: 'relative'`
-  - `gitignoreServiceFiles: true`
-  - `hideServiceFiles: false`
-  - `hideSymlinkConfigs: false`
+- `CONFIG` two-level structure:
+  - `SYMLINK_CONFIG` object:
+    - `SECTION: 'symlink-config'`
+    - `WATCH_WORKSPACE: 'enableFileWatchers'`
+    - `GITIGNORE_SERVICE_FILES: 'gitignoreServiceFiles'`
+    - `HIDE_SERVICE_FILES: 'hideServiceFiles'`
+    - `HIDE_SYMLINK_CONFIGS: 'hideSymlinkConfigs'`
+    - `SCRIPT_GENERATION: 'scriptGeneration'`
+    - `SYMLINK_PATH_MODE: 'symlinkPathMode'`
+    - `DEFAULT` object:
+      - `WATCH_WORKSPACE: true`
+      - `GITIGNORE_SERVICE_FILES: true`
+      - `HIDE_SERVICE_FILES: false`
+      - `HIDE_SYMLINK_CONFIGS: false`
+      - `SCRIPT_GENERATION: 'auto'`
+      - `SYMLINK_PATH_MODE: 'relative'`
+  - `FILES` object:
+    - `SECTION: 'files'`
+    - `EXCLUDE: 'exclude'`
 
 ### `src/shared/config-ops/`
 **Files:**
@@ -182,7 +208,13 @@
 - `handleEvent(section: string, parameter: string, payload: any): Promise<void>`
 
 **Types:**
-- `SymlinkSettingsParameter` (union of CONFIG_PARAMETERS values)
+- `SymlinkSettingsParameter` (union type):
+  - `CONFIG.SYMLINK_CONFIG.WATCH_WORKSPACE`
+  - `CONFIG.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES`
+  - `CONFIG.SYMLINK_CONFIG.HIDE_SERVICE_FILES`
+  - `CONFIG.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS`
+  - `CONFIG.SYMLINK_CONFIG.SCRIPT_GENERATION`
+  - `CONFIG.SYMLINK_CONFIG.SYMLINK_PATH_MODE`
 - `SymlinkSettingsValue` (string | boolean | undefined)
 
 ### `src/managers/next-config-file/`
@@ -280,9 +312,14 @@
 
 **Types:**
 - `Handler` type: `(section: string, parameter: string, payload: { value: any; old_value: any }) => void`
-- `ParameterConfig` interface with parameter, onChange properties
-- `SectionConfig` interface with section, parameters properties
+- `ConfigItem` interface with parameters (string | string[]), onChange properties
+- `SectionConfig` interface with section, configs (ConfigItem | ConfigItem[]) properties
 - `ConfigWatcherConfig` interface with sections property
+
+**Implementation Details:**
+- `configs` can be single ConfigItem or array of ConfigItems
+- Each ConfigItem can watch single parameter or array of parameters
+- All parameters in a ConfigItem share the same onChange handler
 
 ## View Modules
 
@@ -381,23 +418,27 @@
 
 ## Summary
 
-**Total Files**: ~60+ TypeScript files
+**Total Files**: ~65+ TypeScript files
 **Total Functions**: ~80+ exported functions
 **Total Types**: ~25+ interfaces, enums, and type aliases
-**Total Constants**: 3 major constant objects with ~15 properties
+**Total Constants**: 2 major constant objects (FILE_NAMES, CONFIG) with ~20 properties
 
 **Key Patterns:**
+- **Extension Structure**: Entry point (`main.ts`) → Extension module (`extension/`) with separate activate, initialize, register-commands, and set-watchers files
 - Manager modules follow consistent structure: generate, handle-event, init, make, read
 - All generate functions are synchronous for consistency
-- Shared modules provide reusable utilities for config, file, gitignore, and vscode operations
+- Shared modules provide reusable utilities for config, file, gitignore, vscode, and state operations
 - Hook modules provide reusable patterns for file watching and configuration watching with filtering and debouncing
 - Filter functions work per-event: `(uri, event) => boolean` before accumulation
 - Handler functions always receive arrays: `(events: FileEventData[]) => void`
-- Admin script is parameterized: `admin.symlink.config.bat [script-name]` for both apply and clear operations
+- Admin script is parameterized: `admin.symlink-config.bat [script-name]` for both apply and clear operations
 - User interaction logic in main command functions, not in generate functions
 - Type definitions are distributed across modules with clear interfaces
-- Constants are centralized in shared/constants.ts for maintainability
+- Constants are centralized in shared/constants.ts with two-level CONFIG structure
+- CONFIG structure combines sections, parameters, and defaults in unified hierarchy
+- **Config Watcher Pattern**: Multiple parameters can share same handler via `configs` with `parameters` array
 - **File System Abstraction**: Only `shared/file-ops/` uses `fs` module directly; all other code uses abstraction functions
+- **State Management**: Centralized in `shared/state.ts` for workspace root, name, and configuration
 
 **Change Tracking Notes:**
 - Function signatures include parameter types and return types
@@ -409,3 +450,8 @@
 - File watcher enhanced with event accumulation during debounce windows
 - Handler signature changed to always receive array for consistency
 - Symlink detection uses bitwise AND to handle combined file types
+- **Constants Refactoring**: CONFIG_SECTIONS, CONFIG_PARAMETERS, and SYMLINK_SETTINGS_DEFAULTS merged into single CONFIG object
+- **Extension Decomposition**: Separated extension.ts into extension/ folder with activate.ts, initialize.ts, register-commands.ts, set-watchers.ts
+- **Entry Point**: main.ts serves as webpack entry point, re-exports from extension module
+- **State Module**: Moved from src/state.ts to src/shared/state.ts for better organization
+- **Config Watcher Enhancement**: Renamed `parameters` to `configs`, each config can watch multiple parameters with shared handler

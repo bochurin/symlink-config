@@ -589,13 +589,133 @@ export async function selectSymlinkSource(uri: vscode.Uri) {
 - **Dual Protection**: Both UI filtering and runtime validation
 - **Better UX**: Commands don't appear on symlinks in context menu
 
+### ✅ Phase 1.34: Constants Refactoring and Config Watcher Enhancement (Completed - 14.10.2025)
+
+- **Date**: 14.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Constants Consolidation**: Merged CONFIG_SECTIONS, CONFIG_PARAMETERS, and SYMLINK_SETTINGS_DEFAULTS into single two-level CONFIG structure
+  - **Config Watcher Enhancement**: Renamed 'parameters' to 'configs', allowing multiple parameters to share same onChange handler
+  - **File Naming Consistency**: Updated all service files to use hyphen convention (symlink-config.json)
+  - **WATCH_WORKSPACE Setting**: Added new setting (maps to enableFileWatchers) for toggling workspace monitoring
+  - **Cleaner Configuration**: Reduced duplication in config watcher setup with array-based parameter grouping
+
+#### Technical Implementation Details
+
+**Constants Structure**:
+```typescript
+// Before: Three separate objects
+CONFIG_SECTIONS = { SYMLINK_CONFIG: 'symlink-config', FILES: 'files' }
+CONFIG_PARAMETERS = { GITIGNORE_SERVICE_FILES: '...', ... }
+SYMLINK_SETTINGS_DEFAULTS = { scriptGeneration: 'auto', ... }
+
+// After: Unified two-level structure
+CONFIG = {
+  SYMLINK_CONFIG: {
+    SECTION: 'symlink-config',
+    GITIGNORE_SERVICE_FILES: 'gitignoreServiceFiles',
+    WATCH_WORKSPACE: 'enableFileWatchers',
+    DEFAULT: {
+      WATCH_WORKSPACE: true,
+      GITIGNORE_SERVICE_FILES: true,
+      ...
+    }
+  },
+  FILES: {
+    SECTION: 'files',
+    EXCLUDE: 'exclude'
+  }
+}
+```
+
+**Config Watcher Enhancement**:
+```typescript
+// Before: Separate config for each parameter
+configs: [
+  { parameter: CONFIG.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES, onChange: handler },
+  { parameter: CONFIG.SYMLINK_CONFIG.HIDE_SERVICE_FILES, onChange: handler },
+  { parameter: CONFIG.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS, onChange: handler },
+]
+
+// After: Array of parameters with shared handler
+configs: {
+  parameters: [
+    CONFIG.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES,
+    CONFIG.SYMLINK_CONFIG.HIDE_SERVICE_FILES,
+    CONFIG.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS,
+    CONFIG.SYMLINK_CONFIG.WATCH_WORKSPACE,
+  ],
+  onChange: (section, parameter, payload) => {
+    queue(() => handleSymlinkConfigEvent(section, parameter, payload))
+  }
+}
+```
+
+**File Naming Updates**:
+- `symlink.config.json` → `symlink-config.json`
+- `next.symlink.config.json` → `next.symlink-config.json`
+- `current.symlink.config.json` → `current.symlink-config.json`
+- `apply.symlinks.config.bat` → `apply.symlink-config.bat`
+- All script files updated to use hyphen convention
+
+**Benefits**:
+- **Unified Structure**: All configuration in single hierarchical object
+- **Less Duplication**: Multiple parameters share handlers instead of repeating code
+- **Better Organization**: Sections, parameters, and defaults grouped logically
+- **Cleaner Code**: Reduced boilerplate in config watcher setup
+- **Consistent Naming**: All files follow same hyphen-based convention
+
+### ✅ Phase 1.35: Extension Decomposition and Architecture Improvements (Completed - 14.10.2025)
+
+- **Date**: 14.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Extension Decomposition**: Separated extension.ts into extension/ folder with modular components
+  - **Entry Point**: Created main.ts as webpack entry point that re-exports from extension module
+  - **State Module**: Moved state.ts to shared/state.ts for better organization
+  - **Modular Architecture**: Split into activate.ts, initialize.ts, register-commands.ts, set-watchers.ts
+  - **Clean Separation**: Each module has single responsibility (lifecycle, initialization, commands, watchers)
+
+#### Technical Implementation Details
+
+**Extension Structure**:
+```
+// Before: Single file
+src/extension.ts (150+ lines)
+
+// After: Modular structure
+src/main.ts (entry point)
+src/extension/
+  ├── index.ts (re-exports)
+  ├── activate.ts (lifecycle functions)
+  ├── initialize.ts (extension initialization)
+  ├── register-commands.ts (command registration)
+  └── set-watchers.ts (file/config watchers)
+src/shared/state.ts (state management)
+```
+
+**Module Responsibilities**:
+- **main.ts**: Webpack entry point, re-exports activate/deactivate
+- **activate.ts**: VSCode lifecycle (activate, deactivate), tree view creation
+- **initialize.ts**: Extension initialization, manager setup, watcher creation
+- **register-commands.ts**: All command registration in single function
+- **set-watchers.ts**: File and config watcher setup with queue management
+- **shared/state.ts**: Centralized workspace state management
+
+**Benefits**:
+- **Better Organization**: Clear separation of concerns across modules
+- **Easier Maintenance**: Each file has focused responsibility
+- **Improved Testability**: Smaller, focused modules easier to test
+- **Cleaner Imports**: Explicit module boundaries and dependencies
+- **Scalability**: Easy to add new features without bloating single file
+
 ## Current Status
 
-**Phase**: Phase 1.33 Complete - Symlink Selection Validation  
+**Phase**: Phase 1.35 Complete - Extension Decomposition  
 **Branch**: `main`  
-**Version**: 0.0.42  
-**Latest**: Prevented symlink selection as source/target with validation  
-**Extension Status**: Core development complete, ready for comprehensive testing  
+**Version**: 0.0.45  
+**Latest**: Decomposed extension into modular architecture with better organization  
+**Extension Status**: Core development complete with improved architecture, ready for comprehensive testing  
 **Next**: Cross-platform testing and validation (Phase 2)
 
 ## Extension Completion Summary
