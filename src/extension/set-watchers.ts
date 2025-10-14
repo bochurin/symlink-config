@@ -1,7 +1,7 @@
 import { useFileWatcher, FileWatchEvent } from '../hooks/use-file-watcher'
 import { isRootFile, isSymlink } from '../shared/file-ops'
 import { useConfigWatcher } from '../hooks/use-config-watcher'
-
+import { getTreeProvider } from '../shared/state'
 import { FILE_NAMES, CONFIG } from '../shared/constants'
 
 import { handleEvent as handleGitignoreEvent } from '../managers/gitignore-file'
@@ -10,7 +10,8 @@ import { handleEvent as handleCurrentConfigEvent } from '../managers/current-con
 import { handleEvent as handleFileExcludeEvent } from '../managers/file-exclude-settings'
 import { handleEvent as handleSymlinkConfigEvent } from '../managers/symlink-settings'
 
-export function setWatchers(treeProvider?: any) {
+export function setWatchers() {
+  const treeProvider = getTreeProvider()
   let processingQueue = Promise.resolve()
   const queue = (fn: () => Promise<void>) =>
     (processingQueue = processingQueue.then(fn))

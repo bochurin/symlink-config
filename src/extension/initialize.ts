@@ -10,7 +10,7 @@ import { read as readSymlinkSettings } from '../managers/symlink-settings'
 
 let isInitialized = false
 
-export async function initializeExtension(treeProvider?: any) {
+export async function initializeExtension(): Promise<(() => void) | undefined> {
   if (isInitialized || !vscode.workspace.workspaceFolders) {
     return
   }
@@ -18,10 +18,12 @@ export async function initializeExtension(treeProvider?: any) {
   const workspaceRoot =
     vscode.workspace.workspaceFolders[0].uri.fsPath.split('\\').join('/') + '/'
   const workspaceName = vscode.workspace.workspaceFolders?.[0]?.name
-
   state.setWorkspaceRoot(workspaceRoot)
   state.setWorkspaceName(workspaceName)
   console.log('ROOT:', workspaceRoot)
+  //TODO: calculate the shortest path from workspace folders and get it as project root,
+  // save it to the workspace (only!) settings, and ask user to modify it if they need.
+  // watch workspace folders changes and ask to check if the root path is still correct
 
   const watchWorkspace = readSymlinkSettings(
     CONFIG.SYMLINK_CONFIG.WATCH_WORKSPACE,
@@ -32,8 +34,9 @@ export async function initializeExtension(treeProvider?: any) {
     ...(watchWorkspace ? [initNextConfig(), initCurrentConfig()] : []),
   ])
 
-  const dispose = setWatchers(treeProvider)
+  const dispose = setWatchers()
   isInitialized = true
+
   return dispose
 }
 

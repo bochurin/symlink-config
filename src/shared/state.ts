@@ -2,6 +2,7 @@ let workspaceRoot: string
 let workspaceName: string
 let nextSymlinkConfig: string
 let sylentMode: boolean
+let treeProvider: any
 
 export function setWorkspaceRoot(path: string) {
   workspaceRoot = path
@@ -31,4 +32,11 @@ export function setSilentMode(mode: boolean) {
 }
 export function getSilentMode(): boolean {
   return sylentMode
+}
+
+export function setTreeProvider(provider: any) {
+  treeProvider = provider
+}
+export function getTreeProvider(): any {
+  return treeProvider
 }
