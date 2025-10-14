@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
 **Generated**: 13.10.2025  
-**Version**: 0.0.39  
+**Version**: 0.0.42  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -14,6 +14,17 @@
 
 **Variables:**
 - `isInitialized: boolean`
+
+**Registered Commands:**
+- `symlink-config.openSettings` - Opens extension settings
+- `symlink-config.toggleView` - Toggles tree view mode
+- `symlink-config.selectSymlinkSource` - Selects source for symlink (renamed from createSymlink)
+- `symlink-config.selectSymlinkTarget` - Selects target folder for symlink
+- `symlink-config.cancelSymlinkCreation` - Cancels symlink creation
+- `symlink-config.openSymlinkConfig` - Opens symlink config file
+- `symlink-config.applyConfiguration` - Applies symlink configuration
+- `symlink-config.cleanConfiguration` - Cleans symlinks (renamed from clearConfiguration)
+- `symlink-config.collapseAll` - Collapses all tree nodes
 
 ### `src/set-watchers.ts`
 **Functions:**
@@ -52,8 +63,8 @@
   - `CURRENT_SYMLINK_CONFIG: 'current.symlink.config.json'`
   - `APPLY_SYMLINKS_BAT: 'apply.symlinks.config.bat'`
   - `APPLY_SYMLINKS_SH: 'apply.symlinks.config.sh'`
-  - `CLEAR_SYMLINKS_BAT: 'clear.symlinks.config.bat'`
-  - `CLEAR_SYMLINKS_SH: 'clear.symlinks.config.sh'`
+  - `CLEAN_SYMLINKS_BAT: 'clean.symlinks.config.bat'`
+  - `CLEAN_SYMLINKS_SH: 'clean.symlinks.config.sh'`
   - `RUN_ADMIN_BAT: 'admin.symlink.config.bat'` (parameterized: accepts script name)
   - `GITIGNORE: '.gitignore'`
 
@@ -319,26 +330,26 @@
 
 ### `src/commands/apply-configuration/`
 **Files:**
-- `index.ts` (exports: applyConfiguration, clearConfiguration)
-- `apply-configuration.ts`
-- `clear-configuration.ts`
+- `index.ts` (exports: applyConfiguration, cleanConfiguration)
+- `apply-config.ts`
+- `clean-config.ts`
 - `collect-operations.ts`
 - `generate-admin-script.ts`
 - `generate-apply-windows-script.ts`
 - `generate-apply-unix-script.ts`
-- `generate-clear-windows-script.ts`
-- `generate-clear-unix-script.ts`
+- `generate-clean-windows-script.ts`
+- `generate-clean-unix-script.ts`
 - `types.ts`
 
 **Functions:**
 - `applyConfiguration(): Promise<void>` (includes user interaction logic)
-- `clearConfiguration(): Promise<void>` (includes user interaction logic)
-- `collectSymlinkOperations(tree: Record<string, TreeNode>): SymlinkOperation[]`
+- `cleanConfiguration(): Promise<void>` (includes user interaction logic, renamed from clearConfiguration)
+- `collectSymlinkOperations(tree: Record<string, TreeNode>): SymlinkOperation[]` (uses arrow function for traverse helper)
 - `generateAdminScript(workspaceRoot: string): Promise<void>` (shared utility)
 - `generateApplyWindowsScript(operations: SymlinkOperation[], workspaceRoot: string): Promise<void>` (script generation only)
 - `generateApplyUnixScript(operations: SymlinkOperation[], workspaceRoot: string): Promise<void>` (script generation only)
-- `generateClearWindowsScript(workspaceRoot: string): Promise<void>`
-- `generateClearUnixScript(workspaceRoot: string): Promise<void>`
+- `generateCleanWindowsScript(workspaceRoot: string): Promise<void>` (renamed from generateClearWindowsScript)
+- `generateCleanUnixScript(workspaceRoot: string): Promise<void>` (renamed from generateClearUnixScript)
 
 **Types:**
 - `SymlinkOperation` interface with type, target, source?, isDirectory properties
@@ -353,15 +364,20 @@
 - `create-symlink.ts`
 - `open-symlink-config.ts`
 - `tree-operations.ts`
-- `clear-configuration.ts`
 
 **Functions:**
-- `createSymlink(): Promise<void>`
-- `selectSymlinkTarget(): Promise<void>`
+- `selectSymlinkSource(uri: vscode.Uri): Promise<void>` (validates not symlink)
+- `selectSymlinkTarget(uri: vscode.Uri): Promise<void>` (validates not symlink)
 - `cancelSymlinkCreation(): void`
+- `createSymlinkConfig(source: vscode.Uri, targetFolder: vscode.Uri): Promise<void>` (internal)
+- `updateContext(): void` (internal)
+
+**Implementation Details:**
+- Both selection functions validate that selected item is not a symlink using `isSymlink()`
+- Shows warning message if symlink is selected: "Cannot select a symlink as source/target"
+- Prevents circular symlink references and invalid configurations
 - `openSymlinkConfig(treeItem: any): Promise<void>`
 - `collapseAll(): void`
-- `clearConfiguration(): Promise<void>`
 
 ## Summary
 
