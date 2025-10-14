@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
 **Generated**: 14.10.2025  
-**Version**: 0.0.45  
+**Version**: 0.0.48  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -27,6 +27,12 @@
 - `activate(context: vscode.ExtensionContext): Promise<void>`
 - `deactivate(): void`
 
+**Implementation Details:**
+- Creates tree view and stores in state
+- Registers all commands
+- Calls initialize() and subscribes dispose function
+- Watches workspace folder changes and re-initializes
+
 **Registered Commands:**
 - `symlink-config.openSettings` - Opens extension settings
 - `symlink-config.toggleView` - Toggles tree view mode
@@ -40,20 +46,31 @@
 
 #### `src/extension/initialize.ts`
 **Functions:**
-- `initializeExtension(treeProvider?: any): Promise<(() => void) | undefined>`
-- `resetInitialization(): void`
+- `initialize(): Promise<(() => void) | undefined>`
+- `reset(): void`
 
 **Variables:**
 - `isInitialized: boolean` (internal)
+
+**Implementation Details:**
+- Orchestrates initialization: workspace setup, manager init, watcher setup
+- Creates and returns dispose function from watcher array
+- Gets treeProvider from state
+
+#### `src/extension/init-managers.ts`
+**Functions:**
+- `initManagers(): Promise<void>`
+
+**Implementation Details:**
+- Initializes all managers based on settings
+- Conditionally initializes next-config and current-config based on WATCH_WORKSPACE setting
+- Runs all initializations in parallel with Promise.all
 
 #### `src/extension/register-commands.ts`
 **Functions:**
 - `registerCommands(context: vscode.ExtensionContext, treeProvider: any): void`
 
-#### `src/extension/set-watchers.ts`
-**Functions:**
-- `setWatchers(treeProvider?: any): () => void`
-- `queue(fn: () => Promise<void>): Promise<void>` (internal)
+
 
 ## Shared State Module
 
@@ -67,12 +84,20 @@
 - `getNextConfig(): string`
 - `setSilentMode(mode: boolean): void`
 - `getSilentMode(): boolean`
+- `setTreeProvider(provider: any): void`
+- `getTreeProvider(): any`
+- `registerWatcher(watcher: vscode.Disposable): void`
+- `disposeWatchers(): void`
+- `queue(fn: () => Promise<void>): Promise<void>`
 
 **Variables:**
 - `workspaceRoot: string`
 - `workspaceName: string`
 - `nextSymlinkConfig: string`
 - `sylentMode: boolean`
+- `treeProvider: any`
+- `watchers: vscode.Disposable[]`
+- `processingQueue: Promise<void>`
 
 ### `src/types.ts`
 **Types:**
@@ -321,6 +346,77 @@
 - Each ConfigItem can watch single parameter or array of parameters
 - All parameters in a ConfigItem share the same onChange handler
 
+## Watcher Modules
+
+### `src/watchers/`
+**Purpose:** Self-registering file watchers that monitor workspace changes
+
+#### `src/watchers/index.ts`
+**Exports:**
+- `run` (from `./run`)
+
+#### `src/watchers/run.ts`
+**Functions:**
+- `run(): void`
+
+**Implementation Details:**
+- Calls all create watcher functions
+- Watchers self-register via `registerWatcher()`
+- No return values needed
+
+#### `src/watchers/config-watcher.ts`
+**Functions:**
+- `createConfigWatcher(): void`
+
+**Implementation Details:**
+- Uses `useConfigWatcher` hook
+- Watches symlink-config settings changes
+- Queues operations via `queue()` from state
+- Self-registers via `registerWatcher()`
+
+#### `src/watchers/gitignore-watcher.ts`
+**Functions:**
+- `createGitignoreWatcher(): void`
+
+**Implementation Details:**
+- Watches .gitignore files
+- Queues operations via `queue()` from state
+- Self-registers via `registerWatcher()`
+
+#### `src/watchers/symlink-config-watcher.ts`
+**Functions:**
+- `createSymlinkConfigWatcher(): void`
+
+**Implementation Details:**
+- Watches symlink-config.json files
+- Refreshes tree view on changes
+- Self-registers via `registerWatcher()`
+
+#### `src/watchers/next-config-watcher.ts`
+**Functions:**
+- `createNextConfigWatcher(): void`
+
+**Implementation Details:**
+- Watches next.symlink-config.json at workspace root
+- Self-registers via `registerWatcher()`
+
+#### `src/watchers/current-config-watcher.ts`
+**Functions:**
+- `createCurrentConfigWatcher(): void`
+
+**Implementation Details:**
+- Watches current.symlink-config.json at workspace root
+- Self-registers via `registerWatcher()`
+
+#### `src/watchers/symlinks-watcher.ts`
+**Functions:**
+- `createSymlinksWatcher(): void`
+
+**Implementation Details:**
+- Watches all symlinks in workspace
+- 500ms debounce for batch updates
+- Self-registers via `registerWatcher()`
+
 ## View Modules
 
 ### `src/views/symlink-tree/`
@@ -418,13 +514,14 @@
 
 ## Summary
 
-**Total Files**: ~65+ TypeScript files
+**Total Files**: ~72+ TypeScript files
 **Total Functions**: ~80+ exported functions
 **Total Types**: ~25+ interfaces, enums, and type aliases
 **Total Constants**: 2 major constant objects (FILE_NAMES, CONFIG) with ~20 properties
 
 **Key Patterns:**
-- **Extension Structure**: Entry point (`main.ts`) → Extension module (`extension/`) with separate activate, initialize, register-commands, and set-watchers files
+- **Extension Structure**: Entry point (`main.ts`) → Extension module (`extension/`) with separate activate, initialize, register-commands, and init-managers files
+- **Watcher Structure**: Separate watcher files in `watchers/` folder, each with create function that self-registers
 - Manager modules follow consistent structure: generate, handle-event, init, make, read
 - All generate functions are synchronous for consistency
 - Shared modules provide reusable utilities for config, file, gitignore, vscode, and state operations
@@ -438,7 +535,9 @@
 - CONFIG structure combines sections, parameters, and defaults in unified hierarchy
 - **Config Watcher Pattern**: Multiple parameters can share same handler via `configs` with `parameters` array
 - **File System Abstraction**: Only `shared/file-ops/` uses `fs` module directly; all other code uses abstraction functions
-- **State Management**: Centralized in `shared/state.ts` for workspace root, name, and configuration
+- **State Management**: Centralized in `shared/state.ts` for workspace root, name, configuration, tree provider, watchers array, and processing queue
+- **Self-Registering Watchers**: Watchers register themselves via `registerWatcher()`, eliminating need to return and collect watcher arrays
+- **Queue Pattern**: Processing queue centralized in state module, accessible via `queue()` function to serialize async operations
 
 **Change Tracking Notes:**
 - Function signatures include parameter types and return types
@@ -451,7 +550,12 @@
 - Handler signature changed to always receive array for consistency
 - Symlink detection uses bitwise AND to handle combined file types
 - **Constants Refactoring**: CONFIG_SECTIONS, CONFIG_PARAMETERS, and SYMLINK_SETTINGS_DEFAULTS merged into single CONFIG object
-- **Extension Decomposition**: Separated extension.ts into extension/ folder with activate.ts, initialize.ts, register-commands.ts, set-watchers.ts
+- **Extension Decomposition**: Separated extension.ts into extension/ folder with activate.ts, initialize.ts, init-managers.ts, register-commands.ts, set-watchers.ts
 - **Entry Point**: main.ts serves as webpack entry point, re-exports from extension module
 - **State Module**: Moved from src/state.ts to src/shared/state.ts for better organization
+- **TreeProvider State Management**: TreeProvider stored in centralized state, eliminating parameter passing through initialization chain
 - **Config Watcher Enhancement**: Renamed `parameters` to `configs`, each config can watch multiple parameters with shared handler
+- **Manager Initialization**: Extracted manager initialization into separate init-managers module
+- **Function Naming**: Simplified initialize/reset function names (removed Extension/Initialization suffixes)
+- **Watcher Refactoring**: Decomposed set-watchers.ts into separate watcher files (config-watcher, gitignore-watcher, symlink-config-watcher, next-config-watcher, current-config-watcher, symlinks-watcher)
+- **Queue in State**: Moved processing queue from set-watchers to shared/state.ts for global access

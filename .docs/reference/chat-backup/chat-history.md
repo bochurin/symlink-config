@@ -747,3 +747,118 @@ export async function writeFile(file: string, content: string, mode?: number) {
 - Performance testing with large projects
 - Unit testing with mocked file operations
 - VSCode Marketplace preparation and publishing
+
+
+## Session 11: Watcher Self-Registration Pattern (14.10.2025)
+
+### Context
+- Continued from Phase 1.35 (Extension Decomposition)
+- Focus on watcher architecture refactoring with self-registration pattern
+- Decomposition of monolithic set-watchers.ts into modular watcher files
+
+### Key Developments
+
+#### Watcher Decomposition
+- **Monolithic to Modular**: Split set-watchers.ts (150+ lines) into 6 separate watcher files
+- **Individual Watchers**: Each watcher in dedicated file with single responsibility
+- **Clear Structure**: watchers/ folder with config-watcher, gitignore-watcher, symlink-config-watcher, next-config-watcher, current-config-watcher, symlinks-watcher
+- **Orchestration**: run.ts calls all create functions, index.ts exports public API
+
+#### Self-Registration Pattern
+- **Before**: Watchers returned disposables, caller collected into array
+- **After**: Watchers register themselves via registerWatcher() in state
+- **No Return Values**: Create functions return void, side-effect registration
+- **Simplified Initialization**: run() replaces setWatchers(), disposeWatchers() from state
+
+#### Centralized State Management
+- **Queue Migration**: Moved processing queue from set-watchers to shared/state.ts
+- **Watchers Array**: Centralized watcher storage in state module
+- **Global Access**: queue() function accessible from any watcher
+- **Unified Disposal**: Single disposeWatchers() handles all cleanup
+
+#### State Module Enhancements
+```typescript
+// Added to shared/state.ts
+const watchers: vscode.Disposable[] = []
+let processingQueue: Promise<void> = Promise.resolve()
+
+export function registerWatcher(watcher: vscode.Disposable): void
+export function disposeWatchers(): void
+export function queue(fn: () => Promise<void>): Promise<void>
+```
+
+### Technical Implementation
+
+#### Watcher Structure Pattern
+```typescript
+// Each watcher follows this pattern
+export function createGitignoreWatcher(): void {
+  const watcher = useFileWatcher({
+    pattern: '**/.gitignore',
+    onChange: (events) => {
+      events.forEach(({ uri }) => {
+        queue(() => handleGitignoreEvent())
+      })
+    },
+  })
+  registerWatcher(watcher)
+}
+```
+
+#### Initialization Simplification
+```typescript
+// Before: Return and collect
+const watchers = setWatchers()
+const dispose = () => watchers.forEach((w) => w.dispose())
+
+// After: Self-registration
+run()  // Watchers register themselves
+const dispose = disposeWatchers  // From state
+```
+
+### Benefits Achieved
+
+#### Code Organization
+- **Modular Structure**: Each watcher in separate file (20-30 lines each)
+- **Clear Boundaries**: Explicit module boundaries and dependencies
+- **Easy Navigation**: Find and modify specific watcher logic quickly
+- **Single Responsibility**: Each file has one clear purpose
+
+#### Reduced Coupling
+- **No Parameter Passing**: TreeProvider accessed from state, not passed through chain
+- **No Return Collection**: Watchers don't return disposables to be collected
+- **Independent Modules**: Each watcher can be developed/tested independently
+- **Loose Dependencies**: Watchers only depend on state and hooks
+
+#### Maintainability
+- **Easy to Add**: Create new watcher file, add call in run()
+- **Easy to Remove**: Delete file, remove from run()
+- **Easy to Test**: Each watcher can be unit tested independently
+- **Clear Structure**: Consistent pattern across all watchers
+
+### Technical Achievements
+- ✅ **Decomposed Watchers**: 6 separate watcher files replacing monolithic set-watchers.ts
+- ✅ **Self-Registration**: Watchers register themselves in centralized state
+- ✅ **Centralized Queue**: Processing queue moved to shared/state.ts
+- ✅ **State Enhancement**: Added registerWatcher(), disposeWatchers(), queue() functions
+- ✅ **Simplified Initialization**: Eliminated array collection and parameter passing
+- ✅ **Documentation**: Complete decision document and progress log updates
+
+### Version Progression
+- **0.0.48**: Watcher self-registration pattern implementation
+
+### Current Status
+**Phase 1.36 Complete** - Watcher Self-Registration Pattern
+
+- Monolithic set-watchers.ts decomposed into 6 modular watcher files
+- Self-registration pattern eliminates return value collection
+- Centralized state management with queue and watchers array
+- Simplified initialization with run() and disposeWatchers()
+- Complete documentation of architecture decision
+- Ready for comprehensive testing
+
+### Next Development Focus
+- Phase 2: Comprehensive cross-platform testing and validation
+- Performance testing with large projects
+- Unit testing with isolated watcher modules
+- VSCode Marketplace preparation and publishing

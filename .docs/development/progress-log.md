@@ -382,6 +382,8 @@ sl-package.json
 - **Workspace Detection** - Auto-detect symlink configurations
 - **Batch Operations** - Multi-workspace symlink management
 - **NPM Package** - Extract file watcher hooks (`useFileWatcher`, `useConfigWatcher`) into standalone npm package for VSCode extension developers
+- **Conditional Watchers** - Some watchers could be conditionally registered based on settings
+- **Watcher Groups** - Could group related watchers for batch operations
 
 ### ✅ Phase 1.25: Windows Batch Script Optimization (Completed - 10.10.2025)
 
@@ -709,13 +711,88 @@ src/shared/state.ts (state management)
 - **Cleaner Imports**: Explicit module boundaries and dependencies
 - **Scalability**: Easy to add new features without bloating single file
 
+### ✅ Phase 1.36: Watcher Self-Registration Pattern (Completed - 14.10.2025)
+
+- **Date**: 14.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Watcher Decomposition**: Separated set-watchers.ts into individual watcher files in watchers/ folder
+  - **Self-Registration Pattern**: Watchers register themselves via registerWatcher() instead of returning disposables
+  - **Centralized Queue**: Moved processing queue to shared/state.ts for global access
+  - **State Management Enhancement**: Added registerWatcher(), disposeWatchers(), queue() to state module
+  - **Simplified Initialization**: Eliminated watcher array collection and parameter passing
+  - **Modular Architecture**: Each watcher is independent, self-contained module
+
+#### Technical Implementation Details
+
+**Watcher Files Created**:
+- `config-watcher.ts` - VSCode settings changes with queue integration
+- `gitignore-watcher.ts` - .gitignore file changes
+- `symlink-config-watcher.ts` - symlink-config.json changes with tree refresh
+- `next-config-watcher.ts` - next.symlink-config.json at workspace root
+- `current-config-watcher.ts` - current.symlink-config.json at workspace root
+- `symlinks-watcher.ts` - Symlink file changes with 500ms debounce
+- `run.ts` - Orchestration function calling all create functions
+- `index.ts` - Public API exports
+
+**Self-Registration Pattern**:
+```typescript
+// Before: Return and collect
+export function setWatchers(): vscode.Disposable[] {
+  const watchers: vscode.Disposable[] = []
+  const watcher = useFileWatcher(...)
+  watchers.push(watcher)
+  return watchers
+}
+
+// After: Self-registration
+export function createGitignoreWatcher(): void {
+  const watcher = useFileWatcher(...)
+  registerWatcher(watcher)  // Self-registers in state
+}
+```
+
+**State Module Enhancements**:
+```typescript
+// Added to shared/state.ts
+const watchers: vscode.Disposable[] = []
+let processingQueue: Promise<void> = Promise.resolve()
+
+export function registerWatcher(watcher: vscode.Disposable): void
+export function disposeWatchers(): void
+export function queue(fn: () => Promise<void>): Promise<void>
+```
+
+**Simplified Initialization**:
+```typescript
+// Before: Collect and manage array
+const watchers = setWatchers()
+const dispose = () => watchers.forEach((w) => w.dispose())
+
+// After: Self-registration
+run()  // Watchers register themselves
+const dispose = disposeWatchers  // From state
+```
+
+**Benefits**:
+- **Modular Structure**: Each watcher in separate file with single responsibility
+- **Reduced Coupling**: No parameter passing, no return value collection
+- **Centralized State**: Queue and watchers array in shared state module
+- **Better Maintainability**: Easy to add/remove watchers
+- **Improved Testability**: Each watcher can be unit tested independently
+
+**Breaking Changes**:
+- **File Structure**: set-watchers.ts removed, replaced with watchers/ folder
+- **Initialization**: setWatchers() replaced with run() function
+- **State Module**: Queue moved from set-watchers to shared/state.ts
+
 ## Current Status
 
-**Phase**: Phase 1.35 Complete - Extension Decomposition  
+**Phase**: Phase 1.36 Complete - Watcher Self-Registration Pattern  
 **Branch**: `main`  
-**Version**: 0.0.45  
-**Latest**: Decomposed extension into modular architecture with better organization  
-**Extension Status**: Core development complete with improved architecture, ready for comprehensive testing  
+**Version**: 0.0.48  
+**Latest**: Implemented self-registering watcher pattern with centralized state management  
+**Extension Status**: Core development complete with modular watcher architecture, ready for comprehensive testing  
 **Next**: Cross-platform testing and validation (Phase 2)
 
 ## Extension Completion Summary

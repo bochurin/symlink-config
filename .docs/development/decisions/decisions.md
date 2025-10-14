@@ -15,6 +15,7 @@
 - **[Windows Batch Script Optimization](windows-batch-script-optimization.md)** - Array-based script generation with proper line endings and error handling
 - **[Unix Script Generation](unix-script-generation.md)** - Cross-platform script consistency with standalone usage capability
 - **[File Watcher Filter System](file-watcher-filter-system.md)** - Enhanced filtering with debouncing and shared utilities
+- **[Watcher Self-Registration Pattern](watcher-self-registration-pattern.md)** - Modular watcher architecture with centralized state management
 
 ## Development Process
 
