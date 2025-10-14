@@ -6,6 +6,7 @@
 - **[VSCode Integration Strategy](vscode-integration-strategy.md)** - Command palette, status bar, and output channel approach
 - **[Gitignore Manager Architecture](gitignore-manager-architecture.md)** - Rewrite for consistency and state-based change detection
 - **[Shared Utilities Architecture](shared-utilities-architecture.md)** - Shared file operations and simplified state management
+- **[File System Abstraction](file-system-abstraction.md)** - Centralized file system operations in shared/file-ops module
 - **[Configuration Management](configuration-management.md)** - User-configurable gitignore management and extension flexibility
 - **[Workspace Manager Architecture](workspace-manager-architecture.md)** - VSCode workspace settings management and configuration hooks
 - **[Hook Interface Improvements](hook-interface-improvements.md)** - Simplified hooks with automatic detection and cleaner APIs

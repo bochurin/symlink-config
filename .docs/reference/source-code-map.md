@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
 **Generated**: 13.10.2025  
-**Version**: 0.0.37  
+**Version**: 0.0.39  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -94,17 +94,28 @@
 - `full-path.ts`
 - `is-root-file.ts`
 - `is-symlink.ts`
+- `read-dir.ts`
+- `read-symlink.ts`
+- `stat-file.ts`
 
 **Functions:**
 - `readFile(file: string): string`
-- `writeFile(file: string, content: string): Promise<void>`
+- `writeFile(file: string, content: string, mode?: number): Promise<void>`
 - `fullPath(endPath: string): string`
 - `isRootFile(uri: vscode.Uri): boolean`
 - `isSymlink(uri: vscode.Uri): Promise<boolean>` (uses bitwise AND for type checking)
+- `readDir(relativePath: string): fs.Dirent[]`
+- `readSymlink(file: string): string`
+- `statFile(file: string): fs.Stats`
 
 **Implementation Details:**
 - `isSymlink` uses `(stats.type & vscode.FileType.SymbolicLink) !== 0` to detect symlinks
 - Handles both file symlinks (65 = 64|1) and directory symlinks (66 = 64|2)
+- `writeFile` accepts optional `mode` parameter for Unix executable permissions (e.g., 0o755)
+- `readDir` wraps `fs.readdirSync()` with `{ withFileTypes: true }`, returns empty array on error
+- `readSymlink` wraps `fs.readlinkSync()` for reading symlink targets
+- `statFile` wraps `fs.statSync()` for getting file/directory stats
+- **Architecture Rule**: Only file-ops module uses `fs` directly; all other code uses these abstractions
 
 ### `src/shared/gitignore-ops/`
 **Files:**
@@ -142,7 +153,7 @@
 - `read.ts`
 
 **Functions:**
-- `generate(): Promise<Record<string, { spacing: string; active: boolean }>>`
+- `generate(): Record<string, { spacing: string; active: boolean }>` (synchronous)
 - `handleEvent(): Promise<void>`
 - `init(): Promise<void>`
 - `make(): Promise<void>`
@@ -175,7 +186,7 @@
 - `types.ts`
 
 **Functions:**
-- `generate(): string`
+- `generate(): string` (synchronous)
 - `findConfigFiles(): string[]` (internal)
 - `createMasterConfig(configFiles: string[]): Config` (internal)
 - `convertToAtSyntax(entry: ConfigEntry, configDir: string): ConfigEntry` (internal)
@@ -184,7 +195,7 @@
 - `handleEvent(event: FileWatchEvent): Promise<void>`
 - `init(): Promise<void>`
 - `make(): Promise<void>`
-- `needsRegenerate(): Promise<boolean>`
+- `needsRegenerate(): boolean` (synchronous)
 - `read(): string`
 
 **Types:**
@@ -202,12 +213,12 @@
 - `read.ts`
 
 **Functions:**
-- `generate(): Promise<string>`
-- `scanWorkspaceSymlinks(): Promise<ExistingSymlink[]>` (internal)
-- `handleEvent(action: string): Promise<void>`
+- `generate(): string` (synchronous)
+- `scanWorkspaceSymlinks(): ExistingSymlink[]` (internal, synchronous)
+- `handleEvent(event: string): Promise<void>`
 - `init(): Promise<void>`
 - `make(): Promise<void>`
-- `needsRegenerate(): Promise<boolean>`
+- `needsRegenerate(): boolean` (synchronous)
 - `read(): string`
 
 **Types:**
@@ -361,6 +372,7 @@
 
 **Key Patterns:**
 - Manager modules follow consistent structure: generate, handle-event, init, make, read
+- All generate functions are synchronous for consistency
 - Shared modules provide reusable utilities for config, file, gitignore, and vscode operations
 - Hook modules provide reusable patterns for file watching and configuration watching with filtering and debouncing
 - Filter functions work per-event: `(uri, event) => boolean` before accumulation
@@ -369,6 +381,7 @@
 - User interaction logic in main command functions, not in generate functions
 - Type definitions are distributed across modules with clear interfaces
 - Constants are centralized in shared/constants.ts for maintainability
+- **File System Abstraction**: Only `shared/file-ops/` uses `fs` module directly; all other code uses abstraction functions
 
 **Change Tracking Notes:**
 - Function signatures include parameter types and return types
