@@ -1,16 +1,11 @@
 import * as vscode from 'vscode'
 import * as state from '../shared/state'
-import { init as initGitignore } from '../managers/gitignore-file'
-import { init as initNextConfig } from '../managers/next-config-file'
-import { init as initCurrentConfig } from '../managers/current-config'
-import { init as initFileExclude } from '../managers/file-exclude-settings'
-import { setWatchers } from './set-watchers'
-import { CONFIG } from '../shared/constants'
-import { read as readSymlinkSettings } from '../managers/symlink-settings'
+import { runAll as runWatchers } from '../watchers'
+import { initManagers } from './init-managers'
 
 let isInitialized = false
 
-export async function initializeExtension(): Promise<(() => void) | undefined> {
+export async function initialize(): Promise<(() => void) | undefined> {
   if (isInitialized || !vscode.workspace.workspaceFolders) {
     return
   }
@@ -25,21 +20,15 @@ export async function initializeExtension(): Promise<(() => void) | undefined> {
   // save it to the workspace (only!) settings, and ask user to modify it if they need.
   // watch workspace folders changes and ask to check if the root path is still correct
 
-  const watchWorkspace = readSymlinkSettings(
-    CONFIG.SYMLINK_CONFIG.WATCH_WORKSPACE,
-  )
-  await Promise.all([
-    initFileExclude(),
-    initGitignore(),
-    ...(watchWorkspace ? [initNextConfig(), initCurrentConfig()] : []),
-  ])
+  await initManagers()
 
-  const dispose = setWatchers()
+  runWatchers()
   isInitialized = true
 
-  return dispose
+  return state.disposeWatchers
 }
 
-export function resetInitialization() {
+export function reset() {
+  state.disposeWatchers()
   isInitialized = false
 }
