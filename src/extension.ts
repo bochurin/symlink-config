@@ -10,14 +10,14 @@ import { init as initFileExclude } from './managers/file-exclude-settings'
 import { setWatchers } from './set-watchers'
 import { SymlinkTreeProvider } from './views/symlink-tree'
 import {
-  createSymlink,
+  selectSymlinkSource,
   selectSymlinkTarget,
   cancelSymlinkCreation,
 } from './commands/create-symlink'
 import { openSymlinkConfig } from './commands/open-symlink-config'
 import {
   applyConfiguration,
-  clearConfiguration,
+  cleanConfiguration,
 } from './commands/apply-configuration'
 
 import { collapseAll } from './commands/tree-operations'
@@ -79,10 +79,10 @@ export async function activate(context: vscode.ExtensionContext) {
   )
   context.subscriptions.push(toggleViewCommand)
 
-  // Register createSymlink commands
-  const createSymlinkCommand = vscode.commands.registerCommand(
-    'symlink-config.createSymlink',
-    createSymlink,
+  // Register selectSymlinkSource commands
+  const selectSymlinkSourceCommand = vscode.commands.registerCommand(
+    'symlink-config.selectSymlinkSource',
+    selectSymlinkSource,
   )
   const selectTargetCommand = vscode.commands.registerCommand(
     'symlink-config.selectSymlinkTarget',
@@ -100,21 +100,21 @@ export async function activate(context: vscode.ExtensionContext) {
     'symlink-config.applyConfiguration',
     applyConfiguration,
   )
-  const clearConfigCommand = vscode.commands.registerCommand(
-    'symlink-config.clearConfiguration',
-    clearConfiguration,
+  const cleanConfigCommand = vscode.commands.registerCommand(
+    'symlink-config.cleanConfiguration',
+    cleanConfiguration,
   )
   const collapseAllCommand = vscode.commands.registerCommand(
     'symlink-config.collapseAll',
     collapseAll,
   )
   context.subscriptions.push(
-    createSymlinkCommand,
+    selectSymlinkSourceCommand,
     selectTargetCommand,
     cancelCommand,
     openConfigCommand,
     applyConfigCommand,
-    clearConfigCommand,
+    cleanConfigCommand,
     collapseAllCommand,
   )
 

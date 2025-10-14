@@ -29,7 +29,7 @@ function updateContext() {
   }
 }
 
-export async function createSymlink(uri: vscode.Uri) {
+export async function selectSymlinkSource(uri: vscode.Uri) {
   if (!selectedSource) {
     // First click - select source
     selectedSource = uri

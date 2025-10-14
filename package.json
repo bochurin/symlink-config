@@ -2,7 +2,7 @@
   "name": "@bochurin/symlink-config",
   "displayName": "symlink.config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.40",
+  "version": "0.0.41",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -16,33 +16,30 @@
   "contributes": {
     "commands": [
       {
-        "command": "symlink-config.createAll",
-        "title": "Symlinks: Create All",
-        "category": "Symlink Config"
+        "command": "symlink-config.applyConfiguration",
+        "title": "Apply configuration",
+        "category": "symlink-config",
+        "icon": "$(play)"
       },
       {
-        "command": "symlink-config.cleanAll",
-        "title": "Symlinks: Clean All",
-        "category": "Symlink Config"
-      },
-      {
-        "command": "symlink-config.dryRun",
-        "title": "Symlinks: Dry Run",
-        "category": "Symlink Config"
+        "command": "symlink-config.cleanConfiguration",
+        "title": "Clean handled symlinks",
+        "category": "symlink-config",
+        "icon": "$(trash)"
       },
       {
         "command": "symlink-config.openSettings",
-        "title": "Open Settings",
+        "title": "Open symlin-config settings",
         "icon": "$(gear)"
       },
       {
         "command": "symlink-config.toggleView",
-        "title": "Toggle View Mode",
+        "title": "Toggle tree view",
         "icon": "$(arrow-swap)"
       },
       {
-        "command": "symlink-config.createSymlink",
-        "title": "Create Symlink"
+        "command": "symlink-config.selectSymlinkSource",
+        "title": "Select as symlink source"
       },
       {
         "command": "symlink-config.selectSymlinkTarget",
@@ -57,18 +54,8 @@
         "title": "Open configuration"
       },
       {
-        "command": "symlink-config.applyConfiguration",
-        "title": "Apply configuration",
-        "icon": "$(play)"
-      },
-      {
-        "command": "symlink-config.clearConfiguration",
-        "title": "Clear symlinks",
-        "icon": "$(trash)"
-      },
-      {
         "command": "symlink-config.collapseAll",
-        "title": "Collapse All",
+        "title": "Collapse all",
         "icon": "$(collapse-all)"
       }
     ],
@@ -97,13 +84,21 @@
         },
         "symlink-config.scriptGeneration": {
           "type": "string",
-          "enum": ["windows-only", "unix-only", "both", "auto"],
+          "enum": [
+            "windows-only",
+            "unix-only",
+            "both",
+            "auto"
+          ],
           "default": "auto",
           "description": "Which platforms to generate scripts for. Auto detects current platform."
         },
         "symlink-config.symlinkPathMode": {
           "type": "string",
-          "enum": ["relative", "absolute"],
+          "enum": [
+            "relative",
+            "absolute"
+          ],
           "default": "relative",
           "description": "Generate symlinks with relative paths from workspace root or absolute paths."
         }
@@ -122,24 +117,40 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "symlink-config.createAll",
+          "command": "symlink-config.applyConfiguration",
           "when": "workspaceFolderCount > 0"
         },
         {
-          "command": "symlink-config.cleanAll",
+          "command": "symlink-config.cleanConfiguration",
           "when": "workspaceFolderCount > 0"
         },
         {
-          "command": "symlink-config.dryRun",
-          "when": "workspaceFolderCount > 0"
+          "command": "symlink-config.openSettings",
+          "when": "false"
+        },
+        {
+          "command": "symlink-config.toggleView",
+          "when": "false"
+        },
+        {
+          "command": "symlink-config.selectSymlinkSource",
+          "when": "false"
+        },
+        {
+          "command": "symlink-config.selectSymlinkTarget",
+          "when": "false"
         },
         {
           "command": "symlink-config.cancelSymlinkCreation",
-          "when": "workspaceFolderCount > 0 && symlink-config.sourceSelected"
+          "when": "false"
         },
         {
-          "command": "symlink-config.applyConfiguration",
-          "when": "workspaceFolderCount > 0"
+          "command": "symlink-config.openSymlinkConfig",
+          "when": "false"
+        },
+        {
+          "command": "symlink-config.collapseAll",
+          "when": "false"
         }
       ],
       "view/title": [
@@ -150,9 +161,9 @@
           "icon": "$(play)"
         },
         {
-          "command": "symlink-config.clearConfiguration",
+          "command": "symlink-config.cleanConfiguration",
           "when": "view == symlink-config",
-          "group": "navigation@2",
+          "group": "navigation@1",
           "icon": "$(trash)"
         },
         {
@@ -164,17 +175,23 @@
         {
           "command": "symlink-config.collapseAll",
           "when": "view == symlink-config",
-          "group": "navigation@4",
+          "group": "navigation@5",
           "icon": "$(collapse-all)"
         },
         {
           "command": "symlink-config.openSettings",
           "when": "view == symlink-config",
-          "group": "navigation@5",
+          "group": "navigation@7",
           "icon": "$(gear)"
         },
         {
           "command": "symlink-config.applyConfiguration",
+          "when": "view == symlink-config",
+          "group": "1_apply",
+          "icon": "$(play)"
+        },
+        {
+          "command": "symlink-config.cleanConfiguration",
           "when": "view == symlink-config",
           "group": "1_apply",
           "icon": "$(play)"
@@ -200,7 +217,7 @@
       ],
       "explorer/context": [
         {
-          "command": "symlink-config.createSymlink",
+          "command": "symlink-config.selectSymlinkSource",
           "when": "(!explorerResourceIsFolder || explorerResourceIsFolder) && !symlink-config.sourceSelected && view != symlink-config",
           "group": "7_modification"
         },

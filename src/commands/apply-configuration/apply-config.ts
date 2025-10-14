@@ -17,8 +17,8 @@ export async function applyConfig() {
 
   // Confirmation dialog
   const confirmed = await confirm(
-    'Generate symlink scripts based on configuration?',
-    'Yes, Generate Scripts',
+    'Generate symlink scripts to apply configuration?',
+    'Yes, Generate Applying Scripts',
   )
 
   if (!confirmed) {
@@ -58,7 +58,7 @@ export async function applyConfig() {
 
       const options = ['Open in Code', 'Run as Admin']
       const choice = await vscode.window.showInformationMessage(
-        `Apply script generated: ${path.basename(scriptPath)}`,
+        `Applying script generated: ${path.basename(scriptPath)}`,
         { modal: true },
         ...options,
       )
@@ -87,7 +87,7 @@ export async function applyConfig() {
 
       const options = ['Open in Code', 'Run Now']
       const choice = await vscode.window.showInformationMessage(
-        `Apply script generated: ${path.basename(scriptPath)}`,
+        `Applying script generated: ${path.basename(scriptPath)}`,
         { modal: true },
         ...options,
       )

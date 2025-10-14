@@ -18,8 +18,8 @@ export async function cleanConfig(): Promise<void> {
 
   // Confirmation dialog for script generation
   const confirmed = await confirmWarning(
-    'Generate script to remove all symlinks hadled by the extesion?',
-    'Yes, Generate Clear Script',
+    'Generate cleaning script to remove all symlinks hadled by the extesion?',
+    'Yes, Generate Cleaning Script',
   )
 
   if (!confirmed) {
@@ -40,7 +40,7 @@ export async function cleanConfig(): Promise<void> {
       // Show options to user
       const options = ['Open in Code', 'Run as Admin']
       const choice = await vscode.window.showWarningMessage(
-        `Clear script generated: ${path.basename(scriptPath)}`,
+        `Cleaning script generated: ${path.basename(scriptPath)}`,
         { modal: true },
         ...options,
       )
@@ -68,7 +68,7 @@ export async function cleanConfig(): Promise<void> {
       // Show options to user
       const options = ['Open in Code', 'Run Now']
       const choice = await vscode.window.showWarningMessage(
-        `Clear script generated: ${path.basename(scriptPath)}`,
+        `Cleaning script generated: ${path.basename(scriptPath)}`,
         { modal: true },
         ...options,
       )
@@ -85,6 +85,8 @@ export async function cleanConfig(): Promise<void> {
       }
     }
   } catch (error) {
-    vscode.window.showErrorMessage(`Failed to generate clear script: ${error}`)
+    vscode.window.showErrorMessage(
+      `Failed to generate cleaning script: ${error}`,
+    )
   }
 }
