@@ -7,7 +7,7 @@ export async function handleEvent(event: FileWatchEvent) {
   const needsRegen = event === FileWatchEvent.Deleted || needsRegenerate()
 
   if (needsRegen) {
-    info(`next.symlink.config.json was ${event}. Regenerating...`)
+    info(`next.symlink-config.json was ${event}. Regenerating...`)
     await make()
   }
 }

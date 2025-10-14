@@ -62,7 +62,9 @@ export async function selectSymlinkSource(uri: vscode.Uri) {
 export async function selectSymlinkTarget(uri: vscode.Uri) {
   // Check if selected item is a symlink
   if (await isSymlink(uri)) {
-    vscode.window.showWarningMessage('Cannot select a symlink as target folder.')
+    vscode.window.showWarningMessage(
+      'Cannot select a symlink as target folder.',
+    )
     return
   }
 
@@ -107,7 +109,7 @@ async function createSymlinkConfig(
     .replace(/\\/g, '/')
   const sourceName = path.basename(source.fsPath)
 
-  const configPath = path.join(targetFolder.fsPath, 'symlink.config.json')
+  const configPath = path.join(targetFolder.fsPath, 'symlink-config.json')
 
   // Read existing config or create new
   let config: any = {
@@ -143,7 +145,7 @@ async function createSymlinkConfig(
   // Write config to file then open it
   const configContent = JSON.stringify(config, null, 2)
   await fs.writeFile(configPath, configContent, 'utf8')
-  
+
   const document = await vscode.workspace.openTextDocument(configPath)
   await vscode.window.showTextDocument(document)
 

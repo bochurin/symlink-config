@@ -7,8 +7,5 @@ node_modules
 # Local commit message drafts
 *commit-message.txt
 
-# Bat script for symlink creation
-process_symlinks*.bat
-
 # Test workspace
 test-workspace/

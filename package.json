@@ -1,8 +1,8 @@
 {
   "name": "@bochurin/symlink-config",
-  "displayName": "symlink.config",
+  "displayName": "symlink-config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.42",
+  "version": "0.0.43",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -60,7 +60,7 @@
       }
     ],
     "configuration": {
-      "title": "symlink.config",
+      "title": "symlink-config",
       "properties": {
         "symlink-config.silent": {
           "type": "boolean",
@@ -80,7 +80,7 @@
         "symlink-config.hideSymlinkConfigs": {
           "type": "boolean",
           "default": false,
-          "description": "Automatically hide symlink.config.json files from VSCode Explorer."
+          "description": "Automatically hide symlink-config.json files from VSCode Explorer."
         },
         "symlink-config.scriptGeneration": {
           "type": "string",
@@ -108,7 +108,7 @@
       "explorer": [
         {
           "id": "symlink-config",
-          "name": "symlink.config",
+          "name": "symlink-config",
           "when": "workspaceFolderCount > 0",
           "icon": "$(link-external)"
         }

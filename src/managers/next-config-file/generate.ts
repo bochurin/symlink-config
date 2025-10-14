@@ -25,7 +25,7 @@ function findConfigFiles(): string[] {
         const fullPath = path.join(dir, entry.name)
         if (entry.isDirectory()) {
           scanDirectory(fullPath)
-        } else if (entry.name === 'symlink.config.json') {
+        } else if (entry.name === 'symlink-config.json') {
           configFiles.push(fullPath)
         }
       }
