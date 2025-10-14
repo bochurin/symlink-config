@@ -572,3 +572,122 @@ filter: (uri, event) => isSymlink(uri)
 - Performance testing with large projects
 - User experience refinement
 - VSCode Marketplace preparation and publishing
+
+## Session 9: File System Abstraction (13.10.2025)
+
+### Context
+- Continued from Phase 1.30 (File Watcher Event Accumulation)
+- Focus on centralizing all file system operations in shared/file-ops module
+- Implementing architecture rule: only file-ops uses fs directly
+
+### Key Developments
+
+#### File System Abstraction Layer
+- **New Functions Created**:
+  - `readDir(relativePath: string): fs.Dirent[]` - Wraps fs.readdirSync with workspace path resolution
+  - `readSymlink(file: string): string` - Wraps fs.readlinkSync for reading symlink targets
+  - `statFile(file: string): fs.Stats` - Wraps fs.statSync for file/directory stats
+- **Enhanced writeFile**: Added optional `mode` parameter for Unix executable permissions (0o755)
+- **Architecture Rule**: Only shared/file-ops module uses fs/fs.promises directly
+
+#### Code Refactoring
+- **Managers Updated**:
+  - `current-config/generate.ts`: Now uses readDir, readSymlink, statFile
+  - `next-config-file/generate.ts`: Now uses readDir, readFile
+- **Commands Updated**:
+  - All script generators (apply/clear, Windows/Unix) now use writeFile abstraction
+  - Removed all direct fs/fs.promises imports from command modules
+
+#### Benefits Achieved
+- **Centralized Control**: All file operations in single module
+- **Consistent Error Handling**: Unified approach across all file operations
+- **Better Testability**: Easy to mock file operations for unit tests
+- **Maintainability**: Changes to file handling affect all usage points
+- **Code Organization**: Clear separation between business logic and file I/O
+
+### Technical Implementation
+
+#### readDir Function
+```typescript
+export function readDir(relativePath: string): fs.Dirent[] {
+  try {
+    const workspaceRoot = getWorkspaceRoot()
+    const fullPath = path.join(workspaceRoot, relativePath)
+    return fs.readdirSync(fullPath, { withFileTypes: true })
+  } catch {
+    return []
+  }
+}
+```
+
+#### readSymlink Function
+```typescript
+export function readSymlink(file: string): string {
+  return fs.readlinkSync(fullPath(file))
+}
+```
+
+#### statFile Function
+```typescript
+export function statFile(file: string): fs.Stats {
+  return fs.statSync(fullPath(file))
+}
+```
+
+#### Enhanced writeFile
+```typescript
+export async function writeFile(file: string, content: string, mode?: number) {
+  const filePath = fullPath(file)
+  try {
+    await fs.writeFile(filePath, content, { encoding: 'utf8', mode })
+  } catch (error) {
+    console.error('Failed to update gitignore:', error)
+  }
+}
+```
+
+### Files Modified
+- `src/shared/file-ops/read-dir.ts` (created)
+- `src/shared/file-ops/read-symlink.ts` (created, renamed from read-link.ts)
+- `src/shared/file-ops/stat-file.ts` (created)
+- `src/shared/file-ops/write-file.ts` (enhanced with mode parameter)
+- `src/shared/file-ops/index.ts` (added new exports)
+- `src/managers/current-config/generate.ts` (uses new abstractions)
+- `src/managers/next-config-file/generate.ts` (uses new abstractions)
+- `src/commands/apply-configuration/generate-apply-windows-script.ts` (uses writeFile)
+- `src/commands/apply-configuration/generate-apply-unix-script.ts` (uses writeFile with mode)
+- `src/commands/apply-configuration/generate-clear-windows-script.ts` (uses writeFile)
+- `src/commands/apply-configuration/generate-clear-unix-script.ts` (uses writeFile with mode)
+
+### Documentation Updates
+- Created `file-system-abstraction.md` decision document
+- Updated `source-code-map.md` with new file-ops functions
+- Added Phase 1.31 to `progress-log.md`
+- Updated `decisions.md` index
+
+### Technical Achievements
+- ✅ **Centralized File Operations**: All fs usage in shared/file-ops module
+- ✅ **New Abstraction Functions**: readDir, readSymlink, statFile
+- ✅ **Enhanced writeFile**: Optional mode parameter for Unix permissions
+- ✅ **Code Cleanup**: Removed all direct fs usage outside file-ops
+- ✅ **Architecture Compliance**: Enforced single-responsibility for file operations
+- ✅ **Better Testability**: Centralized operations enable easier mocking
+
+### Version Progression
+- **0.0.39**: File system abstraction implementation
+
+### Current Status
+**Phase 1.31 Complete** - File System Abstraction
+
+- All file system operations centralized in shared/file-ops module
+- New abstraction functions for directory reading, symlink reading, and file stats
+- Enhanced writeFile with Unix executable permission support
+- Removed all direct fs usage from managers and commands
+- Complete documentation of architecture decision and implementation
+- Ready for comprehensive testing
+
+### Next Development Focus
+- Phase 2: Comprehensive cross-platform testing and validation
+- Performance testing with large projects
+- Unit testing with mocked file operations
+- VSCode Marketplace preparation and publishing
