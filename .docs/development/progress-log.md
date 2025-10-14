@@ -512,12 +512,89 @@ handlers.forEach((handler) => handler([{ uri, event }]))
 - **Better Organization**: Clear separation between script generation and user interaction
 - **Code Reusability**: Shared admin script generation eliminates duplication
 
+### ✅ Phase 1.32: Command Organization and Naming Improvements (Completed - 14.10.2025)
+
+- **Date**: 14.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Legacy Command Removal**: Removed unused commands (createAll, cleanAll, dryRun) from package.json
+  - **Command Palette Organization**: Added proper entries for applyConfiguration and cleanConfiguration
+  - **Command Renaming**: Renamed createSymlink to selectSymlinkSource for clarity
+  - **UI Command Hiding**: Hidden UI-only commands from Command Palette with "when": "false"
+  - **Clean Command Palette**: Only 2 commands visible: Apply Configuration and Clean Configuration
+  - **Context Menu Access**: All other commands accessible through context menus and tree view buttons
+
+#### Technical Implementation Details
+
+**Command Palette Visibility Control**:
+```json
+// Visible commands
+{
+  "command": "symlink-config.applyConfiguration",
+  "when": "workspaceFolderCount > 0"
+}
+
+// Hidden commands
+{
+  "command": "symlink-config.openSettings",
+  "when": "false"
+}
+```
+
+**Command Renamings**:
+- `createSymlink` → `selectSymlinkSource` (function and command ID)
+- Legacy commands removed: `createAll`, `cleanAll`, `dryRun`
+
+**Benefits**:
+- **Cleaner UX**: Users see only essential commands in Command Palette
+- **Better Organization**: Commands grouped by access method (palette vs context menu)
+- **Consistent Naming**: Command names clearly describe their purpose
+- **Reduced Confusion**: No legacy/unused commands cluttering the interface
+
+### ✅ Phase 1.33: Symlink Selection Validation (Completed - 14.10.2025)
+
+- **Date**: 14.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Context Menu Filtering**: Added `!resourceIsSymlink` condition to prevent symlink selection
+  - **Runtime Validation**: Added `isSymlink()` checks in command handlers
+  - **User Warnings**: Clear warning messages when attempting to select symlinks
+  - **Async Updates**: Changed `selectSymlinkTarget` to async for validation support
+  - **Circular Reference Prevention**: Prevents invalid symlink configurations
+
+#### Technical Implementation Details
+
+**Context Menu Conditions**:
+```json
+{
+  "command": "symlink-config.selectSymlinkSource",
+  "when": "... && !resourceIsSymlink && ..."
+}
+```
+
+**Runtime Validation**:
+```typescript
+export async function selectSymlinkSource(uri: vscode.Uri) {
+  if (await isSymlink(uri)) {
+    vscode.window.showWarningMessage('Cannot select a symlink as source.')
+    return
+  }
+  // ... rest of logic
+}
+```
+
+**Benefits**:
+- **Prevents Invalid Configs**: Users cannot create circular symlink references
+- **Clear Feedback**: Warning messages explain why selection is blocked
+- **Dual Protection**: Both UI filtering and runtime validation
+- **Better UX**: Commands don't appear on symlinks in context menu
+
 ## Current Status
 
-**Phase**: Phase 1.31 Complete - File System Abstraction  
+**Phase**: Phase 1.33 Complete - Symlink Selection Validation  
 **Branch**: `main`  
-**Version**: 0.0.39  
-**Latest**: Centralized all file system operations in shared/file-ops module  
+**Version**: 0.0.42  
+**Latest**: Prevented symlink selection as source/target with validation  
 **Extension Status**: Core development complete, ready for comprehensive testing  
 **Next**: Cross-platform testing and validation (Phase 2)
 
