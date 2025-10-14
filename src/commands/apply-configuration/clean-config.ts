@@ -2,14 +2,14 @@ import * as vscode from 'vscode'
 import * as os from 'os'
 import * as path from 'path'
 
-import { generateClearWindowsScript } from './generate-clear-windows-script'
-import { generateClearUnixScript } from './generate-clear-unix-script'
+import { generateCleanWindowsScript } from './generate-clean-windows-script'
+import { generateCleanUnixScript } from './generate-clean-unix-script'
 import { getWorkspaceRoot } from '../../state'
 import { confirmWarning } from '../../shared/vscode'
 import { FILE_NAMES } from '../../shared/constants'
 import { generateAdminScript } from './generate-admin-script'
 
-export async function clearConfiguration(): Promise<void> {
+export async function cleanConfig(): Promise<void> {
   const workspaceRoot = getWorkspaceRoot()
   if (!workspaceRoot) {
     vscode.window.showErrorMessage('No workspace folder found')
@@ -18,7 +18,7 @@ export async function clearConfiguration(): Promise<void> {
 
   // Confirmation dialog for script generation
   const confirmed = await confirmWarning(
-    'Generate script to remove all symlinks defined in current.symlink.config.json?',
+    'Generate script to remove all symlinks hadled by the extesion?',
     'Yes, Generate Clear Script',
   )
 
@@ -30,7 +30,7 @@ export async function clearConfiguration(): Promise<void> {
 
   try {
     if (isWindows) {
-      await generateClearWindowsScript(workspaceRoot)
+      await generateCleanWindowsScript(workspaceRoot)
       await generateAdminScript(workspaceRoot)
       const scriptPath = path.join(workspaceRoot, FILE_NAMES.CLEAR_SYMLINKS_BAT)
 
@@ -50,13 +50,19 @@ export async function clearConfiguration(): Promise<void> {
         await vscode.window.showTextDocument(document)
       } else if (choice === 'Run as Admin') {
         const adminBatPath = path.join(workspaceRoot, FILE_NAMES.RUN_ADMIN_BAT)
-        const clearBatPath = path.join(workspaceRoot, FILE_NAMES.CLEAR_SYMLINKS_BAT)
-        const terminal = vscode.window.createTerminal({ name: 'Run as Admin', cwd: workspaceRoot })
+        const clearBatPath = path.join(
+          workspaceRoot,
+          FILE_NAMES.CLEAR_SYMLINKS_BAT,
+        )
+        const terminal = vscode.window.createTerminal({
+          name: 'Run as Admin',
+          cwd: workspaceRoot,
+        })
         terminal.sendText(`"${adminBatPath}" "${clearBatPath}"`)
         terminal.show()
       }
     } else {
-      await generateClearUnixScript(workspaceRoot)
+      await generateCleanUnixScript(workspaceRoot)
       const scriptPath = path.join(workspaceRoot, FILE_NAMES.CLEAR_SYMLINKS_SH)
 
       // Show options to user

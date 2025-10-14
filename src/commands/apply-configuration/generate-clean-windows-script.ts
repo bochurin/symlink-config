@@ -3,20 +3,16 @@ import { FILE_NAMES } from '../../shared/constants'
 import { read as readCurrentConfig } from '../../managers/current-config'
 import { writeFile } from '../../shared/file-ops'
 
-export async function generateClearWindowsScript(workspaceRoot: string) {
+export async function generateCleanWindowsScript(workspaceRoot: string) {
   const scriptPath = path.join(workspaceRoot, FILE_NAMES.CLEAR_SYMLINKS_BAT)
   const currentConfig = readCurrentConfig()
-  
+
   if (!currentConfig) {
     return
   }
 
   const config = JSON.parse(currentConfig)
-  const lines = [
-    '@echo off',
-    'echo Clearing symlinks...',
-    ''
-  ]
+  const lines = ['@echo off', 'echo Clearing symlinks...', '']
 
   // Remove directories
   if (config.directories) {
@@ -25,7 +21,7 @@ export async function generateClearWindowsScript(workspaceRoot: string) {
       lines.push(`if exist "${targetPath}" (`)
       lines.push(`  echo Removing ${entry.target}`)
       lines.push(`  rmdir "${targetPath}"`)
-      lines.push(')') 
+      lines.push(')')
     }
   }
 

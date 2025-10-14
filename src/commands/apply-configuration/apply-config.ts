@@ -12,7 +12,7 @@ import { CONFIG_PARAMETERS, FILE_NAMES } from '../../shared/constants'
 import { confirm } from '../../shared/vscode'
 import { generateAdminScript } from './generate-admin-script'
 
-export async function applyConfiguration() {
+export async function applyConfig() {
   const workspaceRoot = getWorkspaceRoot()
 
   // Confirmation dialog
@@ -68,8 +68,14 @@ export async function applyConfiguration() {
         await vscode.window.showTextDocument(document)
       } else if (choice === 'Run as Admin') {
         const adminBatPath = path.join(workspaceRoot, FILE_NAMES.RUN_ADMIN_BAT)
-        const applyBatPath = path.join(workspaceRoot, FILE_NAMES.APPLY_SYMLINKS_BAT)
-        const terminal = vscode.window.createTerminal({ name: 'Run as Admin', cwd: workspaceRoot })
+        const applyBatPath = path.join(
+          workspaceRoot,
+          FILE_NAMES.APPLY_SYMLINKS_BAT,
+        )
+        const terminal = vscode.window.createTerminal({
+          name: 'Run as Admin',
+          cwd: workspaceRoot,
+        })
         terminal.sendText(`"${adminBatPath}" "${applyBatPath}"`)
         terminal.show()
       }

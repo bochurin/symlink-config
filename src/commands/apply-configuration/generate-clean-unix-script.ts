@@ -3,26 +3,19 @@ import { FILE_NAMES } from '../../shared/constants'
 import { read as readCurrentConfig } from '../../managers/current-config'
 import { writeFile } from '../../shared/file-ops'
 
-export async function generateClearUnixScript(workspaceRoot: string) {
+export async function generateCleanUnixScript(workspaceRoot: string) {
   const scriptPath = path.join(workspaceRoot, FILE_NAMES.CLEAR_SYMLINKS_SH)
   const currentConfig = readCurrentConfig()
-  
+
   if (!currentConfig) {
     return
   }
 
   const config = JSON.parse(currentConfig)
-  const lines = [
-    '#!/bin/bash',
-    'echo "Clearing symlinks..."',
-    ''
-  ]
+  const lines = ['#!/bin/bash', 'echo "Clearing symlinks..."', '']
 
   // Remove directories and files
-  const allEntries = [
-    ...(config.directories || []),
-    ...(config.files || [])
-  ]
+  const allEntries = [...(config.directories || []), ...(config.files || [])]
 
   for (const entry of allEntries) {
     const targetPath = path.join(workspaceRoot, entry.target)

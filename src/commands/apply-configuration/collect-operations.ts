@@ -6,7 +6,7 @@ export function collectSymlinkOperations(
 ): SymlinkOperation[] {
   const operations: SymlinkOperation[] = []
 
-  function traverse(node: Record<string, TreeNode>, currentPath: string = '') {
+  const traverse = (node: Record<string, TreeNode>, currentPath: string = '') => {
     for (const [key, treeNode] of Object.entries(node)) {
       const nodePath = currentPath ? `${currentPath}/${key}` : key
 
@@ -35,7 +35,6 @@ export function collectSymlinkOperations(
 
   traverse(tree)
 
-  // Sort operations: deletions first, then creations
   return operations.sort((a, b) => {
     if (a.type === 'delete' && b.type === 'create') return -1
     if (a.type === 'create' && b.type === 'delete') return 1

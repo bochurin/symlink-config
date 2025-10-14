@@ -10,9 +10,10 @@
     "dist": true,
     "node_modules": true,
     "out": true,
-    ".docs": false,
+    ".docs": true,
     ".vscode": true,
-    "**/package-lock.json": true
+    "**/package-lock.json": true,
+    ".amazonq": true
   },
   "search.exclude": {
     "out": true, // set this to false to include "out" folder in search results

@@ -1,2 +1,2 @@
-export { applyConfiguration } from './apply-configuration'
-export { clearConfiguration } from './clear-configuration'
+export { applyConfig as applyConfiguration } from './apply-config'
+export { cleanConfig as clearConfiguration } from './clean-config'
