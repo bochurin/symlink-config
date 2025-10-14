@@ -3,7 +3,7 @@ let workspaceName: string
 let nextSymlinkConfig: string
 let sylentMode: boolean
 let treeProvider: any
-let watchers: any[] = []
+const watchers = new Map<string, any>()
 let processingQueue = Promise.resolve()
 
 export function setWorkspaceRoot(path: string) {
@@ -43,13 +43,21 @@ export function getTreeProvider(): any {
   return treeProvider
 }
 
-export function registerWatcher(watcher: any) {
-  watchers.push(watcher)
+export function registerWatcher(name: string, watcher: any) {
+  watchers.get(name)?.dispose()
+  watchers.set(name, watcher)
 }
 
-export function disposeWatchers() {
-  watchers.forEach((watcher) => watcher.dispose())
-  watchers = []
+export function disposeWatchers(...names: string[]) {
+  if (names.length === 0) {
+    watchers.forEach((watcher) => watcher.dispose())
+    watchers.clear()
+  } else {
+    names.forEach((name) => {
+      watchers.get(name)?.dispose()
+      watchers.delete(name)
+    })
+  }
 }
 
 export function queue(fn: () => Promise<void>): Promise<void> {

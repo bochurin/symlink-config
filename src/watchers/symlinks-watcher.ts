@@ -2,8 +2,9 @@ import { useFileWatcher, FileWatchEvent } from '../hooks/use-file-watcher'
 import { handleEvent as handleCurrentConfigEvent } from '../managers/current-config'
 import { isSymlink } from '../shared/file-ops'
 import { queue, registerWatcher } from '../shared/state'
+import { WATCHERS } from '../shared/constants'
 
-export function createSymlinksWatcher() {
+export function symlinksWatcher() {
   const watcher = useFileWatcher({
     pattern: '**/*',
     debounce: 500,
@@ -13,5 +14,5 @@ export function createSymlinksWatcher() {
       handler: (events) => queue(() => handleCurrentConfigEvent('modified')),
     },
   })
-  registerWatcher(watcher)
+  registerWatcher(WATCHERS.SYMLINKS, watcher)
 }

@@ -2,7 +2,7 @@
   "name": "@bochurin/symlink-config",
   "displayName": "symlink-config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.48",
+  "version": "0.0.49",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -62,27 +62,8 @@
     "configuration": {
       "title": "symlink-config",
       "properties": {
-        "symlink-config.watchWorkspace": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable automatic workspace watching and updating configuration."
-        },
-        "symlink-config.gitignoreServiceFiles": {
-          "type": "boolean",
-          "default": true,
-          "description": "Automatically .gitignore service files."
-        },
-        "symlink-config.hideServiceFiles": {
-          "type": "boolean",
-          "default": false,
-          "description": "Automatically hide service files from VSCode Explorer."
-        },
-        "symlink-config.hideSymlinkConfigs": {
-          "type": "boolean",
-          "default": false,
-          "description": "Automatically hide symlink-config.json files from VSCode Explorer."
-        },
         "symlink-config.scriptGeneration": {
+          "order": 1,
           "type": "string",
           "enum": [
             "windows-only",
@@ -94,6 +75,7 @@
           "description": "Which platforms to generate scripts for. Auto detects current platform."
         },
         "symlink-config.symlinkPathMode": {
+          "order": 2,
           "type": "string",
           "enum": [
             "relative",
@@ -102,7 +84,32 @@
           "default": "relative",
           "description": "Generate symlinks with relative paths from workspace root or absolute paths."
         },
+        "symlink-config.watchWorkspace": {
+          "order": 3,
+          "type": "boolean",
+          "default": true,
+          "description": "Enable automatic workspace watching and updating configuration."
+        },
+        "symlink-config.gitignoreServiceFiles": {
+          "order": 4,
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically .gitignore service files."
+        },
+        "symlink-config.hideServiceFiles": {
+          "order": 5,
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically hide service files from VSCode Explorer."
+        },
+        "symlink-config.hideSymlinkConfigs": {
+          "order": 6,
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically hide symlink-config.json files from VSCode Explorer."
+        },
         "symlink-config.silent": {
+          "order": 7,
           "type": "boolean",
           "default": false,
           "description": "Silent mode - no VS Studio information messages."

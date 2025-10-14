@@ -8,7 +8,7 @@ import { collectSymlinkOperations } from './collect-operations'
 import { generateApplyWindowsScript } from './generate-apply-windows-script'
 import { generateApplyUnixScript } from './generate-apply-unix-script'
 import { read as readSymlinkSettings } from '../../managers/symlink-settings'
-import { CONFIG, FILE_NAMES } from '../../shared/constants'
+import { SETTINGS, FILE_NAMES } from '../../shared/constants'
 import { confirm } from '../../shared/vscode'
 import { generateAdminScript } from './generate-admin-script'
 
@@ -36,7 +36,7 @@ export async function applyConfig() {
     }
 
     const scriptGeneration = readSymlinkSettings(
-      CONFIG.SYMLINK_CONFIG.SCRIPT_GENERATION,
+      SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION,
     )
     const isWindows = os.platform() === 'win32'
 

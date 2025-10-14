@@ -1,11 +1,11 @@
 import * as vscode from 'vscode'
 import * as state from '../shared/state'
-import { runAll as runWatchers } from '../watchers'
+import { makeWatchers } from './make-watchers'
 import { initManagers } from './init-managers'
 
 let isInitialized = false
 
-export async function initialize(): Promise<(() => void) | undefined> {
+export async function init(): Promise<(() => void) | undefined> {
   if (isInitialized || !vscode.workspace.workspaceFolders) {
     return
   }
@@ -22,7 +22,8 @@ export async function initialize(): Promise<(() => void) | undefined> {
 
   await initManagers()
 
-  runWatchers()
+  makeWatchers()
+
   isInitialized = true
 
   return state.disposeWatchers

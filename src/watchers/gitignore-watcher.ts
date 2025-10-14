@@ -1,10 +1,10 @@
 import { useFileWatcher, FileWatchEvent } from '../hooks/use-file-watcher'
 import { handleEvent as handleGitignoreEvent } from '../managers/gitignore-file'
-import { FILE_NAMES } from '../shared/constants'
+import { FILE_NAMES, WATCHERS } from '../shared/constants'
 import { isRootFile } from '../shared/file-ops'
 import { queue, registerWatcher } from '../shared/state'
 
-export function createGitignoreWatcher() {
+export function gitignoreWatcher() {
   const watcher = useFileWatcher({
     pattern: `**/${FILE_NAMES.GITIGNORE}`,
     filter: (uri, event) => isRootFile(uri),
@@ -13,5 +13,5 @@ export function createGitignoreWatcher() {
       handler: (events) => queue(() => handleGitignoreEvent()),
     },
   })
-  registerWatcher(watcher)
+  registerWatcher(WATCHERS.GITIGNORE, watcher)
 }

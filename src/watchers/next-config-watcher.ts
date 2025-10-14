@@ -1,10 +1,10 @@
 import { useFileWatcher, FileWatchEvent } from '../hooks/use-file-watcher'
 import { handleEvent as handleNextConfigEvent } from '../managers/next-config-file'
-import { FILE_NAMES } from '../shared/constants'
+import { FILE_NAMES, WATCHERS } from '../shared/constants'
 import { isRootFile } from '../shared/file-ops'
 import { getTreeProvider, queue, registerWatcher } from '../shared/state'
 
-export function createNextConfigWatcher() {
+export function nextConfigWatcher() {
   const treeProvider = getTreeProvider()
   const watcher = useFileWatcher({
     pattern: `**/${FILE_NAMES.NEXT_SYMLINK_CONFIG}`,
@@ -17,5 +17,5 @@ export function createNextConfigWatcher() {
       },
     },
   })
-  registerWatcher(watcher)
+  registerWatcher(WATCHERS.NEXT_CONFIG, watcher)
 }

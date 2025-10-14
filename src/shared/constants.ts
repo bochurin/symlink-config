@@ -11,8 +11,18 @@ export const FILE_NAMES = {
   GITIGNORE: '.gitignore',
 } as const
 
+// Watcher names
+export const WATCHERS = {
+  SETTINGS: 'settings',
+  GITIGNORE: 'gitignore',
+  NEXT_CONFIG: 'nextConfig',
+  CURRENT_CONFIG: 'currentConfig',
+  SYMLINK_CONFIGS: 'symlinkConfigs',
+  SYMLINKS: 'symlinks',
+} as const
+
 // Configuration structure
-export const CONFIG = {
+export const SETTINGS = {
   SYMLINK_CONFIG: {
     SECTION: 'symlink-config',
     WATCH_WORKSPACE: 'enableFileWatchers',
