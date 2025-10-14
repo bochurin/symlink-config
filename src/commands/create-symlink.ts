@@ -3,6 +3,7 @@ import * as path from 'path'
 import * as fs from 'fs/promises'
 import { getWorkspaceRoot } from '../state'
 import { info } from '../shared/vscode/info'
+import { isSymlink } from '../shared/file-ops'
 
 let selectedSource: vscode.Uri | undefined
 let statusBarItem: vscode.StatusBarItem | undefined
@@ -30,6 +31,12 @@ function updateContext() {
 }
 
 export async function selectSymlinkSource(uri: vscode.Uri) {
+  // Check if selected item is a symlink
+  if (await isSymlink(uri)) {
+    vscode.window.showWarningMessage('Cannot select a symlink as source.')
+    return
+  }
+
   if (!selectedSource) {
     // First click - select source
     selectedSource = uri
@@ -52,10 +59,16 @@ export async function selectSymlinkSource(uri: vscode.Uri) {
   }
 }
 
-export function selectSymlinkTarget(uri: vscode.Uri) {
+export async function selectSymlinkTarget(uri: vscode.Uri) {
+  // Check if selected item is a symlink
+  if (await isSymlink(uri)) {
+    vscode.window.showWarningMessage('Cannot select a symlink as target folder.')
+    return
+  }
+
   if (!selectedSource) {
     vscode.window.showWarningMessage(
-      'No source selected. First use "Create Symlink" on a file or folder.',
+      'No source selected. First use "Select as symlink source" on a file or folder.',
     )
     return
   }

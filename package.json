@@ -2,7 +2,7 @@
   "name": "@bochurin/symlink-config",
   "displayName": "symlink.config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.41",
+  "version": "0.0.42",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -218,12 +218,12 @@
       "explorer/context": [
         {
           "command": "symlink-config.selectSymlinkSource",
-          "when": "(!explorerResourceIsFolder || explorerResourceIsFolder) && !symlink-config.sourceSelected && view != symlink-config",
+          "when": "(!explorerResourceIsFolder || explorerResourceIsFolder) && !symlink-config.sourceSelected && !resourceIsSymlink && view != symlink-config",
           "group": "7_modification"
         },
         {
           "command": "symlink-config.selectSymlinkTarget",
-          "when": "explorerResourceIsFolder && symlink-config.sourceSelected && view != symlink-config",
+          "when": "explorerResourceIsFolder && symlink-config.sourceSelected && !resourceIsSymlink && view != symlink-config",
           "group": "7_modification"
         },
         {
