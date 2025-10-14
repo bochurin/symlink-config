@@ -4,7 +4,7 @@ import * as path from 'path'
 
 import { generateCleanWindowsScript } from './generate-clean-windows-script'
 import { generateCleanUnixScript } from './generate-clean-unix-script'
-import { getWorkspaceRoot } from '../../state'
+import { getWorkspaceRoot } from '../../shared/state'
 import { confirmWarning } from '../../shared/vscode'
 import { FILE_NAMES } from '../../shared/constants'
 import { generateAdminScript } from './generate-admin-script'

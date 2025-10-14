@@ -1,14 +1,14 @@
 import * as vscode from 'vscode'
 import * as os from 'os'
 import * as path from 'path'
-import { getWorkspaceRoot } from '../../state'
+import { getWorkspaceRoot } from '../../shared/state'
 import { info } from '../../shared/vscode/info'
 import { generateTree } from '../../views/symlink-tree/generate'
 import { collectSymlinkOperations } from './collect-operations'
 import { generateApplyWindowsScript } from './generate-apply-windows-script'
 import { generateApplyUnixScript } from './generate-apply-unix-script'
 import { read as readSymlinkSettings } from '../../managers/symlink-settings'
-import { CONFIG_PARAMETERS, FILE_NAMES } from '../../shared/constants'
+import { CONFIG, FILE_NAMES } from '../../shared/constants'
 import { confirm } from '../../shared/vscode'
 import { generateAdminScript } from './generate-admin-script'
 
@@ -36,7 +36,7 @@ export async function applyConfig() {
     }
 
     const scriptGeneration = readSymlinkSettings(
-      CONFIG_PARAMETERS.SCRIPT_GENERATION,
+      CONFIG.SYMLINK_CONFIG.SCRIPT_GENERATION,
     )
     const isWindows = os.platform() === 'win32'
 

@@ -2,7 +2,7 @@
   "name": "@bochurin/symlink-config",
   "displayName": "symlink-config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.43",
+  "version": "0.0.45",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -62,10 +62,10 @@
     "configuration": {
       "title": "symlink-config",
       "properties": {
-        "symlink-config.silent": {
+        "symlink-config.watchWorkspace": {
           "type": "boolean",
-          "default": false,
-          "description": "Silent mode - no VS Studio information messages."
+          "default": true,
+          "description": "Enable automatic workspace watching and updating configuration."
         },
         "symlink-config.gitignoreServiceFiles": {
           "type": "boolean",
@@ -101,6 +101,11 @@
           ],
           "default": "relative",
           "description": "Generate symlinks with relative paths from workspace root or absolute paths."
+        },
+        "symlink-config.silent": {
+          "type": "boolean",
+          "default": false,
+          "description": "Silent mode - no VS Studio information messages."
         }
       }
     },

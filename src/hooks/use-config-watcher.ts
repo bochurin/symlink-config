@@ -2,14 +2,14 @@ import * as vscode from 'vscode'
 
 type Handler = (section: string, parameter: string, payload: { value: any; old_value: any }) => void
 
-type ParameterConfig = {
-  parameter: string
+type ConfigItem = {
+  parameters: string | string[]
   onChange: Handler | Handler[]
 }
 
 type SectionConfig = {
   section: string
-  parameters: ParameterConfig | ParameterConfig[]
+  configs: ConfigItem | ConfigItem[]
 }
 
 export interface ConfigWatcherConfig {
@@ -24,12 +24,17 @@ export function useConfigWatcher(config: ConfigWatcherConfig): vscode.Disposable
   sections.forEach((sectionConfig) => {
     const initialConfig = vscode.workspace.getConfiguration(sectionConfig.section)
     previousValues[sectionConfig.section] = {}
-    const parameters = Array.isArray(sectionConfig.parameters)
-      ? sectionConfig.parameters
-      : [sectionConfig.parameters]
+    const configs = Array.isArray(sectionConfig.configs)
+      ? sectionConfig.configs
+      : [sectionConfig.configs]
 
-    parameters.forEach((param) => {
-      previousValues[sectionConfig.section][param.parameter] = initialConfig.get(param.parameter)
+    configs.forEach((configItem) => {
+      const parameters = Array.isArray(configItem.parameters)
+        ? configItem.parameters
+        : [configItem.parameters]
+      parameters.forEach((param) => {
+        previousValues[sectionConfig.section][param] = initialConfig.get(param)
+      })
     })
   })
 
@@ -37,22 +42,28 @@ export function useConfigWatcher(config: ConfigWatcherConfig): vscode.Disposable
     sections.forEach((sectionConfig) => {
       if (event.affectsConfiguration(sectionConfig.section)) {
         const newConfig = vscode.workspace.getConfiguration(sectionConfig.section)
-        const parameters = Array.isArray(sectionConfig.parameters)
-          ? sectionConfig.parameters
-          : [sectionConfig.parameters]
+        const configs = Array.isArray(sectionConfig.configs)
+          ? sectionConfig.configs
+          : [sectionConfig.configs]
 
-        parameters.forEach((param) => {
-          const newValue = newConfig.get(param.parameter)
-          const oldValue = previousValues[sectionConfig.section][param.parameter]
+        configs.forEach((configItem) => {
+          const parameters = Array.isArray(configItem.parameters)
+            ? configItem.parameters
+            : [configItem.parameters]
+          
+          parameters.forEach((param) => {
+            const newValue = newConfig.get(param)
+            const oldValue = previousValues[sectionConfig.section][param]
 
-          if (newValue !== oldValue) {
-            const payload = { value: newValue, old_value: oldValue }
-            const handlers = Array.isArray(param.onChange) ? param.onChange : [param.onChange]
-            handlers.forEach((handler) => {
-              handler(sectionConfig.section, param.parameter, payload)
-            })
-            previousValues[sectionConfig.section][param.parameter] = newValue
-          }
+            if (newValue !== oldValue) {
+              const payload = { value: newValue, old_value: oldValue }
+              const handlers = Array.isArray(configItem.onChange) ? configItem.onChange : [configItem.onChange]
+              handlers.forEach((handler) => {
+                handler(sectionConfig.section, param, payload)
+              })
+              previousValues[sectionConfig.section][param] = newValue
+            }
+          })
         })
       }
     })

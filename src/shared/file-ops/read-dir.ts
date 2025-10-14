@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { getWorkspaceRoot } from '../../state'
+import { getWorkspaceRoot } from '../state'
 
 export function readDir(relativePath: string): fs.Dirent[] {
   try {

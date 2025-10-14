@@ -1,6 +1,6 @@
 import * as path from 'path'
 import { Config, ConfigEntry } from './types'
-import { getWorkspaceRoot } from '../../state'
+import { getWorkspaceRoot } from '../../shared/state'
 import { readDir, readFile } from '../../shared/file-ops'
 
 export function generate(): string {

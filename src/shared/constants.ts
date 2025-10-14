@@ -11,25 +11,27 @@ export const FILE_NAMES = {
   GITIGNORE: '.gitignore',
 } as const
 
-// Configuration sections and parameters
-export const CONFIG_SECTIONS = {
-  SYMLINK_CONFIG: 'symlink-config',
-  FILES: 'files',
-} as const
-
-export const CONFIG_PARAMETERS = {
-  GITIGNORE_SERVICE_FILES: 'gitignoreServiceFiles',
-  HIDE_SERVICE_FILES: 'hideServiceFiles',
-  HIDE_SYMLINK_CONFIGS: 'hideSymlinkConfigs',
-  SCRIPT_GENERATION: 'scriptGeneration',
-  SYMLINK_PATH_MODE: 'symlinkPathMode',
-  EXCLUDE: 'exclude',
-} as const
-
-export const SYMLINK_SETTINGS_DEFAULTS = {
-  [CONFIG_PARAMETERS.SCRIPT_GENERATION]: 'auto' as const,
-  [CONFIG_PARAMETERS.SYMLINK_PATH_MODE]: 'relative' as const,
-  [CONFIG_PARAMETERS.GITIGNORE_SERVICE_FILES]: true,
-  [CONFIG_PARAMETERS.HIDE_SERVICE_FILES]: false,
-  [CONFIG_PARAMETERS.HIDE_SYMLINK_CONFIGS]: false,
+// Configuration structure
+export const CONFIG = {
+  SYMLINK_CONFIG: {
+    SECTION: 'symlink-config',
+    WATCH_WORKSPACE: 'enableFileWatchers',
+    GITIGNORE_SERVICE_FILES: 'gitignoreServiceFiles',
+    HIDE_SERVICE_FILES: 'hideServiceFiles',
+    HIDE_SYMLINK_CONFIGS: 'hideSymlinkConfigs',
+    SCRIPT_GENERATION: 'scriptGeneration',
+    SYMLINK_PATH_MODE: 'symlinkPathMode',
+    DEFAULT: {
+      WATCH_WORKSPACE: true,
+      GITIGNORE_SERVICE_FILES: true,
+      HIDE_SERVICE_FILES: false,
+      HIDE_SYMLINK_CONFIGS: false,
+      SCRIPT_GENERATION: 'auto' as const,
+      SYMLINK_PATH_MODE: 'relative' as const,
+    },
+  },
+  FILES: {
+    SECTION: 'files',
+    EXCLUDE: 'exclude',
+  },
 } as const

@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { getWorkspaceRoot } from '../../state'
+import { getWorkspaceRoot } from '../state'
 
 export function isRootFile(uri: vscode.Uri) {
   const workspaceRoot = getWorkspaceRoot()

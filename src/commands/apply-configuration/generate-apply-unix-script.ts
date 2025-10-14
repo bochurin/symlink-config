@@ -1,6 +1,6 @@
 import * as path from 'path'
 import { read as readSymlinkSettings } from '../../managers/symlink-settings'
-import { FILE_NAMES, CONFIG_PARAMETERS } from '../../shared/constants'
+import { FILE_NAMES, CONFIG } from '../../shared/constants'
 import { SymlinkOperation } from './types'
 import { writeFile } from '../../shared/file-ops'
 
@@ -23,7 +23,7 @@ export async function generateApplyUnixScript(
       lines.push('fi')
     } else if (op.type === 'create' && op.source) {
       // Get path mode setting
-      const pathMode = readSymlinkSettings(CONFIG_PARAMETERS.SYMLINK_PATH_MODE)
+      const pathMode = readSymlinkSettings(CONFIG.SYMLINK_CONFIG.SYMLINK_PATH_MODE)
 
       let sourcePath: string
       let symlinkSource: string
