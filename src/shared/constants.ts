@@ -13,7 +13,8 @@ export const FILE_NAMES = {
 
 // Watcher names
 export const WATCHERS = {
-  SETTINGS: 'settings',
+  SYMLINK_SETTINGS: 'symlinkSettings',
+  FILES_SETTINGS: 'filesSettings',
   GITIGNORE: 'gitignore',
   NEXT_CONFIG: 'nextConfig',
   CURRENT_CONFIG: 'currentConfig',

@@ -4,7 +4,8 @@ import {
   currentConfigWatcher,
   gitignoreWatcher,
   symlinksWatcher,
-  settingsWatcher,
+  symlinkSettingsWatcher,
+  filesSettingsWatcher,
 } from '../watchers'
 
 import { SETTINGS, WATCHERS } from '../shared/constants'
@@ -14,7 +15,15 @@ import { disposeWatchers } from '../shared/state'
 export function makeWatchers() {
   disposeWatchers()
 
-  settingsWatcher()
+  symlinkSettingsWatcher()
+
+  const hideServiceFiles = readSymlinkSettings(
+    SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES,
+  )
+  const hideSymlinkConfigs = readSymlinkSettings(
+    SETTINGS.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS,
+  )
+  if (hideServiceFiles || hideSymlinkConfigs) filesSettingsWatcher()
 
   const gitignoreServiceFiles = readSymlinkSettings(
     SETTINGS.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES,
