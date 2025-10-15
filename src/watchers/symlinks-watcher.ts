@@ -8,10 +8,10 @@ export function symlinksWatcher() {
   const watcher = useFileWatcher({
     pattern: '**/*',
     debounce: 500,
-    filter: (uri, event) => isSymlink(uri),
+    filters: (uri, event) => isSymlink(uri),
     events: {
       on: [FileWatchEvent.Created, FileWatchEvent.Deleted],
-      handler: (events) => queue(() => handleCurrentConfigEvent('modified')),
+      handlers: (events) => queue(() => handleCurrentConfigEvent('modified')),
     },
   })
   registerWatcher(WATCHERS.SYMLINKS, watcher)

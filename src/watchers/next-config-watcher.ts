@@ -8,10 +8,10 @@ export function nextConfigWatcher() {
   const treeProvider = getTreeProvider()
   const watcher = useFileWatcher({
     pattern: `**/${FILE_NAMES.NEXT_SYMLINK_CONFIG}`,
-    filter: (uri, event) => isRootFile(uri),
+    filters: (uri, event) => isRootFile(uri),
     events: {
       on: [FileWatchEvent.Modified, FileWatchEvent.Deleted],
-      handler: (events) => {
+      handlers: (events) => {
         queue(() => handleNextConfigEvent(events[0].event))
         treeProvider?.refresh()
       },

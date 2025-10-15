@@ -8,14 +8,14 @@ export function currentConfigWatcher() {
   const treeProvider = getTreeProvider()
   const watcher = useFileWatcher({
     pattern: `**/${FILE_NAMES.CURRENT_SYMLINK_CONFIG}`,
-    filter: (uri, event) => isRootFile(uri),
+    filters: (uri, event) => isRootFile(uri),
     events: {
       on: [
         FileWatchEvent.Created,
         FileWatchEvent.Modified,
         FileWatchEvent.Deleted,
       ],
-      handler: (events) => {
+      handlers: (events) => {
         queue(() => handleCurrentConfigEvent(events[0].event))
         treeProvider?.refresh()
       },

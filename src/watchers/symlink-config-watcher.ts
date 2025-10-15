@@ -13,7 +13,7 @@ export function symlinkConfigsWatcher() {
         FileWatchEvent.Modified,
         FileWatchEvent.Deleted,
       ],
-      handler: [
+      handlers: [
         (events) => queue(() => handleNextConfigEvent(FileWatchEvent.Modified)),
         (events) => treeProvider?.refresh(),
       ],

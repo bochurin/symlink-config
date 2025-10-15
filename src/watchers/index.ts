@@ -1,4 +1,4 @@
-export * from './config-watcher'
+export * from './settings-watcher'
 export * from './current-config-watcher'
 export * from './gitignore-watcher'
 export * from './next-config-watcher'

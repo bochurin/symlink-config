@@ -7,10 +7,10 @@ import { queue, registerWatcher } from '../shared/state'
 export function gitignoreWatcher() {
   const watcher = useFileWatcher({
     pattern: `**/${FILE_NAMES.GITIGNORE}`,
-    filter: (uri, event) => isRootFile(uri),
+    filters: (uri, event) => isRootFile(uri),
     events: {
       on: [FileWatchEvent.Modified, FileWatchEvent.Deleted],
-      handler: (events) => queue(() => handleGitignoreEvent()),
+      handlers: (events) => queue(() => handleGitignoreEvent()),
     },
   })
   registerWatcher(WATCHERS.GITIGNORE, watcher)
