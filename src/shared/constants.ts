@@ -32,6 +32,7 @@ export const SETTINGS = {
     HIDE_SYMLINK_CONFIGS: 'hideSymlinkConfigs',
     SCRIPT_GENERATION: 'scriptGeneration',
     SYMLINK_PATH_MODE: 'symlinkPathMode',
+    MAX_LOG_ENTRIES: 'maxLogEntries',
     DEFAULT: {
       WATCH_WORKSPACE: true,
       GITIGNORE_SERVICE_FILES: true,
@@ -39,6 +40,7 @@ export const SETTINGS = {
       HIDE_SYMLINK_CONFIGS: false,
       SCRIPT_GENERATION: 'auto' as const,
       SYMLINK_PATH_MODE: 'relative' as const,
+      MAX_LOG_ENTRIES: 1000,
     },
   },
   FILES: {

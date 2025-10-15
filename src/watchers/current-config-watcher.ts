@@ -5,6 +5,8 @@ import { isRootFile } from '../shared/file-ops'
 import { getTreeProvider, queue, registerWatcher } from '../shared/state'
 
 export function currentConfigWatcher() {
+  const { log } = require('../shared/state')
+  log('Current config watcher registered')
   const treeProvider = getTreeProvider()
   const watcher = useFileWatcher({
     pattern: `**/${FILE_NAMES.CURRENT_SYMLINK_CONFIG}`,
@@ -16,6 +18,7 @@ export function currentConfigWatcher() {
         FileEventType.Deleted,
       ],
       handlers: (events) => {
+        log('current.symlink-config.json changed')
         queue(() => handleCurrentConfigEvent(events[0].event))
         treeProvider?.refresh()
       },

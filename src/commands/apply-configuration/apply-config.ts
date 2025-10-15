@@ -13,6 +13,7 @@ import { confirm } from '../../shared/vscode'
 import { generateAdminScript } from './generate-admin-script'
 
 export async function applyConfig() {
+  const { log } = await import('../../shared/state')
   const workspaceRoot = getWorkspaceRoot()
 
   // Confirmation dialog
@@ -22,15 +23,19 @@ export async function applyConfig() {
   )
 
   if (!confirmed) {
+    log('Apply configuration cancelled by user')
     return
   }
 
   try {
+    log('Generating apply configuration scripts...')
     // Generate tree to get symlink operations
     const tree = generateTree('targets')
     const operations = collectSymlinkOperations(tree)
+    log(`Found ${operations.length} symlink operations`)
 
     if (operations.length === 0) {
+      log('No symlink operations needed')
       info('No symlink operations needed')
       return
     }
@@ -50,8 +55,10 @@ export async function applyConfig() {
       (scriptGeneration === 'auto' && !isWindows)
 
     if (shouldGenerateWindows) {
+      log('Generating Windows apply script...')
       await generateApplyWindowsScript(operations, workspaceRoot)
       await generateAdminScript(workspaceRoot)
+      log('Windows apply script generated')
       const scriptPath = path.join(workspaceRoot, FILE_NAMES.APPLY_SYMLINKS_BAT)
 
       await vscode.env.clipboard.writeText(path.basename(scriptPath))
@@ -82,7 +89,9 @@ export async function applyConfig() {
     }
 
     if (shouldGenerateUnix) {
+      log('Generating Unix apply script...')
       await generateApplyUnixScript(operations, workspaceRoot)
+      log('Unix apply script generated')
       const scriptPath = path.join(workspaceRoot, FILE_NAMES.APPLY_SYMLINKS_SH)
 
       const options = ['Open in Code', 'Run Now']
@@ -104,6 +113,7 @@ export async function applyConfig() {
       }
     }
   } catch (error) {
+    log(`ERROR: Failed to apply configuration: ${error}`)
     vscode.window.showErrorMessage(`Failed to apply configuration: ${error}`)
   }
 }

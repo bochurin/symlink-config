@@ -7,5 +7,6 @@ export type SymlinkSettingsParameter =
   | typeof SETTINGS.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS
   | typeof SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION
   | typeof SETTINGS.SYMLINK_CONFIG.SYMLINK_PATH_MODE
+  | typeof SETTINGS.SYMLINK_CONFIG.MAX_LOG_ENTRIES
 
-export type SymlinkSettingsValue = string | boolean | undefined
+export type SymlinkSettingsValue = string | boolean | number | undefined

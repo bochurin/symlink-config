@@ -13,9 +13,12 @@ export async function initManagers() {
   const watchWorkspace = readSymlinkSettings(
     SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE,
   )
+  const { log } = await import('../shared/state')
+  log('Initializing managers...')
   await Promise.all([
     initFileExclude(),
     ...(gitignoreServiceFiles ? [initGitignore()] : []),
     ...(watchWorkspace ? [initNextConfig(), initCurrentConfig()] : []),
   ])
+  log('Managers initialized')
 }

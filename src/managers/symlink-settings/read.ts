@@ -28,6 +28,8 @@ export function read(
         return readConfig<string>(configKey, defaults.SYMLINK_PATH_MODE)
       case SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE:
         return readConfig<boolean>(configKey, defaults.WATCH_WORKSPACE)
+      case SETTINGS.SYMLINK_CONFIG.MAX_LOG_ENTRIES:
+        return readConfig<number>(configKey, defaults.MAX_LOG_ENTRIES)
     }
   } catch {
     // Return package.json defaults on error

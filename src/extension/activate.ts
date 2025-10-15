@@ -5,7 +5,11 @@ import { registerCommands } from './register-commands'
 import { init, reset } from './ini'
 
 export async function activate(context: vscode.ExtensionContext) {
-  console.log('🔗 Symlink Config extension is now active!')
+  const outputChannel = vscode.window.createOutputChannel('symlink-config', { log: true })
+  state.setOutputChannel(outputChannel)
+  context.subscriptions.push(outputChannel)
+
+  state.log('Extension activated')
 
   const treeProvider = new SymlinkTreeProvider()
   vscode.window.createTreeView('symlink-config', {
@@ -22,6 +26,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const workspaceListener = vscode.workspace.onDidChangeWorkspaceFolders(
     async () => {
+      state.log('Workspace folders changed, reinitializing...')
       reset()
       const dispose = await init()
       if (dispose) {
@@ -34,5 +39,6 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
+  state.log('Extension deactivated')
   state.disposeWatchers()
 }

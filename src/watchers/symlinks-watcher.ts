@@ -5,13 +5,18 @@ import { queue, registerWatcher } from '../shared/state'
 import { WATCHERS } from '../shared/constants'
 
 export function symlinksWatcher() {
+  const { log } = require('../shared/state')
+  log('Symlinks watcher registered')
   const watcher = useFileWatcher({
     pattern: '**/*',
     debounce: 500,
     filters: (event) => isSymlink(event.uri),
     events: {
       on: [FileEventType.Created, FileEventType.Deleted],
-      handlers: (events) => queue(() => handleCurrentConfigEvent('modified')),
+      handlers: (events) => {
+        log(`Symlink changed (${events.length} events)`)
+        return queue(() => handleCurrentConfigEvent('modified'))
+      },
     },
   })
   registerWatcher(WATCHERS.SYMLINKS, watcher)

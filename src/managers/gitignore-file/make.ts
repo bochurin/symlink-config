@@ -4,6 +4,7 @@ import { generate } from './generate'
 import { read } from './read'
 
 export async function make() {
+  const { log } = await import('../../shared/state')
   const currentEntries = await read()
   const originalSpacing = Object.fromEntries(
     Object.entries(currentEntries).map(([key, entry]) => [key, entry.spacing])
@@ -21,5 +22,6 @@ export async function make() {
 
     const content = assembleGitignore(mergedEntries)
     await writeFile('.gitignore', content)
+    log('.gitignore updated')
   }
 }

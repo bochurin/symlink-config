@@ -15,7 +15,7 @@ export async function init(): Promise<(() => void) | undefined> {
   const workspaceName = vscode.workspace.workspaceFolders?.[0]?.name
   state.setWorkspaceRoot(workspaceRoot)
   state.setWorkspaceName(workspaceName)
-  console.log('ROOT:', workspaceRoot)
+  state.log(`Workspace root: ${workspaceRoot}`)
   //TODO: calculate the shortest path from workspace folders and get it as project root,
   // save it to the workspace (only!) settings, and ask user to modify it if they need.
   // watch workspace folders changes and ask to check if the root path is still correct

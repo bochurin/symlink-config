@@ -5,12 +5,17 @@ import { isRootFile } from '../shared/file-ops'
 import { queue, registerWatcher } from '../shared/state'
 
 export function gitignoreWatcher() {
+  const { log } = require('../shared/state')
+  log('Gitignore watcher registered')
   const watcher = useFileWatcher({
     pattern: `**/${FILE_NAMES.GITIGNORE}`,
     filters: (event) => isRootFile(event.uri),
     events: {
       on: [FileEventType.Modified, FileEventType.Deleted],
-      handlers: (events) => queue(() => handleGitignoreEvent()),
+      handlers: (events) => {
+        log('.gitignore file changed')
+        return queue(() => handleGitignoreEvent())
+      },
     },
   })
   registerWatcher(WATCHERS.GITIGNORE, watcher)

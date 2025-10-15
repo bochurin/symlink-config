@@ -3,6 +3,8 @@ import { FILE_NAMES } from '../../shared/constants'
 import { generate } from './generate'
 
 export async function make() {
+  const { log } = await import('../../shared/state')
   const content = generate()
   await writeFile(FILE_NAMES.CURRENT_SYMLINK_CONFIG, content)
+  log('current.symlink-config.json updated')
 }

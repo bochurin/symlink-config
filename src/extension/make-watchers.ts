@@ -13,6 +13,8 @@ import { read as readSymlinkSettings } from '../managers/symlink-settings'
 import { disposeWatchers } from '../shared/state'
 
 export function makeWatchers() {
+  const { log } = require('../shared/state')
+  log('Creating watchers...')
   disposeWatchers()
 
   symlinkSettingsWatcher()
@@ -39,4 +41,5 @@ export function makeWatchers() {
     symlinkConfigsWatcher()
     symlinksWatcher()
   }
+  log('Watchers created')
 }

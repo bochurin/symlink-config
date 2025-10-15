@@ -10,6 +10,9 @@ import {
   cleanConfiguration,
 } from '../commands/apply-configuration'
 import { collapseAll } from '../commands/tree-operations'
+import { refreshManagers } from '../commands/refresh-managers'
+import { clearLogsCommand } from '../commands/clear-logs'
+import { showLogsCommand } from '../commands/show-logs'
 
 export function registerCommands(
   context: vscode.ExtensionContext,
@@ -50,6 +53,18 @@ export function registerCommands(
       cleanConfiguration,
     ),
     vscode.commands.registerCommand('symlink-config.collapseAll', collapseAll),
+    vscode.commands.registerCommand(
+      'symlink-config.refreshManagers',
+      refreshManagers,
+    ),
+    vscode.commands.registerCommand(
+      'symlink-config.clearLogs',
+      clearLogsCommand,
+    ),
+    vscode.commands.registerCommand(
+      'symlink-config.showLogs',
+      showLogsCommand,
+    ),
   ]
 
   context.subscriptions.push(...commands)

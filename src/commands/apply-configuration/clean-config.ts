@@ -10,8 +10,10 @@ import { FILE_NAMES } from '../../shared/constants'
 import { generateAdminScript } from './generate-admin-script'
 
 export async function cleanConfig(): Promise<void> {
+  const { log } = await import('../../shared/state')
   const workspaceRoot = getWorkspaceRoot()
   if (!workspaceRoot) {
+    log('ERROR: No workspace folder found')
     vscode.window.showErrorMessage('No workspace folder found')
     return
   }
@@ -23,15 +25,20 @@ export async function cleanConfig(): Promise<void> {
   )
 
   if (!confirmed) {
+    log('Clean configuration cancelled by user')
     return
   }
+  
+  log('Generating clean configuration scripts...')
 
   const isWindows = os.platform() === 'win32'
 
   try {
     if (isWindows) {
+      log('Generating Windows clean script...')
       await generateCleanWindowsScript(workspaceRoot)
       await generateAdminScript(workspaceRoot)
+      log('Windows clean script generated')
       const scriptPath = path.join(workspaceRoot, FILE_NAMES.CLEAR_SYMLINKS_BAT)
 
       // Copy script name to clipboard
@@ -62,7 +69,9 @@ export async function cleanConfig(): Promise<void> {
         terminal.show()
       }
     } else {
+      log('Generating Unix clean script...')
       await generateCleanUnixScript(workspaceRoot)
+      log('Unix clean script generated')
       const scriptPath = path.join(workspaceRoot, FILE_NAMES.CLEAR_SYMLINKS_SH)
 
       // Show options to user
@@ -85,6 +94,7 @@ export async function cleanConfig(): Promise<void> {
       }
     }
   } catch (error) {
+    log(`ERROR: Failed to generate cleaning script: ${error}`)
     vscode.window.showErrorMessage(
       `Failed to generate cleaning script: ${error}`,
     )

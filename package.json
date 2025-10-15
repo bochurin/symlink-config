@@ -2,7 +2,7 @@
   "name": "@bochurin/symlink-config",
   "displayName": "symlink-config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.52",
+  "version": "0.0.53",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -28,9 +28,20 @@
         "icon": "$(trash)"
       },
       {
-        "command": "symlink-config.openSettings",
-        "title": "Open symlin-config settings",
-        "icon": "$(gear)"
+        "command": "symlink-config.refreshManagers",
+        "title": "Refresh managers",
+        "category": "symlink-config",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "symlink-config.clearLogs",
+        "title": "Clear logs",
+        "category": "symlink-config"
+      },
+      {
+        "command": "symlink-config.showLogs",
+        "title": "Show logs",
+        "category": "symlink-config"
       },
       {
         "command": "symlink-config.toggleView",
@@ -38,25 +49,30 @@
         "icon": "$(arrow-swap)"
       },
       {
-        "command": "symlink-config.selectSymlinkSource",
-        "title": "Select as symlink source"
+        "command": "symlink-config.collapseAll",
+        "title": "Collapse all",
+        "icon": "$(collapse-all)"
       },
       {
-        "command": "symlink-config.selectSymlinkTarget",
-        "title": "Select symlink target folder"
+        "command": "symlink-config.openSettings",
+        "title": "Open symlin-config settings",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "symlink-config.selectSymlinkSource",
+        "title": "Select as symlink source"
       },
       {
         "command": "symlink-config.cancelSymlinkCreation",
         "title": "Cancel symlink creation"
       },
       {
-        "command": "symlink-config.openSymlinkConfig",
-        "title": "Open configuration"
+        "command": "symlink-config.selectSymlinkTarget",
+        "title": "Select symlink target folder"
       },
       {
-        "command": "symlink-config.collapseAll",
-        "title": "Collapse all",
-        "icon": "$(collapse-all)"
+        "command": "symlink-config.openSymlinkConfig",
+        "title": "Open symlink configuration"
       }
     ],
     "configuration": {
@@ -113,6 +129,13 @@
           "type": "boolean",
           "default": false,
           "description": "Silent mode - no VS Studio information messages."
+        },
+        "symlink-config.maxLogEntries": {
+          "order": 8,
+          "type": "number",
+          "default": 1000,
+          "minimum": 100,
+          "description": "Maximum number of log entries before auto-clear. Set to 0 for unlimited."
         }
       }
     },
@@ -137,11 +160,27 @@
           "when": "workspaceFolderCount > 0"
         },
         {
-          "command": "symlink-config.openSettings",
-          "when": "false"
+          "command": "symlink-config.refreshManagers",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "symlink-config.clearLogs",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "symlink-config.showLogs",
+          "when": "workspaceFolderCount > 0"
         },
         {
           "command": "symlink-config.toggleView",
+          "when": "false"
+        },
+        {
+          "command": "symlink-config.collapseAll",
+          "when": "false"
+        },
+        {
+          "command": "symlink-config.openSettings",
           "when": "false"
         },
         {
@@ -149,19 +188,15 @@
           "when": "false"
         },
         {
-          "command": "symlink-config.selectSymlinkTarget",
-          "when": "false"
-        },
-        {
           "command": "symlink-config.cancelSymlinkCreation",
           "when": "false"
         },
         {
-          "command": "symlink-config.openSymlinkConfig",
+          "command": "symlink-config.selectSymlinkTarget",
           "when": "false"
         },
         {
-          "command": "symlink-config.collapseAll",
+          "command": "symlink-config.openSymlinkConfig",
           "when": "false"
         }
       ],
@@ -179,21 +214,27 @@
           "icon": "$(trash)"
         },
         {
+          "command": "symlink-config.refreshManagers",
+          "when": "view == symlink-config",
+          "group": "navigation@2",
+          "icon": "$(refresh)"
+        },
+        {
           "command": "symlink-config.toggleView",
           "when": "view == symlink-config",
-          "group": "navigation@3",
+          "group": "navigation@2",
           "icon": "$(arrow-swap)"
         },
         {
           "command": "symlink-config.collapseAll",
           "when": "view == symlink-config",
-          "group": "navigation@5",
+          "group": "navigation@3",
           "icon": "$(collapse-all)"
         },
         {
           "command": "symlink-config.openSettings",
           "when": "view == symlink-config",
-          "group": "navigation@7",
+          "group": "navigation@4",
           "icon": "$(gear)"
         },
         {
@@ -209,6 +250,12 @@
           "icon": "$(play)"
         },
         {
+          "command": "symlink-config.refreshManagers",
+          "when": "view == symlink-config",
+          "group": "2_actions",
+          "icon": "$(refresh)"
+        },
+        {
           "command": "symlink-config.toggleView",
           "when": "view == symlink-config",
           "group": "2_actions",
@@ -217,7 +264,7 @@
         {
           "command": "symlink-config.collapseAll",
           "when": "view == symlink-config",
-          "group": "3_collapse",
+          "group": "3_actions",
           "icon": "$(collapse-all)"
         },
         {
@@ -234,13 +281,13 @@
           "group": "7_modification"
         },
         {
-          "command": "symlink-config.selectSymlinkTarget",
-          "when": "explorerResourceIsFolder && symlink-config.sourceSelected && !resourceIsSymlink && view != symlink-config",
+          "command": "symlink-config.cancelSymlinkCreation",
+          "when": "symlink-config.sourceSelected && view != symlink-config",
           "group": "7_modification"
         },
         {
-          "command": "symlink-config.cancelSymlinkCreation",
-          "when": "symlink-config.sourceSelected && view != symlink-config",
+          "command": "symlink-config.selectSymlinkTarget",
+          "when": "explorerResourceIsFolder && symlink-config.sourceSelected && !resourceIsSymlink && view != symlink-config",
           "group": "7_modification"
         }
       ],
