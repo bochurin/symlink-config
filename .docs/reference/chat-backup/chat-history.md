@@ -862,3 +862,147 @@ const dispose = disposeWatchers  // From state
 - Performance testing with large projects
 - Unit testing with isolated watcher modules
 - VSCode Marketplace preparation and publishing
+
+
+## Session 12: Name-Based Watcher Registration (14.10.2025)
+
+### Context
+- Continued from Phase 1.36 (Watcher Self-Registration Pattern)
+- Focus on improving watcher management with name-based registration
+- Implementing selective watcher disposal based on settings
+
+### Key Developments
+
+#### Name-Based Watcher Registration
+- **Map-Based Storage**: Changed from array to Map<string, Disposable> for watcher storage
+- **WATCHERS Constant**: Added centralized watcher name constants for all 6 watchers
+- **Named Registration**: `registerWatcher(name, watcher)` replaces `registerWatcher(watcher, isWorkspace)`
+- **Automatic Replacement**: Registering same name automatically disposes old watcher
+
+#### Selective Watcher Disposal
+- **Flexible API**: `disposeWatchers()` disposes all, `disposeWatchers(...names)` disposes specific
+- **Conditional Management**: makeWatchers() creates or disposes workspace watchers based on settings
+- **Clean Shutdown**: deactivate() calls disposeWatchers() to clean up all watchers
+- **Safe Operations**: Optional chaining prevents errors when disposing non-existent watchers
+
+#### Constants Refactoring
+- **CONFIG → SETTINGS**: Renamed for better semantic clarity
+- **WATCHERS Constant**: Added with SETTINGS, GITIGNORE, NEXT_CONFIG, CURRENT_CONFIG, SYMLINK_CONFIGS, SYMLINKS
+- **Consistent Usage**: Updated all code to use SETTINGS and WATCHERS constants
+- **Settings Order**: Added order property to package.json for custom settings display order
+
+### Technical Implementation
+
+#### Watcher Registration Pattern
+```typescript
+// State module with Map storage
+const watchers = new Map<string, vscode.Disposable>()
+
+export function registerWatcher(name: string, watcher: vscode.Disposable) {
+  watchers.get(name)?.dispose()  // Auto-dispose existing
+  watchers.set(name, watcher)
+}
+
+export function disposeWatchers(...names: string[]) {
+  if (names.length === 0) {
+    watchers.forEach((watcher) => watcher.dispose())
+    watchers.clear()
+  } else {
+    names.forEach((name) => {
+      watchers.get(name)?.dispose()
+      watchers.delete(name)
+    })
+  }
+}
+```
+
+#### Conditional Watcher Management
+```typescript
+export function makeWatchers() {
+  const watchWorkspace = readSymlinkSettings(
+    SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE,
+  )
+  
+  // Always create core watchers
+  settingsWatcher()
+  gitignoreWatcher()
+
+  // Conditionally manage workspace watchers
+  if (watchWorkspace) {
+    nextConfigWatcher()
+    currentConfigWatcher()
+    symlinkConfigsWatcher()
+    symlinksWatcher()
+  } else {
+    disposeWatchers(
+      WATCHERS.NEXT_CONFIG,
+      WATCHERS.CURRENT_CONFIG,
+      WATCHERS.SYMLINK_CONFIGS,
+      WATCHERS.SYMLINKS,
+    )
+  }
+}
+```
+
+#### Watcher Registration
+```typescript
+// Each watcher registers with constant name
+export function settingsWatcher() {
+  const watcher = useConfigWatcher({...})
+  registerWatcher(WATCHERS.SETTINGS, watcher)
+}
+
+export function gitignoreWatcher() {
+  const watcher = useFileWatcher({...})
+  registerWatcher(WATCHERS.GITIGNORE, watcher)
+}
+```
+
+### Benefits Achieved
+
+#### Flexible Management
+- **Selective Control**: Dispose specific watchers without affecting others
+- **Named References**: Clear, semantic watcher identification
+- **Conditional Logic**: Easy to enable/disable watcher groups
+- **Automatic Cleanup**: No manual tracking of watcher arrays
+
+#### Code Quality
+- **Better Debugging**: Named watchers easier to track in logs
+- **Type Safety**: WATCHERS constant provides autocomplete
+- **Maintainability**: Clear watcher lifecycle management
+- **Consistency**: All watchers follow same registration pattern
+
+#### User Experience
+- **Dynamic Behavior**: Watchers respond to settings changes
+- **Resource Efficiency**: Unused watchers properly disposed
+- **Clean Shutdown**: All watchers cleaned up on deactivate
+- **Settings Order**: Custom display order in VSCode settings UI
+
+### Technical Achievements
+- ✅ **Name-Based Registration**: Map-based watcher storage with string keys
+- ✅ **WATCHERS Constant**: Centralized watcher name management
+- ✅ **Selective Disposal**: Flexible disposal API for all or specific watchers
+- ✅ **Conditional Management**: makeWatchers() handles workspace watcher lifecycle
+- ✅ **Constants Refactoring**: CONFIG renamed to SETTINGS for clarity
+- ✅ **Deactivate Cleanup**: Proper resource cleanup on extension shutdown
+- ✅ **Settings Order**: Custom display order in package.json
+
+### Version Progression
+- **0.0.49**: Name-based watcher registration and selective disposal
+
+### Current Status
+**Phase 1.37 Complete** - Name-Based Watcher Registration
+
+- Map-based watcher storage with string names
+- WATCHERS constant for centralized name management
+- Selective disposal API: disposeWatchers(...names)
+- Conditional watcher management in makeWatchers()
+- CONFIG renamed to SETTINGS throughout codebase
+- Deactivate cleanup calling disposeWatchers()
+- Settings display order customization in package.json
+
+### Next Development Focus
+- Phase 2: Comprehensive cross-platform testing and validation
+- Performance testing with large projects
+- User experience refinement
+- VSCode Marketplace preparation and publishing

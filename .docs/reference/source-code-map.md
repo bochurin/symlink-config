@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
 **Generated**: 14.10.2025  
-**Version**: 0.0.48  
+**Version**: 0.0.51  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -26,6 +26,9 @@
 **Functions:**
 - `activate(context: vscode.ExtensionContext): Promise<void>`
 - `deactivate(): void`
+
+**Implementation Details:**
+- `deactivate()` calls `disposeWatchers()` to clean up all watchers
 
 **Implementation Details:**
 - Creates tree view and stores in state
@@ -63,8 +66,19 @@
 
 **Implementation Details:**
 - Initializes all managers based on settings
-- Conditionally initializes next-config and current-config based on WATCH_WORKSPACE setting
+- Conditionally initializes next-config and current-config based on SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE
 - Runs all initializations in parallel with Promise.all
+
+#### `src/extension/make-watchers.ts`
+**Functions:**
+- `makeWatchers(): void`
+
+**Implementation Details:**
+- Disposes all watchers first with `disposeWatchers()`
+- Always creates symlinkSettingsWatcher
+- Conditionally creates filesSettingsWatcher when hideServiceFiles OR hideSymlinkConfigs is enabled
+- Conditionally creates gitignoreWatcher when gitignoreServiceFiles is enabled
+- Conditionally creates workspace watchers (nextConfig, currentConfig, symlinkConfigs, symlinks) when watchWorkspace is enabled
 
 #### `src/extension/register-commands.ts`
 **Functions:**
@@ -86,8 +100,8 @@
 - `getSilentMode(): boolean`
 - `setTreeProvider(provider: any): void`
 - `getTreeProvider(): any`
-- `registerWatcher(watcher: vscode.Disposable): void`
-- `disposeWatchers(): void`
+- `registerWatcher(name: string, watcher: vscode.Disposable): void`
+- `disposeWatchers(...names: string[]): void`
 - `queue(fn: () => Promise<void>): Promise<void>`
 
 **Variables:**
@@ -96,8 +110,14 @@
 - `nextSymlinkConfig: string`
 - `sylentMode: boolean`
 - `treeProvider: any`
-- `watchers: vscode.Disposable[]`
+- `watchers: Map<string, vscode.Disposable>`
 - `processingQueue: Promise<void>`
+
+**Implementation Details:**
+- Watchers tracked by name in Map for selective disposal
+- `registerWatcher(name, watcher)` - disposes existing watcher with same name before registering
+- `disposeWatchers()` - disposes all watchers
+- `disposeWatchers('name1', 'name2')` - disposes specific watchers by name
 
 ### `src/types.ts`
 **Types:**
@@ -118,7 +138,16 @@
   - `RUN_ADMIN_BAT: 'admin.symlink-config.bat'` (parameterized: accepts script name)
   - `GITIGNORE: '.gitignore'`
 
-- `CONFIG` two-level structure:
+- `WATCHERS` constant object:
+  - `SYMLINK_SETTINGS: 'symlinkSettings'`
+  - `FILES_SETTINGS: 'filesSettings'`
+  - `GITIGNORE: 'gitignore'`
+  - `NEXT_CONFIG: 'nextConfig'`
+  - `CURRENT_CONFIG: 'currentConfig'`
+  - `SYMLINK_CONFIGS: 'symlinkConfigs'`
+  - `SYMLINKS: 'symlinks'`
+
+- `SETTINGS` two-level structure (renamed from CONFIG):
   - `SYMLINK_CONFIG` object:
     - `SECTION: 'symlink-config'`
     - `WATCH_WORKSPACE: 'enableFileWatchers'`
@@ -323,28 +352,33 @@
 - `FileEventData` type: `{ uri: vscode.Uri; event: FileWatchEvent }`
 - `Handler` type: `(events: FileEventData[]) => void` (always receives array)
 - `Filter` type: `(uri: vscode.Uri, event: FileWatchEvent) => Promise<boolean> | boolean`
-- `WatcherConfig` interface with pattern, debounce?, filter?, onCreate?, onChange?, onDelete?, events? properties
+- `WatcherConfig` interface with pattern, debounce?, filters?, events (required) properties
 
 **Implementation Details:**
+- Removed legacy onCreate/onChange/onDelete syntax
+- events property is now required (not optional)
+- filters accepts Filter | Filter[] (all filters must pass)
+- handlers accepts Handler | Handler[]
 - Handlers always receive array of events for consistency
 - With debouncing: accumulates all filtered events during debounce window
 - Without debouncing: passes single-item array `[{uri, event}]`
-- Filters work per-event before accumulation
+- Filters work per-event before accumulation, all must return true
 
-### `src/hooks/use-config-watcher.ts`
+### `src/hooks/use-settings-watcher.ts`
 **Functions:**
-- `useConfigWatcher(config: ConfigWatcherConfig): vscode.Disposable`
+- `useSettingsWatcher(config: SettingsWatcherConfig): vscode.Disposable`
 
 **Types:**
 - `Handler` type: `(section: string, parameter: string, payload: { value: any; old_value: any }) => void`
-- `ConfigItem` interface with parameters (string | string[]), onChange properties
-- `SectionConfig` interface with section, configs (ConfigItem | ConfigItem[]) properties
-- `ConfigWatcherConfig` interface with sections property
+- `HandleConfig` interface with parameters (string | string[]), onChange (Handler | Handler[]) properties
+- `SectionConfig` interface with section, handlers (HandleConfig | HandleConfig[]) properties
+- `SettingsWatcherConfig` interface with sections property
 
 **Implementation Details:**
-- `configs` can be single ConfigItem or array of ConfigItems
-- Each ConfigItem can watch single parameter or array of parameters
-- All parameters in a ConfigItem share the same onChange handler
+- Renamed from use-config-watcher.ts
+- `handlers` can be single HandleConfig or array of HandleConfigs
+- Each HandleConfig can watch single parameter or array of parameters
+- All parameters in a HandleConfig share the same onChange handler
 
 ## Watcher Modules
 
@@ -353,69 +387,78 @@
 
 #### `src/watchers/index.ts`
 **Exports:**
-- `run` (from `./run`)
+- `symlinkSettingsWatcher` (from `./symlink-settings-watcher`)
+- `filesSettingsWatcher` (from `./files-settings-watcher`)
+- `gitignoreWatcher` (from `./gitignore-watcher`)
+- `nextConfigWatcher` (from `./next-config-watcher`)
+- `currentConfigWatcher` (from `./current-config-watcher`)
+- `symlinkConfigsWatcher` (from `./symlink-config-watcher`)
+- `symlinksWatcher` (from `./symlinks-watcher`)
 
-#### `src/watchers/run.ts`
+#### `src/watchers/symlink-settings-watcher.ts`
 **Functions:**
-- `run(): void`
+- `symlinkSettingsWatcher(): void`
 
 **Implementation Details:**
-- Calls all create watcher functions
-- Watchers self-register via `registerWatcher()`
-- No return values needed
-
-#### `src/watchers/config-watcher.ts`
-**Functions:**
-- `createConfigWatcher(): void`
-
-**Implementation Details:**
-- Uses `useConfigWatcher` hook
-- Watches symlink-config settings changes
+- Uses `useSettingsWatcher` hook
+- Watches symlink-config section settings changes
 - Queues operations via `queue()` from state
-- Self-registers via `registerWatcher()`
+- Registers with name `WATCHERS.SYMLINK_SETTINGS`
+- Always runs (not conditional)
+
+#### `src/watchers/files-settings-watcher.ts`
+**Functions:**
+- `filesSettingsWatcher(): void`
+
+**Implementation Details:**
+- Uses `useSettingsWatcher` hook
+- Watches files section settings changes (files.exclude)
+- Queues operations via `queue()` from state
+- Registers with name `WATCHERS.FILES_SETTINGS`
+- Conditionally created only when hideServiceFiles OR hideSymlinkConfigs is enabled
 
 #### `src/watchers/gitignore-watcher.ts`
 **Functions:**
-- `createGitignoreWatcher(): void`
+- `gitignoreWatcher(): void`
 
 **Implementation Details:**
 - Watches .gitignore files
 - Queues operations via `queue()` from state
-- Self-registers via `registerWatcher()`
+- Registers with name `WATCHERS.GITIGNORE`
 
 #### `src/watchers/symlink-config-watcher.ts`
 **Functions:**
-- `createSymlinkConfigWatcher(): void`
+- `symlinkConfigsWatcher(): void`
 
 **Implementation Details:**
 - Watches symlink-config.json files
 - Refreshes tree view on changes
-- Self-registers via `registerWatcher()`
+- Registers with name `WATCHERS.SYMLINK_CONFIGS`
 
 #### `src/watchers/next-config-watcher.ts`
 **Functions:**
-- `createNextConfigWatcher(): void`
+- `nextConfigWatcher(): void`
 
 **Implementation Details:**
 - Watches next.symlink-config.json at workspace root
-- Self-registers via `registerWatcher()`
+- Registers with name `WATCHERS.NEXT_CONFIG`
 
 #### `src/watchers/current-config-watcher.ts`
 **Functions:**
-- `createCurrentConfigWatcher(): void`
+- `currentConfigWatcher(): void`
 
 **Implementation Details:**
 - Watches current.symlink-config.json at workspace root
-- Self-registers via `registerWatcher()`
+- Registers with name `WATCHERS.CURRENT_CONFIG`
 
 #### `src/watchers/symlinks-watcher.ts`
 **Functions:**
-- `createSymlinksWatcher(): void`
+- `symlinksWatcher(): void`
 
 **Implementation Details:**
 - Watches all symlinks in workspace
 - 500ms debounce for batch updates
-- Self-registers via `registerWatcher()`
+- Registers with name `WATCHERS.SYMLINKS`
 
 ## View Modules
 
@@ -559,3 +602,12 @@
 - **Function Naming**: Simplified initialize/reset function names (removed Extension/Initialization suffixes)
 - **Watcher Refactoring**: Decomposed set-watchers.ts into separate watcher files (config-watcher, gitignore-watcher, symlink-config-watcher, next-config-watcher, current-config-watcher, symlinks-watcher)
 - **Queue in State**: Moved processing queue from set-watchers to shared/state.ts for global access
+- **Name-Based Watcher Registration**: Watchers registered by name using WATCHERS constants for selective disposal
+- **Selective Watcher Disposal**: disposeWatchers() can dispose all or specific watchers by name
+- **Constants Rename**: CONFIG renamed to SETTINGS for clarity
+- **Hook Rename**: use-config-watcher.ts renamed to use-settings-watcher.ts
+- **Watcher Rename**: config-watcher.ts renamed to settings-watcher.ts
+- **Hook Simplification**: Removed legacy onCreate/onChange/onDelete syntax from use-file-watcher
+- **Property Names**: filters (Filter | Filter[]), handlers (Handler | Handler[]) in use-file-watcher
+- **Settings Watcher Split**: Split settings-watcher into symlink-settings-watcher and files-settings-watcher for independent management
+- **Conditional Watchers**: filesSettingsWatcher only runs when hide options are enabled to save resources
