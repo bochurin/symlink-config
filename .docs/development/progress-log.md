@@ -786,6 +786,69 @@ const dispose = disposeWatchers  // From state
 - **Initialization**: setWatchers() replaced with run() function
 - **State Module**: Queue moved from set-watchers to shared/state.ts
 
+### ✅ Phase 1.38: Hook Decomposition (Completed - 15.10.2025)
+
+- **Date**: 15.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Hook Folder Structure**: Decomposed use-file-watcher and use-settings-watcher into organized folders
+  - **Separate Files**: Created types.ts, implementation file, execute-handlers.ts, and index.ts for each hook
+  - **Handler Extraction**: Extracted executeHandlers logic to separate files for cleaner separation of concerns
+  - **Factory Pattern**: use-file-watcher uses createExecuteHandlers factory to maintain debounce state in closure
+  - **Simple Utility**: use-settings-watcher uses executeHandlers utility to normalize and execute handlers
+  - **ESLint Updates**: Updated module boundary rules to enforce index.ts imports for hook subfolders
+  - **Documentation**: Updated source-code-map.md and rules to reflect new hook structure
+
+#### Technical Implementation Details
+
+**Hook Folder Structure**:
+```
+// Before: Single files
+src/hooks/use-file-watcher.ts
+src/hooks/use-settings-watcher.ts
+
+// After: Organized folders
+src/hooks/use-file-watcher/
+  ├── types.ts
+  ├── use-file-watcher.ts
+  ├── execute-handlers.ts
+  └── index.ts
+src/hooks/use-settings-watcher/
+  ├── types.ts
+  ├── use-settings-watcher.ts
+  ├── execute-handlers.ts
+  └── index.ts
+```
+
+**Handler Execution Patterns**:
+```typescript
+// use-file-watcher: Factory pattern with closure
+export function createExecuteHandlers(
+  filters: Filter | Filter[] | undefined,
+  debounce: number | undefined,
+) {
+  let debounceTimeout: NodeJS.Timeout | undefined
+  let accumulatedEvents: FileEvent[] = []
+  return async function executeHandlers(...) { /* ... */ }
+}
+
+// use-settings-watcher: Simple utility
+export function executeHandlers(
+  handlers: Handler | Handler[],
+  event: SettingsEvent,
+): void {
+  const handlerArray = Array.isArray(handlers) ? handlers : [handlers]
+  handlerArray.forEach((handler) => handler(event))
+}
+```
+
+**Benefits**:
+- **Cleaner Separation**: Types, implementation, and execution logic in separate files
+- **Easier Testing**: Individual components can be tested independently
+- **Consistent Structure**: Both hooks follow same folder organization pattern
+- **Reusable Logic**: Handler execution logic extracted for potential reuse
+- **Better Maintainability**: Smaller, focused files easier to understand and modify
+
 ### ✅ Phase 1.37: Name-Based Watcher Registration (Completed - 14.10.2025)
 
 - **Date**: 14.10.2025
@@ -877,10 +940,10 @@ export const WATCHERS = {
 
 ## Current Status
 
-**Phase**: Phase 1.37 Complete - Name-Based Watcher Registration  
+**Phase**: Phase 1.38 Complete - Hook Decomposition  
 **Branch**: `main`  
-**Version**: 0.0.49  
-**Latest**: Implemented name-based watcher registration with selective disposal  
+**Version**: 0.0.56  
+**Latest**: Decomposed hooks into organized folder structures with execute-handlers extraction  
 **Extension Status**: Core development complete with flexible watcher management, ready for comprehensive testing  
 **Next**: Cross-platform testing and validation (Phase 2)
 

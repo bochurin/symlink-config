@@ -19,17 +19,26 @@ Implement comprehensive filter system with debouncing support and centralized fi
 
 ## Implementation
 
-### Enhanced Filter Interface
+### Enhanced Filter Interface (Current: v0.0.56)
 
 ```typescript
-type Filter = (uri: vscode.Uri, event: FileWatchEvent) => Promise<boolean> | boolean
+// Filter receives FileEvent object
+type Filter = (event: FileEvent) => Promise<boolean> | boolean
 
 export interface WatcherConfig {
   pattern: string
   debounce?: number // milliseconds
-  filter?: Filter | Filter[] // all must return true
-  // ... other properties
+  filters?: Filter | Filter[] // all must return true
+  events: EventConfig | EventConfig[] // required
 }
+
+export interface EventConfig {
+  on: FileEventType | FileEventType[]
+  handlers: Handler | Handler[]
+}
+
+// Handler always receives array
+type Handler = (events: FileEvent[]) => void
 ```
 
 ### Shared Filter Functions
@@ -57,38 +66,59 @@ export async function isSymlink(uri: vscode.Uri): Promise<boolean> {
 }
 ```
 
-### Intermediate Callback Pattern
+### Filter Pattern (Current)
 
-Used adapter pattern to bridge filter interface with existing functions:
+Filters receive FileEvent objects for consistency:
 
 ```typescript
-// Adapter callbacks that receive (uri, event) but only pass uri to functions
-filter: (uri, event) => isRootFile(uri)
-filter: (uri, event) => isSymlink(uri)
+// Filters receive FileEvent: { uri, event }
+filters: ({ uri }) => isRootFile(uri)
+filters: ({ uri }) => isSymlink(uri)
+
+// Or access event type
+filters: ({ uri, event }) => {
+  return event === FileEventType.Modified && isRootFile(uri)
+}
 ```
 
-### Debouncing Implementation
+### Debouncing Implementation (Current: v0.0.56)
+
+Extracted to separate execute-handlers.ts file:
 
 ```typescript
-const executeHandlers = async (handlers: Handler[], uri: vscode.Uri, event: FileWatchEvent) => {
-  // Apply filters
-  if (config.filter) {
-    const filters = Array.isArray(config.filter) ? config.filter : [config.filter]
-    for (const filter of filters) {
-      const passed = await filter(uri, event)
-      if (!passed) return // Skip if any filter returns false
+// use-file-watcher/execute-handlers.ts
+export function createExecuteHandlers(
+  filters: Filter | Filter[] | undefined,
+  debounce: number | undefined,
+) {
+  let debounceTimeout: NodeJS.Timeout | undefined
+  let accumulatedEvents: FileEvent[] = []
+  
+  return async function executeHandlers(
+    handlers: Handler[],
+    uri: vscode.Uri,
+    eventType: FileEventType,
+  ) {
+    // Apply filters
+    if (filters) {
+      const filterArray = Array.isArray(filters) ? filters : [filters]
+      for (const filter of filterArray) {
+        if (!await filter({ uri, event: eventType })) return
+      }
     }
-  }
-
-  const runHandlers = () => handlers.forEach((handler) => handler(uri, event))
-
-  if (config.debounce) {
-    if (debounceTimeout) {
-      clearTimeout(debounceTimeout)
+    
+    // Debounce with event accumulation
+    if (debounce) {
+      accumulatedEvents.push({ uri, event: eventType })
+      if (debounceTimeout) clearTimeout(debounceTimeout)
+      debounceTimeout = setTimeout(() => {
+        const events = [...accumulatedEvents]
+        accumulatedEvents = []
+        handlers.forEach((handler) => handler(events))
+      }, debounce)
+    } else {
+      handlers.forEach((handler) => handler([{ uri, event: eventType }]))
     }
-    debounceTimeout = setTimeout(runHandlers, config.debounce)
-  } else {
-    runHandlers()
   }
 }
 ```
@@ -118,29 +148,32 @@ const executeHandlers = async (handlers: Handler[], uri: vscode.Uri, event: File
 
 ## Usage Examples
 
-### Basic Filtering
+### Basic Filtering (Current)
 
 ```typescript
 const watcher = useFileWatcher({
   pattern: '**/.gitignore',
-  filter: (uri, event) => isRootFile(uri),
-  onChange: () => handleGitignoreEvent()
+  filters: ({ uri }) => isRootFile(uri),
+  events: {
+    on: FileEventType.Modified,
+    handlers: (events) => handleGitignoreEvent()
+  }
 })
 ```
 
-### Multiple Filters with Debouncing
+### Multiple Filters with Debouncing (Current)
 
 ```typescript
 const watcher = useFileWatcher({
   pattern: '**/*',
-  debounce: 1000,
-  filter: [
-    (uri, event) => isSymlink(uri),
-    (uri, event) => event !== FileWatchEvent.Modified
+  debounce: 500,
+  filters: [
+    ({ uri }) => isSymlink(uri),
+    ({ event }) => event !== FileEventType.Modified
   ],
   events: {
-    on: [FileWatchEvent.Created, FileWatchEvent.Deleted],
-    handler: () => handleSymlinkChanges()
+    on: [FileEventType.Created, FileEventType.Deleted],
+    handlers: (events) => handleSymlinkChanges(events)
   }
 })
 ```
@@ -165,8 +198,10 @@ const watcher = useFileWatcher({
 
 ### Breaking Changes
 
-- **Filter Signature**: Filters now receive both uri and event parameters
+- **Filter Signature**: Filters receive FileEvent object `{ uri, event }`
+- **Handler Signature**: Handlers always receive array of FileEvent objects
 - **Shared Location**: Filter functions moved from hooks to shared utilities
+- **Hook Decomposition**: Hooks decomposed into folders with separate files (v0.0.56)
 
 ### Compatibility
 
@@ -206,8 +241,13 @@ const watcher = useFileWatcher({
 - **Event Batching**: Collect and process multiple events together
 - **Priority Queuing**: Different debounce delays for different event types
 
-## Outcome
+## Outcome (Updated: v0.0.56)
 
-Successfully implemented comprehensive filter system with debouncing support, providing performance optimization and better code organization while maintaining backward compatibility through adapter patterns.
+Successfully implemented comprehensive filter system with:
+- **Event Accumulation**: Debouncing accumulates events during window
+- **Handler Arrays**: Consistent array-based handler signature
+- **Modular Architecture**: Decomposed into types, implementation, and execute-handlers files
+- **Factory Pattern**: createExecuteHandlers maintains state in closure
+- **Type Safety**: Full TypeScript support throughout
 
-**Next Steps**: Monitor performance in production environments, consider additional filter utilities based on usage patterns.
+**Current Status**: Filter system complete with clean architecture and comprehensive features, ready for production use.

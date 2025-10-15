@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 14.10.2025  
-**Version**: 0.0.52  
+**Generated**: 15.10.2025  
+**Version**: 0.0.56  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -31,10 +31,12 @@
 - `deactivate()` calls `disposeWatchers()` to clean up all watchers
 
 **Implementation Details:**
+- Creates output channel with `{ log: true }` option during activation
 - Creates tree view and stores in state
 - Registers all commands
 - Calls initialize() and subscribes dispose function
 - Watches workspace folder changes and re-initializes
+- Logs activation, deactivation, and workspace changes
 
 **Registered Commands:**
 - `symlink-config.openSettings` - Opens extension settings
@@ -46,6 +48,9 @@
 - `symlink-config.applyConfiguration` - Applies symlink configuration
 - `symlink-config.cleanConfiguration` - Cleans symlinks
 - `symlink-config.collapseAll` - Collapses all tree nodes
+- `symlink-config.refreshManagers` - Manually refreshes all managers
+- `symlink-config.clearLogs` - Clears output channel logs
+- `symlink-config.showLogs` - Opens output panel with extension logs
 
 #### `src/extension/initialize.ts`
 **Functions:**
@@ -62,11 +67,14 @@
 
 #### `src/extension/init-managers.ts`
 **Functions:**
-- `initManagers(): Promise<void>`
+- `initManagers(force?: boolean): Promise<void>`
 
 **Implementation Details:**
-- Initializes all managers based on settings
-- Conditionally initializes next-config and current-config based on SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE
+- Logs initialization start and completion
+- Accepts optional `force` parameter to bypass settings checks
+- Initializes all managers based on settings (or force flag)
+- Conditionally initializes gitignore when force OR gitignoreServiceFiles is enabled
+- Conditionally initializes next-config and current-config when force OR watchWorkspace is enabled
 - Runs all initializations in parallel with Promise.all
 
 #### `src/extension/make-watchers.ts`
@@ -74,6 +82,7 @@
 - `makeWatchers(): void`
 
 **Implementation Details:**
+- Logs watcher creation start and completion
 - Disposes all watchers first with `disposeWatchers()`
 - Always creates symlinkSettingsWatcher
 - Conditionally creates filesSettingsWatcher when hideServiceFiles OR hideSymlinkConfigs is enabled
@@ -100,6 +109,10 @@
 - `getSilentMode(): boolean`
 - `setTreeProvider(provider: any): void`
 - `getTreeProvider(): any`
+- `setOutputChannel(channel: vscode.OutputChannel): void`
+- `log(message: string): void`
+- `clearLogs(): void`
+- `showLogs(): void`
 - `registerWatcher(name: string, watcher: vscode.Disposable): void`
 - `disposeWatchers(...names: string[]): void`
 - `queue(fn: () => Promise<void>): Promise<void>`
@@ -110,8 +123,17 @@
 - `nextSymlinkConfig: string`
 - `sylentMode: boolean`
 - `treeProvider: any`
+- `outputChannel: vscode.OutputChannel`
+- `logCount: number`
 - `watchers: Map<string, vscode.Disposable>`
 - `processingQueue: Promise<void>`
+
+**Implementation Details:**
+- Output channel created during activation with `{ log: true }` option
+- `log()` includes timestamp `[HH:MM:SS]` and auto-rotation based on maxLogEntries setting
+- Falls back to console.log if outputChannel not initialized
+- `clearLogs()` resets counter and shows output panel
+- `showLogs()` explicitly shows output panel
 
 **Implementation Details:**
 - Watchers tracked by name in Map for selective disposal
@@ -156,6 +178,7 @@
     - `HIDE_SYMLINK_CONFIGS: 'hideSymlinkConfigs'`
     - `SCRIPT_GENERATION: 'scriptGeneration'`
     - `SYMLINK_PATH_MODE: 'symlinkPathMode'`
+    - `MAX_LOG_ENTRIES: 'maxLogEntries'`
     - `DEFAULT` object:
       - `WATCH_WORKSPACE: true`
       - `GITIGNORE_SERVICE_FILES: true`
@@ -163,6 +186,7 @@
       - `HIDE_SYMLINK_CONFIGS: false`
       - `SCRIPT_GENERATION: 'auto'`
       - `SYMLINK_PATH_MODE: 'relative'`
+      - `MAX_LOG_ENTRIES: 1000`
   - `FILES` object:
     - `SECTION: 'files'`
     - `EXCLUDE: 'exclude'`
@@ -241,13 +265,15 @@
 - `handle-event.ts`
 - `init.ts`
 - `make.ts`
+- `needs-regenerate.ts`
 - `read.ts`
 
 **Functions:**
 - `generate(): Record<string, { spacing: string; active: boolean }>` (synchronous)
 - `handleEvent(): Promise<void>`
 - `init(): Promise<void>`
-- `make(): Promise<void>`
+- `make(): Promise<void>` (logs when .gitignore is updated)
+- `needsRegenerate(events?: FileEvent | FileEvent[]): boolean` (synchronous, logs event and result)
 - `read(): Promise<Record<string, { spacing: string; active: boolean }>>`
 
 ### `src/managers/symlink-settings/`
@@ -263,13 +289,14 @@
 
 **Types:**
 - `SymlinkSettingsParameter` (union type):
-  - `CONFIG.SYMLINK_CONFIG.WATCH_WORKSPACE`
-  - `CONFIG.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES`
-  - `CONFIG.SYMLINK_CONFIG.HIDE_SERVICE_FILES`
-  - `CONFIG.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS`
-  - `CONFIG.SYMLINK_CONFIG.SCRIPT_GENERATION`
-  - `CONFIG.SYMLINK_CONFIG.SYMLINK_PATH_MODE`
-- `SymlinkSettingsValue` (string | boolean | undefined)
+  - `SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE`
+  - `SETTINGS.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES`
+  - `SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES`
+  - `SETTINGS.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS`
+  - `SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION`
+  - `SETTINGS.SYMLINK_CONFIG.SYMLINK_PATH_MODE`
+  - `SETTINGS.SYMLINK_CONFIG.MAX_LOG_ENTRIES`
+- `SymlinkSettingsValue` (string | boolean | number | undefined)
 
 ### `src/managers/next-config-file/`
 **Files:**
@@ -291,8 +318,8 @@
 - `loadConfig(configPath: string): Config | null` (internal)
 - `handleEvent(event: FileWatchEvent): Promise<void>`
 - `init(): Promise<void>`
-- `make(): Promise<void>`
-- `needsRegenerate(): boolean` (synchronous)
+- `make(): Promise<void>` (logs when next.symlink-config.json is updated)
+- `needsRegenerate(event?: FileEventType): boolean` (synchronous, logs event and result)
 - `read(): string`
 
 **Types:**
@@ -314,8 +341,8 @@
 - `scanWorkspaceSymlinks(): ExistingSymlink[]` (internal, synchronous)
 - `handleEvent(event: string): Promise<void>`
 - `init(): Promise<void>`
-- `make(): Promise<void>`
-- `needsRegenerate(): boolean` (synchronous)
+- `make(): Promise<void>` (logs when current.symlink-config.json is updated)
+- `needsRegenerate(): boolean` (synchronous, logs result and errors)
 - `read(): string`
 
 **Types:**
@@ -323,19 +350,21 @@
 
 ### `src/managers/file-exclude-settings/`
 **Files:**
-- `index.ts` (exports: init, read, handle-event, make)
+- `index.ts` (exports: init, read, handle-event, make, types)
 - `generate.ts`
 - `handle-event.ts`
 - `init.ts`
 - `make.ts`
+- `needs-regenerate.ts`
 - `read.ts`
 - `types.ts`
 
 **Functions:**
-- `generate(mode: ExclusionPart): Record<string, boolean>`
+- `generate(mode: ExclusionPart): Record<string, boolean>` (synchronous)
 - `handleEvent(): Promise<void>`
 - `init(): Promise<void>`
-- `make(): Promise<void>`
+- `make(): Promise<void>` (logs when files.exclude settings are updated)
+- `needsRegenerate(event?: SettingsEvent): boolean` (synchronous, logs event and result)
 - `read(): Record<string, boolean>`
 
 **Types:**
@@ -343,18 +372,28 @@
 
 ## Hook Modules
 
-### `src/hooks/use-file-watcher.ts`
+### `src/hooks/use-file-watcher/`
+**Files:**
+- `index.ts` (exports all)
+- `types.ts`
+- `use-file-watcher.ts`
+- `execute-handlers.ts`
+
 **Functions:**
 - `useFileWatcher(config: WatcherConfig): vscode.FileSystemWatcher`
+- `createExecuteHandlers(filters: Filter | Filter[] | undefined, debounce: number | undefined): (handlers: Handler[], uri: vscode.Uri, eventType: FileEventType) => Promise<void>`
 
 **Types:**
 - `FileEventType` enum with Created, Modified, Deleted values
 - `FileEvent` type: `{ uri: vscode.Uri; event: FileEventType }`
 - `Handler` type: `(events: FileEvent[]) => void` (always receives array)
 - `Filter` type: `(event: FileEvent) => Promise<boolean> | boolean`
-- `WatcherConfig` interface with pattern, debounce?, filters?, events (required) properties
+- `EventConfig` interface with on (FileEventType | FileEventType[]), handlers (Handler | Handler[]) properties
+- `WatcherConfig` interface with pattern, debounce?, filters?, events (EventConfig | EventConfig[]) properties
 
 **Implementation Details:**
+- Decomposed into folder structure with separate files for types, implementation, and handler execution
+- `createExecuteHandlers` factory function encapsulates filtering and debouncing logic with closure for state
 - Removed legacy onCreate/onChange/onDelete syntax
 - events property is now required (not optional)
 - filters accepts Filter | Filter[] (all filters must pass)
@@ -365,17 +404,27 @@
 - Filters work per-event before accumulation, all must return true
 - Filter receives FileEvent object for consistency with Handler signature
 
-### `src/hooks/use-settings-watcher.ts`
+### `src/hooks/use-settings-watcher/`
+**Files:**
+- `index.ts` (exports all)
+- `types.ts`
+- `use-settings-watcher.ts`
+- `execute-handlers.ts`
+
 **Functions:**
 - `useSettingsWatcher(config: SettingsWatcherConfig): vscode.Disposable`
+- `executeHandlers(handlers: Handler | Handler[], event: SettingsEvent): void`
 
 **Types:**
-- `Handler` type: `(section: string, parameter: string, payload: { value: any; old_value: any }) => void`
+- `SettingsEvent` type: `{ section: string; parameter: string; value: any; oldValue: any }`
+- `Handler` type: `(event: SettingsEvent) => void`
 - `HandleConfig` interface with parameters (string | string[]), onChange (Handler | Handler[]) properties
 - `SectionConfig` interface with section, handlers (HandleConfig | HandleConfig[]) properties
 - `SettingsWatcherConfig` interface with sections property
 
 **Implementation Details:**
+- Decomposed into folder structure with separate files for types, implementation, and handler execution
+- `executeHandlers` utility function normalizes handlers to array and executes each with event
 - Renamed from use-config-watcher.ts
 - `handlers` can be single HandleConfig or array of HandleConfigs
 - Each HandleConfig can watch single parameter or array of parameters
@@ -401,6 +450,7 @@
 - `symlinkSettingsWatcher(): void`
 
 **Implementation Details:**
+- Logs watcher registration and setting changes
 - Uses `useSettingsWatcher` hook
 - Watches symlink-config section settings changes
 - Queues operations via `queue()` from state
@@ -412,6 +462,7 @@
 - `filesSettingsWatcher(): void`
 
 **Implementation Details:**
+- Logs watcher registration and setting changes
 - Uses `useSettingsWatcher` hook
 - Watches files section settings changes (files.exclude)
 - Queues operations via `queue()` from state
@@ -423,6 +474,7 @@
 - `gitignoreWatcher(): void`
 
 **Implementation Details:**
+- Logs watcher registration and file changes
 - Watches .gitignore files
 - Queues operations via `queue()` from state
 - Registers with name `WATCHERS.GITIGNORE`
@@ -432,6 +484,7 @@
 - `symlinkConfigsWatcher(): void`
 
 **Implementation Details:**
+- Logs watcher registration and file changes with event count
 - Watches symlink-config.json files
 - Refreshes tree view on changes
 - Registers with name `WATCHERS.SYMLINK_CONFIGS`
@@ -441,6 +494,7 @@
 - `nextConfigWatcher(): void`
 
 **Implementation Details:**
+- Logs watcher registration and file changes
 - Watches next.symlink-config.json at workspace root
 - Registers with name `WATCHERS.NEXT_CONFIG`
 
@@ -449,6 +503,7 @@
 - `currentConfigWatcher(): void`
 
 **Implementation Details:**
+- Logs watcher registration and file changes
 - Watches current.symlink-config.json at workspace root
 - Registers with name `WATCHERS.CURRENT_CONFIG`
 
@@ -457,6 +512,7 @@
 - `symlinksWatcher(): void`
 
 **Implementation Details:**
+- Logs watcher registration and symlink changes with event count
 - Watches all symlinks in workspace
 - 500ms debounce for batch updates
 - Registers with name `WATCHERS.SYMLINKS`
@@ -519,8 +575,8 @@
 - `types.ts`
 
 **Functions:**
-- `applyConfiguration(): Promise<void>` (includes user interaction logic)
-- `cleanConfiguration(): Promise<void>` (includes user interaction logic, renamed from clearConfiguration)
+- `applyConfiguration(): Promise<void>` (includes user interaction logic, logs all steps and errors)
+- `cleanConfiguration(): Promise<void>` (includes user interaction logic, renamed from clearConfiguration, logs all steps and errors)
 - `collectSymlinkOperations(tree: Record<string, TreeNode>): SymlinkOperation[]` (uses arrow function for traverse helper)
 - `generateAdminScript(workspaceRoot: string): Promise<void>` (shared utility)
 - `generateApplyWindowsScript(operations: SymlinkOperation[], workspaceRoot: string): Promise<void>` (script generation only)
@@ -538,9 +594,14 @@
 
 ### `src/commands/`
 **Files:**
+- `index.ts` (exports all commands)
+- `apply-configuration/` (subfolder with index.ts)
 - `create-symlink.ts`
 - `open-symlink-config.ts`
 - `tree-operations.ts`
+- `refresh-managers.ts`
+- `clear-logs.ts`
+- `show-logs.ts`
 
 **Functions:**
 - `selectSymlinkSource(uri: vscode.Uri): Promise<void>` (validates not symlink)
@@ -555,6 +616,9 @@
 - Prevents circular symlink references and invalid configurations
 - `openSymlinkConfig(treeItem: any): Promise<void>`
 - `collapseAll(): void`
+- `refreshManagers(): Promise<void>`
+- `clearLogsCommand(): void`
+- `showLogsCommand(): void`
 
 ## Summary
 
@@ -614,3 +678,14 @@
 - **Conditional Watchers**: filesSettingsWatcher only runs when hide options are enabled to save resources
 - **Type Rename**: FileWatchEvent renamed to FileEventType, FileEventData renamed to FileEvent
 - **Filter Signature**: Filter now receives FileEvent object instead of separate uri and event parameters for consistency
+- **Logging System**: Added comprehensive logging throughout extension with output channel, auto-rotation, and timestamp formatting
+- **Log Management**: Added maxLogEntries setting (default 1000), clearLogs and showLogs commands
+- **Event Data Logging**: Watchers log detailed event data (file paths, event types, old/new values)
+- **Manager Logging**: needsRegenerate functions log events and results for debugging
+- **Manager Consistency**: All managers now have consistent structure with needs-regenerate.ts files
+- **ESLint Module Boundaries**: Added no-restricted-imports rule to enforce index.ts-only imports for managers, commands, shared, views, watchers, extension
+- **Commands Index**: Created commands/index.ts for centralized command exports
+- **Import Consolidation**: register-commands.ts now imports all commands from single index
+- **Hook Decomposition**: Decomposed hooks into separate folders (use-file-watcher/, use-settings-watcher/) with types.ts, implementation, and index.ts
+- **Handler Extraction**: Extracted executeHandlers logic to separate files in both hooks for cleaner separation of concerns
+- **Factory Pattern**: use-file-watcher uses createExecuteHandlers factory to maintain debounce state in closure

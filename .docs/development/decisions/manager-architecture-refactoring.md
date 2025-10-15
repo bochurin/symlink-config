@@ -50,25 +50,28 @@ handleGitignoreEvent()
 - Cleaner, more explicit code
 - Consistent with modern JavaScript/TypeScript practices
 
-### 3. Enhanced File Watcher Hook
+### 3. Enhanced File Watcher Hook (Current: v0.0.56)
 
-Improved the file watcher hook to pass event information:
+Evolved to event-based configuration with handler arrays:
 
 ```typescript
-// Enhanced Handler type
-type Handler = (uri: vscode.Uri, event: FileWatchEvent) => void
+// Current Handler type - always receives array
+type Handler = (events: FileEvent[]) => void
 
-// Flexible event syntax
-events?: {
-  on: FileWatchEvent | FileWatchEvent[]
-  handler: Handler | Handler[]
-} | Array<{...}>
+// Event-based configuration
+events: EventConfig | EventConfig[]
+
+interface EventConfig {
+  on: FileEventType | FileEventType[]
+  handlers: Handler | Handler[]
+}
 ```
 
 **Rationale**:
-- Handlers can now access the actual event type
-- More flexible API supporting both single objects and arrays
-- Better type safety with event parameter passing
+- Handlers always receive arrays for consistency
+- Event-based syntax supports complex scenarios
+- Filtering and debouncing integrated
+- Decomposed into separate files (types, implementation, execute-handlers)
 
 ### 4. Type System Improvements
 

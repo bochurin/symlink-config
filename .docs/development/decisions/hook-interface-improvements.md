@@ -88,30 +88,53 @@ useFileWatcher({
 })
 ```
 
-#### After: Automatic Detection
+#### After: Event-Based Configuration (Current)
 
 ```typescript
 export interface WatcherConfig {
   pattern: string
-  onCreate?: (() => void) | (() => void)[]
-  onChange?: (() => void) | (() => void)[]
-  onDelete?: (() => void) | (() => void)[]
+  debounce?: number
+  filters?: Filter | Filter[]
+  events: EventConfig | EventConfig[]
 }
 
+export interface EventConfig {
+  on: FileEventType | FileEventType[]
+  handlers: Handler | Handler[]
+}
+
+export type Handler = (events: FileEvent[]) => void
+
 // Implementation
+const createHandlers: Handler[] = []
+const changeHandlers: Handler[] = []
+const deleteHandlers: Handler[] = []
+
+// Collect handlers by event type
+for (const eventConfig of eventConfigs) {
+  for (const event of events) {
+    if (event === FileEventType.Created) createHandlers.push(...handlers)
+    if (event === FileEventType.Modified) changeHandlers.push(...handlers)
+    if (event === FileEventType.Deleted) deleteHandlers.push(...handlers)
+  }
+}
+
 const watcher = vscode.workspace.createFileSystemWatcher(
   config.pattern,
-  !config.onCreate, // ignore create if no onCreate handler
-  !config.onChange, // ignore change if no onChange handler
-  !config.onDelete // ignore delete if no onDelete handler
+  createHandlers.length === 0,
+  changeHandlers.length === 0,
+  deleteHandlers.length === 0,
 )
+
+const executeHandlers = createExecuteHandlers(config.filters, config.debounce)
 
 // Usage
 useFileWatcher({
   pattern: '**/.gitignore',
-  onChange: () => handler(), // Automatically watches CHANGE
-  onDelete: () => handler() // Automatically watches DELETE
-  // No onCreate = automatically IGNORES CREATE
+  events: {
+    on: [FileEventType.Modified, FileEventType.Deleted],
+    handlers: (events) => handler(events)
+  }
 })
 ```
 
@@ -154,15 +177,31 @@ if (newValue !== oldValue) {
 }
 ```
 
-### File Watcher Logic
+### File Watcher Logic (Current)
 
 ```typescript
-const watcher = vscode.workspace.createFileSystemWatcher(
-  config.pattern,
-  !config.onCreate, // Convert handler presence to ignore flag
-  !config.onChange,
-  !config.onDelete
-)
+// Decomposed into separate files
+// use-file-watcher/types.ts - Type definitions
+// use-file-watcher/use-file-watcher.ts - Main implementation
+// use-file-watcher/execute-handlers.ts - Handler execution with filtering/debouncing
+// use-file-watcher/index.ts - Public API exports
+
+// Handler execution factory pattern
+export function createExecuteHandlers(
+  filters: Filter | Filter[] | undefined,
+  debounce: number | undefined,
+) {
+  let debounceTimeout: NodeJS.Timeout | undefined
+  let accumulatedEvents: FileEvent[] = []
+  
+  return async function executeHandlers(
+    handlers: Handler[],
+    uri: vscode.Uri,
+    eventType: FileEventType,
+  ) {
+    // Filter and debounce logic
+  }
+}
 ```
 
 ### Parameter Naming Consistency
@@ -205,22 +244,31 @@ const watcher = vscode.workspace.createFileSystemWatcher(
 - **Gradual Migration**: Update one hook at a time
 - **Backward Compatibility**: Consider deprecation warnings for future versions
 
-## Future Enhancements
+## Recent Enhancements (v0.0.56)
 
-### Advanced Auto-Detection
+### Hook Decomposition
 
-- **Pattern-Based Detection**: Auto-detect patterns based on handler names
-- **Conditional Watching**: Enable/disable watching based on runtime conditions
-- **Smart Defaults**: Learn from usage patterns to optimize defaults
+- **Folder Structure**: Decomposed hooks into organized folders with separate files
+- **Handler Extraction**: Extracted executeHandlers logic to separate files
+- **Factory Pattern**: use-file-watcher uses createExecuteHandlers factory for closure-based state
+- **Simple Utility**: use-settings-watcher uses executeHandlers utility for normalization
+- **Module Boundaries**: ESLint enforces index.ts-only imports for hook subfolders
 
-### Enhanced Context
+### Enhanced Features
 
-- **Event Metadata**: Include additional context about what triggered the change
-- **Change Reasons**: Distinguish between user changes and programmatic changes
-- **Batch Operations**: Handle multiple related changes efficiently
+- **Filtering**: Filter functions receive FileEvent objects for consistency
+- **Debouncing**: Accumulates events during debounce window
+- **Event Arrays**: Handlers always receive arrays for uniform processing
+- **Type Safety**: Proper TypeScript types throughout hook system
 
 ## Outcome
 
-Successfully simplified hook interfaces while maintaining full functionality. The new design is more intuitive, requires less configuration, and automatically optimizes performance based on usage patterns.
+Successfully evolved hook interfaces from simple auto-detection to event-based configuration with filtering, debouncing, and modular architecture. The current design provides:
 
-**Next Steps**: Monitor usage patterns to identify additional simplification opportunities, consider applying similar patterns to other extension APIs.
+- **Flexible Configuration**: Event-based syntax supports complex scenarios
+- **Performance Optimization**: Filtering and debouncing reduce unnecessary processing
+- **Clean Architecture**: Decomposed into focused, testable modules
+- **Type Safety**: Strong TypeScript typing throughout
+- **Maintainability**: Separate files for types, implementation, and execution logic
+
+**Current Status**: Hook system complete with comprehensive features and clean architecture, ready for production use.

@@ -35,16 +35,29 @@ export function writeFile(file: string, content: string) {
 }
 ```
 
-#### After: Asynchronous Operations
+#### After: Asynchronous Operations (Current)
 
 ```typescript
-// writeFile - non-blocking operation
-export async function writeFile(file: string, content: string) {
-  const filePath = path.join(workspaceRoot, file)
+// writeFile - non-blocking operation with optional mode
+import * as fs from 'fs/promises'
+import { fullPath } from './full-path'
+
+export async function writeFile(file: string, content: string, mode?: number) {
+  const filePath = fullPath(file)
   try {
-    await fs.writeFile(filePath, content, 'utf8')
+    await fs.writeFile(filePath, content, { encoding: 'utf8', mode })
   } catch (error) {
     console.error('Failed to update file:', error)
+  }
+}
+
+// Note: readFile remains synchronous for simplicity
+export function readFile(file: string): string {
+  const filePath = fullPath(file)
+  try {
+    return fs.readFileSync(filePath, 'utf8')
+  } catch {
+    return ''
   }
 }
 ```
@@ -136,22 +149,21 @@ export async function activate(context: vscode.ExtensionContext) {
 
 ## Technical Implementation
 
-### File Operations Module
+### File Operations Module (Current)
 
 ```typescript
-// shared/file-ops/writeFile.ts
-import * as fs from 'fs/promises'
+// shared/file-ops/ - Centralized file system abstraction
+// - read-file.ts - Synchronous read with empty string fallback
+// - write-file.ts - Async write with optional mode parameter
+// - full-path.ts - Path resolution from workspace root
+// - is-root-file.ts - Check if file is in workspace root
+// - is-symlink.ts - Async symlink detection with bitwise check
+// - read-dir.ts - Directory listing with Dirent objects
+// - read-symlink.ts - Read symlink target
+// - stat-file.ts - File stats
+// - index.ts - Public API exports
 
-export async function writeFile(file: string, content: string) {
-  const workspaceRoot = state.getWorkspaceRoot()
-  const filePath = path.join(workspaceRoot, file)
-
-  try {
-    await fs.writeFile(filePath, content, 'utf8')
-  } catch (error) {
-    console.error('Failed to update file:', error)
-  }
-}
+// Architecture rule: Only file-ops module uses fs directly
 ```
 
 ### Manager Pattern
@@ -215,11 +227,17 @@ try {
 - **Cross-Platform**: Verify async operations work on Windows, macOS, Linux
 - **Integration**: Ensure all managers work correctly with async operations
 
+## Implemented Enhancements
+
+- ✅ **Operation Queuing**: Implemented queue() in shared/state.ts for serializing async operations
+- ✅ **File System Abstraction**: Centralized all fs operations in shared/file-ops module
+- ✅ **Mixed Approach**: writeFile async, readFile sync for simplicity where appropriate
+- ✅ **Mode Support**: writeFile accepts optional mode parameter for Unix permissions (0o755)
+
 ## Future Enhancements
 
 ### Advanced Async Features
 
-- **Operation Queuing**: Queue file operations to prevent conflicts
 - **Progress Indication**: Show progress for long-running operations
 - **Cancellation**: Support for canceling in-progress operations
 - **Retry Logic**: Automatic retry for transient failures
@@ -231,8 +249,12 @@ try {
 - **Streaming**: Use streams for large file operations
 - **Parallel Processing**: Process multiple files simultaneously
 
-## Outcome
+## Outcome (Updated)
 
-Successfully migrated all file operations to async patterns, providing consistent architecture, better performance, and improved user experience while maintaining full functionality.
+Successfully implemented file system abstraction with:
+- **Centralized Operations**: All fs usage in shared/file-ops module
+- **Operation Queue**: Serialized async operations via queue() function
+- **Mixed Approach**: Async where beneficial (writeFile), sync where simpler (readFile)
+- **Enhanced Features**: Mode parameter support, comprehensive file operations
 
-**Next Steps**: Consider implementing operation queuing and progress indication for enhanced user experience with large operations.
+**Current Status**: File operations complete with clean architecture and operation queuing, ready for production use.

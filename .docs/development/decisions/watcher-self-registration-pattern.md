@@ -21,14 +21,14 @@ Implement self-registering watcher pattern with centralized state management:
 ### 1. Decompose into Separate Files
 
 Create `src/watchers/` folder with individual watcher files:
-- `config-watcher.ts` - VSCode settings changes
+- `symlink-settings-watcher.ts` - Symlink-config section settings changes
+- `files-settings-watcher.ts` - Files section settings changes (conditional)
 - `gitignore-watcher.ts` - .gitignore file changes
 - `symlink-config-watcher.ts` - symlink-config.json changes
 - `next-config-watcher.ts` - next.symlink-config.json changes
 - `current-config-watcher.ts` - current.symlink-config.json changes
-- `symlinks-watcher.ts` - Symlink file changes with debounce
-- `run.ts` - Orchestration function
-- `index.ts` - Public API
+- `symlinks-watcher.ts` - Symlink file changes with 500ms debounce
+- `index.ts` - Public API exports
 
 ### 2. Self-Registration Pattern
 
@@ -39,35 +39,51 @@ Each watcher registers itself in centralized state:
 export function setWatchers(): vscode.Disposable[] {
   const watchers: vscode.Disposable[] = []
   
-  const configWatcher = useConfigWatcher(...)
+  const configWatcher = useSettingsWatcher(...)
   watchers.push(configWatcher)
   
   return watchers
 }
 
-// After: Self-registration
-export function createConfigWatcher(): void {
-  const watcher = useConfigWatcher(...)
-  registerWatcher(watcher)  // Self-registers in state
+// After: Self-registration (v0.0.49+)
+export function symlinkSettingsWatcher(): void {
+  const watcher = useSettingsWatcher(...)
+  registerWatcher(WATCHERS.SYMLINK_SETTINGS, watcher)
 }
+
+// Current: Name-based registration (v0.0.49+)
+registerWatcher(name: string, watcher: vscode.Disposable)
 ```
 
-### 3. Centralized State Management
+### 3. Centralized State Management (Updated: v0.0.49)
 
-Move watchers array and queue to `shared/state.ts`:
+Move watchers Map and queue to `shared/state.ts`:
 
 ```typescript
-// State module
-const watchers: vscode.Disposable[] = []
+// State module - name-based registration
+const watchers = new Map<string, vscode.Disposable>()
 let processingQueue: Promise<void> = Promise.resolve()
 
-export function registerWatcher(watcher: vscode.Disposable): void {
-  watchers.push(watcher)
+export function registerWatcher(name: string, watcher: vscode.Disposable): void {
+  // Dispose existing watcher with same name
+  if (watchers.has(name)) {
+    watchers.get(name)?.dispose()
+  }
+  watchers.set(name, watcher)
 }
 
-export function disposeWatchers(): void {
-  watchers.forEach((w) => w.dispose())
-  watchers.length = 0
+export function disposeWatchers(...names: string[]): void {
+  if (names.length === 0) {
+    // Dispose all
+    watchers.forEach((w) => w.dispose())
+    watchers.clear()
+  } else {
+    // Dispose specific watchers
+    names.forEach((name) => {
+      watchers.get(name)?.dispose()
+      watchers.delete(name)
+    })
+  }
 }
 
 export function queue(fn: () => Promise<void>): Promise<void> {
@@ -83,8 +99,8 @@ export function queue(fn: () => Promise<void>): Promise<void> {
 const watchers = setWatchers()
 const dispose = () => watchers.forEach((w) => w.dispose())
 
-// After: Self-registration
-run()  // Watchers register themselves
+// After: Self-registration with makeWatchers (v0.0.49+)
+makeWatchers()  // Conditionally creates watchers based on settings
 const dispose = disposeWatchers  // From state
 ```
 
@@ -95,39 +111,60 @@ const dispose = disposeWatchers  // From state
 Each watcher file follows pattern:
 
 ```typescript
-import { useFileWatcher } from '../../hooks/use-file-watcher'
-import { registerWatcher } from '../../shared/state'
-import { queue } from '../../shared/state'
+import { useFileWatcher, FileEventType } from '../hooks/use-file-watcher'
+import { registerWatcher, queue } from '../shared/state'
+import { WATCHERS } from '../shared/constants'
 
-export function createGitignoreWatcher(): void {
+export function gitignoreWatcher(): void {
   const watcher = useFileWatcher({
     pattern: '**/.gitignore',
-    onChange: (events) => {
-      events.forEach(({ uri }) => {
+    filters: ({ uri }) => isRootFile(uri),
+    events: {
+      on: [FileEventType.Created, FileEventType.Modified, FileEventType.Deleted],
+      handlers: (events) => {
         queue(() => handleGitignoreEvent())
-      })
+      },
     },
   })
   
-  registerWatcher(watcher)
+  registerWatcher(WATCHERS.GITIGNORE, watcher)
 }
 ```
 
 ### Orchestration
 
 ```typescript
-// src/watchers/run.ts
-import { createConfigWatcher } from './config-watcher'
-import { createGitignoreWatcher } from './gitignore-watcher'
-// ... other imports
+// src/extension/make-watchers.ts (v0.0.49+)
+import { symlinkSettingsWatcher, filesSettingsWatcher, gitignoreWatcher } from '../watchers'
+import { readSymlinkSettings } from '../managers/symlink-settings'
+import { SETTINGS, WATCHERS } from '../shared/constants'
 
-export function run(): void {
-  createConfigWatcher()
-  createGitignoreWatcher()
-  createSymlinkConfigWatcher()
-  createNextConfigWatcher()
-  createCurrentConfigWatcher()
-  createSymlinksWatcher()
+export function makeWatchers(): void {
+  const watchWorkspace = readSymlinkSettings(SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE)
+  const gitignoreServiceFiles = readSymlinkSettings(SETTINGS.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES)
+  const hideServiceFiles = readSymlinkSettings(SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES)
+  const hideSymlinkConfigs = readSymlinkSettings(SETTINGS.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS)
+  
+  // Always create
+  symlinkSettingsWatcher()
+  
+  // Conditional creation
+  if (hideServiceFiles || hideSymlinkConfigs) {
+    filesSettingsWatcher()
+  }
+  
+  if (gitignoreServiceFiles) {
+    gitignoreWatcher()
+  }
+  
+  if (watchWorkspace) {
+    nextConfigWatcher()
+    currentConfigWatcher()
+    symlinkConfigsWatcher()
+    symlinksWatcher()
+  } else {
+    disposeWatchers(WATCHERS.NEXT_CONFIG, WATCHERS.CURRENT_CONFIG, WATCHERS.SYMLINK_CONFIGS, WATCHERS.SYMLINKS)
+  }
 }
 ```
 
@@ -207,9 +244,15 @@ export function run(): void {
 - **State Management**: Centralized state in shared/state.ts
 - **Hook System**: Watchers use useFileWatcher and useConfigWatcher hooks
 
+## Implemented Enhancements (v0.0.49+)
+
+- ✅ **Name-Based Registration**: Watchers registered with string names from WATCHERS constant
+- ✅ **Selective Disposal**: disposeWatchers() can dispose all or specific watchers by name
+- ✅ **Conditional Watchers**: makeWatchers() conditionally creates/disposes based on settings
+- ✅ **Automatic Cleanup**: Registering same name disposes old watcher automatically
+
 ## Future Considerations
 
-- **Conditional Watchers**: Some watchers could be conditionally registered based on settings
 - **Watcher Groups**: Could group related watchers for batch operations
 - **Lazy Registration**: Could defer watcher creation until needed
 - **Plugin System**: Self-registration pattern enables plugin-like architecture
