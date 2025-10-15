@@ -54,6 +54,10 @@ export default [
             },
 
             {
+              group: ['*/hooks/*/*', '!*/hooks/*/index'],
+              message: 'Import from hook index.ts only, not internal files'
+            },
+            {
               group: ['*/shared/*/*', '!*/shared/*/index'],
               message: 'Import from shared module index.ts only, not internal files'
             },

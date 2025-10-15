@@ -1,27 +1,6 @@
 import * as vscode from 'vscode'
-
-export type SettingsEvent = {
-  section: string
-  parameter: string
-  value: any
-  oldValue: any
-}
-
-type Handler = (event: SettingsEvent) => void
-
-type HandleConfig = {
-  parameters: string | string[]
-  onChange: Handler | Handler[]
-}
-
-type SectionConfig = {
-  section: string
-  handlers: HandleConfig | HandleConfig[]
-}
-
-export interface SettingsWatcherConfig {
-  sections: SectionConfig | SectionConfig[]
-}
+import type { SettingsWatcherConfig } from './types'
+import { executeHandlers } from './execute-handlers'
 
 export function useSettingsWatcher(
   watcherConfig: SettingsWatcherConfig,
@@ -45,9 +24,9 @@ export function useSettingsWatcher(
       const parameters = Array.isArray(configItem.parameters)
         ? configItem.parameters
         : [configItem.parameters]
-      parameters.forEach((param) => {
-        previousValues[sectionConfig.section][param] =
-          initialSettings.get(param)
+      parameters.forEach((parameter) => {
+        previousValues[sectionConfig.section][parameter] =
+          initialSettings.get(parameter)
       })
     })
   })
@@ -74,11 +53,11 @@ export function useSettingsWatcher(
             const oldValue = previousValues[sectionConfig.section][parameter]
 
             if (value !== oldValue) {
-              const handlers = Array.isArray(configItem.onChange)
-                ? configItem.onChange
-                : [configItem.onChange]
-              handlers.forEach((handler) => {
-                handler({ section, parameter, value, oldValue })
+              executeHandlers(configItem.onChange, {
+                section,
+                parameter,
+                value,
+                oldValue,
               })
               previousValues[sectionConfig.section][parameter] = value
             }
