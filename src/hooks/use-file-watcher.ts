@@ -1,17 +1,14 @@
 import * as vscode from 'vscode'
 
-export enum FileWatchEvent {
+export enum FileEventType {
   Created = 'Created',
   Modified = 'Modified',
   Deleted = 'Deleted',
 }
 
-type FileEventData = { uri: vscode.Uri; event: FileWatchEvent }
-type Handler = (events: FileEventData[]) => void
-type Filter = (
-  uri: vscode.Uri,
-  event: FileWatchEvent,
-) => Promise<boolean> | boolean
+type FileEvent = { uri: vscode.Uri; event: FileEventType }
+type Handler = (events: FileEvent[]) => void
+type Filter = (event: FileEvent) => Promise<boolean> | boolean
 
 export interface WatcherConfig {
   pattern: string
@@ -19,11 +16,11 @@ export interface WatcherConfig {
   filters?: Filter | Filter[]
   events:
     | {
-        on: FileWatchEvent | FileWatchEvent[]
+        on: FileEventType | FileEventType[]
         handlers: Handler | Handler[]
       }
     | Array<{
-        on: FileWatchEvent | FileWatchEvent[]
+        on: FileEventType | FileEventType[]
         handlers: Handler | Handler[]
       }>
 }
@@ -49,13 +46,13 @@ export function useFileWatcher(
 
     for (const event of events) {
       switch (event) {
-        case FileWatchEvent.Created:
+        case FileEventType.Created:
           createHandlers.push(...handlers)
           break
-        case FileWatchEvent.Modified:
+        case FileEventType.Modified:
           changeHandlers.push(...handlers)
           break
-        case FileWatchEvent.Deleted:
+        case FileEventType.Deleted:
           deleteHandlers.push(...handlers)
           break
       }
@@ -71,25 +68,25 @@ export function useFileWatcher(
 
   // Filter and debouncing logic
   let debounceTimeout: NodeJS.Timeout | undefined
-  let accumulatedEvents: FileEventData[] = []
+  let accumulatedEvents: FileEvent[] = []
 
   const executeHandlers = async (
     handlers: Handler[],
     uri: vscode.Uri,
-    event: FileWatchEvent,
+    eventType: FileEventType,
   ) => {
     if (config.filters) {
       const filters = Array.isArray(config.filters)
         ? config.filters
         : [config.filters]
       for (const filter of filters) {
-        const passed = await filter(uri, event)
+        const passed = await filter({ uri, event: eventType })
         if (!passed) return
       }
     }
 
     if (config.debounce) {
-      accumulatedEvents.push({ uri, event })
+      accumulatedEvents.push({ uri, event: eventType })
       if (debounceTimeout) {
         clearTimeout(debounceTimeout)
       }
@@ -99,25 +96,25 @@ export function useFileWatcher(
         handlers.forEach((handler) => handler(events))
       }, config.debounce)
     } else {
-      handlers.forEach((handler) => handler([{ uri, event }]))
+      handlers.forEach((handler) => handler([{ uri, event: eventType }]))
     }
   }
 
   if (createHandlers.length > 0) {
     watcher.onDidCreate((uri) =>
-      executeHandlers(createHandlers, uri, FileWatchEvent.Created),
+      executeHandlers(createHandlers, uri, FileEventType.Created),
     )
   }
 
   if (changeHandlers.length > 0) {
     watcher.onDidChange((uri) =>
-      executeHandlers(changeHandlers, uri, FileWatchEvent.Modified),
+      executeHandlers(changeHandlers, uri, FileEventType.Modified),
     )
   }
 
   if (deleteHandlers.length > 0) {
     watcher.onDidDelete((uri) =>
-      executeHandlers(deleteHandlers, uri, FileWatchEvent.Deleted),
+      executeHandlers(deleteHandlers, uri, FileEventType.Deleted),
     )
   }
 
