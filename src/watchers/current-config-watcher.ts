@@ -2,10 +2,9 @@ import { useFileWatcher, FileEventType } from '../hooks/use-file-watcher'
 import { handleEvent as handleCurrentConfigEvent } from '../managers/current-config'
 import { FILE_NAMES, WATCHERS } from '../shared/constants'
 import { isRootFile } from '../shared/file-ops'
-import { getTreeProvider, queue, registerWatcher } from '../shared/state'
+import { getTreeProvider, queue, registerWatcher, log } from '../shared/state'
 
 export function currentConfigWatcher() {
-  const { log } = require('../shared/state')
   log('Current config watcher registered')
   const treeProvider = getTreeProvider()
   const watcher = useFileWatcher({
@@ -18,7 +17,7 @@ export function currentConfigWatcher() {
         FileEventType.Deleted,
       ],
       handlers: (events) => {
-        log('current.symlink-config.json changed')
+        log(`current.symlink-config.json: ${events[0].event} at ${events[0].uri.fsPath}`)
         queue(() => handleCurrentConfigEvent(events[0].event))
         treeProvider?.refresh()
       },

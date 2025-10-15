@@ -2,9 +2,9 @@ import { writeFile } from '../../shared/file-ops'
 import { assembleGitignore } from '../../shared/gitignore-ops'
 import { generate } from './generate'
 import { read } from './read'
+import { log } from '../../shared/state'
 
 export async function make() {
-  const { log } = await import('../../shared/state')
   const currentEntries = await read()
   const originalSpacing = Object.fromEntries(
     Object.entries(currentEntries).map(([key, entry]) => [key, entry.spacing])

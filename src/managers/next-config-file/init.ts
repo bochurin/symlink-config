@@ -1,6 +1,10 @@
-import { FileEventType } from '../../hooks/use-file-watcher'
-import { handleEvent } from './handle-event'
+import { info } from '../../shared/vscode'
+import { make } from './make'
+import { needsRegenerate } from './needs-regenerate'
 
 export async function init() {
-  await handleEvent(FileEventType.Modified)
+  if (needsRegenerate()) {
+    info(`next.symlink-config.json is inconsistent. Regenerating...`)
+    await make()
+  }
 }

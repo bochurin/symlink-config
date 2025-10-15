@@ -36,6 +36,37 @@ export default [
       ],
       'import/newline-after-import': 'warn',
       'import/no-duplicates': 'warn',
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['*/managers/*/*', '!*/managers/*/index'],
+              message: 'Import from manager index.ts only, not internal files'
+            },
+            {
+              group: ['*/commands/*/*', '!*/commands/*/index'],
+              message: 'Import from command index.ts only, not internal files'
+            },
+            {
+              group: ['*/shared/*/*', '!*/shared/*/index'],
+              message: 'Import from shared module index.ts only, not internal files'
+            },
+            {
+              group: ['*/views/*/*', '!*/views/*/index'],
+              message: 'Import from view index.ts only, not internal files'
+            },
+            {
+              group: ['*/watchers/*/*', '!*/watchers/*/index'],
+              message: 'Import from watcher index.ts only, not internal files'
+            },
+            {
+              group: ['*/extension/*/*', '!*/extension/*/index'],
+              message: 'Import from extension module index.ts only, not internal files'
+            }
+          ]
+        }
+      ],
 
       curly: 'warn',
       eqeqeq: 'warn',

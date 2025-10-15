@@ -4,13 +4,12 @@ import * as path from 'path'
 
 import { generateCleanWindowsScript } from './generate-clean-windows-script'
 import { generateCleanUnixScript } from './generate-clean-unix-script'
-import { getWorkspaceRoot } from '../../shared/state'
+import { getWorkspaceRoot, log } from '../../shared/state'
 import { confirmWarning } from '../../shared/vscode'
 import { FILE_NAMES } from '../../shared/constants'
 import { generateAdminScript } from './generate-admin-script'
 
 export async function cleanConfig(): Promise<void> {
-  const { log } = await import('../../shared/state')
   const workspaceRoot = getWorkspaceRoot()
   if (!workspaceRoot) {
     log('ERROR: No workspace folder found')

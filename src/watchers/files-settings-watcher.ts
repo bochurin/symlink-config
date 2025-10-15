@@ -1,18 +1,17 @@
 import { useSettingsWatcher } from '../hooks/use-settings-watcher'
 import { handleEvent as handleFileExcludeEvent } from '../managers/file-exclude-settings'
 import { SETTINGS, WATCHERS } from '../shared/constants'
-import { queue, registerWatcher } from '../shared/state'
+import { queue, registerWatcher, log } from '../shared/state'
 
 export function filesSettingsWatcher() {
-  const { log } = require('../shared/state')
   log('Files settings watcher registered')
   const watcher = useSettingsWatcher({
     sections: {
       section: SETTINGS.FILES.SECTION,
       handlers: {
         parameters: SETTINGS.FILES.EXCLUDE,
-        onChange: () => {
-          log('files.exclude setting changed')
+        onChange: (section, parameter, payload) => {
+          log(`files.exclude changed: ${Object.keys(payload.value || {}).length} patterns`)
           return queue(() => handleFileExcludeEvent())
         },
       },

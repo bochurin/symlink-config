@@ -3,5 +3,5 @@ import { log } from '../shared/state'
 
 export async function refreshManagers() {
   log('Manual refresh triggered')
-  await initManagers()
+  await initManagers(true)
 }

@@ -8,12 +8,11 @@ import {
   filesSettingsWatcher,
 } from '../watchers'
 
-import { SETTINGS, WATCHERS } from '../shared/constants'
+import { SETTINGS } from '../shared/constants'
 import { read as readSymlinkSettings } from '../managers/symlink-settings'
-import { disposeWatchers } from '../shared/state'
+import { disposeWatchers, log } from '../shared/state'
 
 export function makeWatchers() {
-  const { log } = require('../shared/state')
   log('Creating watchers...')
   disposeWatchers()
 

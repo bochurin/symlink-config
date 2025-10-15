@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import * as os from 'os'
 import * as path from 'path'
-import { getWorkspaceRoot } from '../../shared/state'
+import { getWorkspaceRoot, log } from '../../shared/state'
 import { info } from '../../shared/vscode/info'
 import { generateTree } from '../../views/symlink-tree/generate'
 import { collectSymlinkOperations } from './collect-operations'
@@ -13,7 +13,6 @@ import { confirm } from '../../shared/vscode'
 import { generateAdminScript } from './generate-admin-script'
 
 export async function applyConfig() {
-  const { log } = await import('../../shared/state')
   const workspaceRoot = getWorkspaceRoot()
 
   // Confirmation dialog
