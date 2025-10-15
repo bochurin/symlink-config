@@ -1,10 +1,10 @@
-import { writeFile } from '../../shared/file-ops'
-import { FILE_NAMES } from '../../shared/constants'
 import { generate } from './generate'
 import { log } from '../../shared/state'
+import { write } from './write'
 
 export async function make() {
   const content = generate()
-  await writeFile(FILE_NAMES.CURRENT_SYMLINK_CONFIG, content)
+
+  await write(content)
   log('current.symlink-config.json updated')
 }
