@@ -45,9 +45,14 @@ export default [
               message: 'Import from manager index.ts only, not internal files'
             },
             {
-              group: ['*/commands/*/*', '!*/commands/*/index'],
-              message: 'Import from command index.ts only, not internal files'
+              group: ['*/commands/*', '!*/commands/index', '!*/commands/apply-configuration'],
+              message: 'Import from commands/index.ts only, not individual command files'
             },
+            {
+              group: ['*/commands/*/*', '!*/commands/*/index'],
+              message: 'Import from command subfolder index.ts only, not internal files'
+            },
+
             {
               group: ['*/shared/*/*', '!*/shared/*/index'],
               message: 'Import from shared module index.ts only, not internal files'
@@ -57,12 +62,12 @@ export default [
               message: 'Import from view index.ts only, not internal files'
             },
             {
-              group: ['*/watchers/*/*', '!*/watchers/*/index'],
-              message: 'Import from watcher index.ts only, not internal files'
+              group: ['*/watchers/*', '!*/watchers/index'],
+              message: 'Import from watchers/index.ts only, not individual watcher files'
             },
             {
-              group: ['*/extension/*/*', '!*/extension/*/index'],
-              message: 'Import from extension module index.ts only, not internal files'
+              group: ['*/extension/*', '!*/extension/index'],
+              message: 'Import from extension/index.ts only, not internal files'
             }
           ]
         }

@@ -3,19 +3,16 @@ import { make as makeExclusion, ExclusionPart } from '../file-exclude-settings'
 import { info } from '../../shared/vscode'
 import { SETTINGS } from '../../shared/constants'
 import { makeWatchers } from '../../extension/make-watchers'
+import { SettingsEvent } from '../../hooks/use-settings-watcher'
 
-export async function handleEvent(
-  section: string,
-  parameter: string,
-  payload: { value: any; old_value: any },
-) {
-  switch (section) {
+export async function handleEvent(event: SettingsEvent) {
+  switch (event.section) {
     case SETTINGS.SYMLINK_CONFIG.SECTION:
-      switch (parameter) {
+      switch (event.parameter) {
         case SETTINGS.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES:
           info(
             //TODO: use constants for messages
-            `Gitignoring service files ${payload.value ? 'enabled' : 'disabled'}.`,
+            `Gitignoring service files ${event.value ? 'enabled' : 'disabled'}.`,
           )
           await makeGitignore()
           break
@@ -23,12 +20,12 @@ export async function handleEvent(
         case SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES:
         case SETTINGS.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS:
           const object =
-            parameter === SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES
+            event.parameter === SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES
               ? 'service files'
               : 'symlink configs'
-          const action = payload.value ? 'enabled' : 'disabled'
+          const action = event.value ? 'enabled' : 'disabled'
           const mode =
-            parameter === SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES
+            event.parameter === SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES
               ? ExclusionPart.ServiceFiles
               : ExclusionPart.SymlinkConfigs
           info(`Hiding ${object} ${action}.`)

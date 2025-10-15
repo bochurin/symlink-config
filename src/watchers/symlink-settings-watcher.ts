@@ -1,4 +1,7 @@
-import { useSettingsWatcher } from '../hooks/use-settings-watcher'
+import {
+  SettingsEvent,
+  useSettingsWatcher,
+} from '../hooks/use-settings-watcher'
 import { handleEvent as handleSymlinkConfigEvent } from '../managers/symlink-settings'
 import { SETTINGS, WATCHERS } from '../shared/constants'
 import { queue, registerWatcher, log } from '../shared/state'
@@ -15,9 +18,11 @@ export function symlinkSettingsWatcher() {
           SETTINGS.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS,
           SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE,
         ],
-        onChange: (section, parameter, payload) => {
-          log(`Setting changed: ${parameter} (${payload.old_value} → ${payload.value})`)
-          return queue(() => handleSymlinkConfigEvent(section, parameter, payload))
+        onChange: (event: SettingsEvent) => {
+          log(
+            `Setting changed: ${event.parameter} (${event.oldValue} → ${event.value})`,
+          )
+          return queue(() => handleSymlinkConfigEvent(event))
         },
       },
     },

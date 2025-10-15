@@ -1,10 +1,13 @@
 import * as vscode from 'vscode'
 
-type Handler = (
-  section: string,
-  parameter: string,
-  payload: { value: any; old_value: any },
-) => void
+export type SettingsEvent = {
+  section: string
+  parameter: string
+  value: any
+  oldValue: any
+}
+
+type Handler = (event: SettingsEvent) => void
 
 type HandleConfig = {
   parameters: string | string[]
@@ -51,32 +54,33 @@ export function useSettingsWatcher(
 
   return vscode.workspace.onDidChangeConfiguration((event) => {
     sections.forEach((sectionConfig) => {
-      if (event.affectsConfiguration(sectionConfig.section)) {
+      const section = sectionConfig.section
+
+      if (event.affectsConfiguration(section)) {
         const newConfig = vscode.workspace.getConfiguration(
           sectionConfig.section,
         )
-        const configs = Array.isArray(sectionConfig.handlers)
+        const handlers = Array.isArray(sectionConfig.handlers)
           ? sectionConfig.handlers
           : [sectionConfig.handlers]
 
-        configs.forEach((configItem) => {
+        handlers.forEach((configItem) => {
           const parameters = Array.isArray(configItem.parameters)
             ? configItem.parameters
             : [configItem.parameters]
 
-          parameters.forEach((param) => {
-            const newValue = newConfig.get(param)
-            const oldValue = previousValues[sectionConfig.section][param]
+          parameters.forEach((parameter) => {
+            const value = newConfig.get(parameter)
+            const oldValue = previousValues[sectionConfig.section][parameter]
 
-            if (newValue !== oldValue) {
-              const payload = { value: newValue, old_value: oldValue }
+            if (value !== oldValue) {
               const handlers = Array.isArray(configItem.onChange)
                 ? configItem.onChange
                 : [configItem.onChange]
               handlers.forEach((handler) => {
-                handler(sectionConfig.section, param, payload)
+                handler({ section, parameter, value, oldValue })
               })
-              previousValues[sectionConfig.section][param] = newValue
+              previousValues[sectionConfig.section][parameter] = value
             }
           })
         })

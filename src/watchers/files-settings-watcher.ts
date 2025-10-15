@@ -1,4 +1,7 @@
-import { useSettingsWatcher } from '../hooks/use-settings-watcher'
+import {
+  SettingsEvent,
+  useSettingsWatcher,
+} from '../hooks/use-settings-watcher'
 import { handleEvent as handleFileExcludeEvent } from '../managers/file-exclude-settings'
 import { SETTINGS, WATCHERS } from '../shared/constants'
 import { queue, registerWatcher, log } from '../shared/state'
@@ -10,9 +13,11 @@ export function filesSettingsWatcher() {
       section: SETTINGS.FILES.SECTION,
       handlers: {
         parameters: SETTINGS.FILES.EXCLUDE,
-        onChange: (section, parameter, payload) => {
-          log(`files.exclude changed: ${Object.keys(payload.value || {}).length} patterns`)
-          return queue(() => handleFileExcludeEvent())
+        onChange: (event: SettingsEvent) => {
+          log(
+            `files.exclude changed: ${Object.keys(event.value || {}).length} patterns`,
+          )
+          return queue(() => handleFileExcludeEvent(event))
         },
       },
     },

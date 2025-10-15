@@ -5,8 +5,8 @@ export enum FileEventType {
   Modified = 'Modified',
   Deleted = 'Deleted',
 }
+export type FileEvent = { uri: vscode.Uri; event: FileEventType }
 
-type FileEvent = { uri: vscode.Uri; event: FileEventType }
 type Handler = (events: FileEvent[]) => void
 type Filter = (event: FileEvent) => Promise<boolean> | boolean
 

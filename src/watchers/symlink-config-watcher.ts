@@ -16,9 +16,11 @@ export function symlinkConfigsWatcher() {
       ],
       handlers: [
         (events) => {
-          const details = events.map(e => `${e.event} ${e.uri.fsPath}`).join(', ')
+          const details = events
+            .map((e) => `${e.event} ${e.uri.fsPath}`)
+            .join(', ')
           log(`symlink-config.json: ${details}`)
-          return queue(() => handleNextConfigEvent(FileEventType.Modified))
+          return queue(() => handleNextConfigEvent(events))
         },
         (events) => treeProvider?.refresh(),
       ],

@@ -6,12 +6,10 @@ import { read } from './read'
 export function needsRegenerate(events?: FileEvent | FileEvent[]): boolean {
   const eventType = Array.isArray(events) ? events[0].event : events?.event
 
-  const generated = generate()
-  const current = read()
-  const result = current !== generated
+  const result = true //TODO: really check if it is needed to regenerate it
 
   log(
-    `next.symlink-config.json needsRegenerate: event=${eventType || 'none'}, result=${result}`,
+    `.gitignore needsRegenerate: event=${eventType || 'none'}, result=${result}`,
   )
   return result
 }

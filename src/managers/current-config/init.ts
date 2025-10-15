@@ -1,5 +1,10 @@
-import { handleEvent } from './handle-event'
+import { info } from '../../shared/vscode'
+import { make } from './make'
+import { needsRegenerate } from './needs-regenerate'
 
 export async function init() {
-  await handleEvent('inited')
+  if (needsRegenerate()) {
+    info(`next.symlink-config.json is inconsistent. Regenerating...`)
+    await make()
+  }
 }

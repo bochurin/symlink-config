@@ -13,8 +13,10 @@ export function nextConfigWatcher() {
     events: {
       on: [FileEventType.Modified, FileEventType.Deleted],
       handlers: (events) => {
-        log(`next.symlink-config.json: ${events[0].event} at ${events[0].uri.fsPath}`)
-        queue(() => handleNextConfigEvent(events[0].event))
+        log(
+          `next.symlink-config.json: ${events[0].event} at ${events[0].uri.fsPath}`,
+        )
+        queue(() => handleNextConfigEvent(events))
         treeProvider?.refresh()
       },
     },

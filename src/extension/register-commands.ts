@@ -1,18 +1,16 @@
 import * as vscode from 'vscode'
 import {
+  applyConfiguration,
+  cancelSymlinkCreation,
+  cleanConfiguration,
+  clearLogsCommand,
+  collapseAll,
+  openSymlinkConfig,
+  refreshManagers,
   selectSymlinkSource,
   selectSymlinkTarget,
-  cancelSymlinkCreation,
-} from '../commands/create-symlink'
-import { openSymlinkConfig } from '../commands/open-symlink-config'
-import {
-  applyConfiguration,
-  cleanConfiguration,
-} from '../commands/apply-configuration'
-import { collapseAll } from '../commands/tree-operations'
-import { refreshManagers } from '../commands/refresh-managers'
-import { clearLogsCommand } from '../commands/clear-logs'
-import { showLogsCommand } from '../commands/show-logs'
+  showLogsCommand,
+} from '../commands'
 
 export function registerCommands(
   context: vscode.ExtensionContext,
