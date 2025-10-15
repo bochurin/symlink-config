@@ -258,6 +258,39 @@
 
 ## Manager Modules
 
+### `src/managers/manager/`
+**Purpose:** Manager factory for creating managers with common patterns
+
+**Files:**
+- `index.ts` (exports: Manager, ManagerCallbacks, createManager)
+- `types.ts`
+- `create-manager.ts`
+
+**Functions:**
+- `createManager<CT, ET>(callbacks: ManagerCallbacks<CT, ET>): Manager<CT, ET>`
+
+**Types:**
+- `ManagerCallbacks<CT, ET>` interface:
+  - `readCallback: () => CT`
+  - `writeCallback?: (content: CT) => Promise<void>`
+  - `makeCallbak: (initialContent: CT, events?: ET, newContent?: CT) => CT`
+  - `generateCallback?: (initialContent: CT) => CT`
+  - `needsRegenerateCallback?: (content: CT, events?: ET) => boolean`
+  - `nameCallback?: () => string`
+- `Manager<CT, ET>` interface:
+  - `init: () => Promise<void>`
+  - `read: () => CT`
+  - `make: () => Promise<void>`
+  - `handleEvent: (events: ET) => Promise<void>`
+
+**Implementation Details:**
+- Factory function that implements common manager pattern logic
+- Flow: read() → generate(initialContent) → makeCallback(initialContent, events, newContent) → write(finalContent) → log()
+- Provides default implementations for optional callbacks
+- Handles init logic: checks needsRegenerate() and calls make() if needed
+- Handles handleEvent logic: checks needsRegenerate(events) and calls make(events) if needed
+- All callbacks are synchronous (no async/await needed for generate/make)
+
 ### `src/managers/gitignore-file/`
 **Files:**
 - `index.ts` (exports: init, read, handle-event, make)
