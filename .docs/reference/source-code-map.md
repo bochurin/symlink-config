@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
 **Generated**: 14.10.2025  
-**Version**: 0.0.51  
+**Version**: 0.0.52  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -348,10 +348,10 @@
 - `useFileWatcher(config: WatcherConfig): vscode.FileSystemWatcher`
 
 **Types:**
-- `FileWatchEvent` enum with Created, Modified, Deleted values
-- `FileEventData` type: `{ uri: vscode.Uri; event: FileWatchEvent }`
-- `Handler` type: `(events: FileEventData[]) => void` (always receives array)
-- `Filter` type: `(uri: vscode.Uri, event: FileWatchEvent) => Promise<boolean> | boolean`
+- `FileEventType` enum with Created, Modified, Deleted values
+- `FileEvent` type: `{ uri: vscode.Uri; event: FileEventType }`
+- `Handler` type: `(events: FileEvent[]) => void` (always receives array)
+- `Filter` type: `(event: FileEvent) => Promise<boolean> | boolean`
 - `WatcherConfig` interface with pattern, debounce?, filters?, events (required) properties
 
 **Implementation Details:**
@@ -363,6 +363,7 @@
 - With debouncing: accumulates all filtered events during debounce window
 - Without debouncing: passes single-item array `[{uri, event}]`
 - Filters work per-event before accumulation, all must return true
+- Filter receives FileEvent object for consistency with Handler signature
 
 ### `src/hooks/use-settings-watcher.ts`
 **Functions:**
@@ -611,3 +612,5 @@
 - **Property Names**: filters (Filter | Filter[]), handlers (Handler | Handler[]) in use-file-watcher
 - **Settings Watcher Split**: Split settings-watcher into symlink-settings-watcher and files-settings-watcher for independent management
 - **Conditional Watchers**: filesSettingsWatcher only runs when hide options are enabled to save resources
+- **Type Rename**: FileWatchEvent renamed to FileEventType, FileEventData renamed to FileEvent
+- **Filter Signature**: Filter now receives FileEvent object instead of separate uri and event parameters for consistency
