@@ -1,7 +1,8 @@
 import * as vscode from 'vscode'
-import * as state from '../shared/state'
+import * as state from './state'
 import { makeWatchers } from './make-watchers'
 import { managersInit } from './managers-init'
+import { makeManagers } from './make-managers'
 
 let isInitialized = false
 
@@ -20,9 +21,14 @@ export async function init(): Promise<(() => void) | undefined> {
   // save it to the workspace (only!) settings, and ask user to modify it if they need.
   // watch workspace folders changes and ask to check if the root path is still correct
 
-  await managersInit()
+  //Create all managers objects
+  makeManagers()
 
+  //Establich all the watchers and sumscribe managers to them
   makeWatchers()
+
+  //Performe initialization functions of all managers
+  await managersInit()
 
   isInitialized = true
 

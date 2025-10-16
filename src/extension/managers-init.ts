@@ -5,7 +5,7 @@ import { init as initFileExclude } from '../managers/file-exclude-settings'
 
 import { SETTINGS } from '../shared/constants'
 import { read as readSymlinkSettings } from '../managers/symlink-settings'
-import { log } from '../shared/state'
+import { log } from '../shared/log'
 
 export async function managersInit(force?: boolean) {
   force = force || false

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 
-import * as state from '../../shared/state'
+import * as state from '../../extension/state'
 
 import { treeBase, TreeNode } from './types'
 import { TreeItem } from './tree-item'

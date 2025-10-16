@@ -1,5 +1,5 @@
 import { SettingsEvent } from '../../shared/hooks/use-settings-watcher'
-import { log } from '../../shared/state'
+import { log } from '../../shared/log'
 import { generate } from './generate'
 import { read } from './read'
 

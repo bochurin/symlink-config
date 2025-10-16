@@ -2,7 +2,9 @@ import { useFileWatcher, FileEventType } from '../shared/hooks/use-file-watcher'
 import { handleEvent as handleGitignoreEvent } from '../managers/gitignore-file'
 import { FILE_NAMES, WATCHERS } from '../shared/constants'
 import { isRootFile } from '../shared/file-ops'
-import { queue, registerWatcher, log } from '../shared/state'
+import { registerWatcher } from '../extension/state'
+import { log } from '../shared/log'
+import { queue } from '../extension/queue'
 
 export function gitignoreWatcher() {
   log('Gitignore watcher registered')

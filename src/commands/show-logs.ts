@@ -1,4 +1,4 @@
-import { showLogs } from '../shared/state'
+import { showLogs } from '../shared/log'
 
 export function showLogsCommand() {
   showLogs()

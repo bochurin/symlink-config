@@ -10,7 +10,8 @@ import {
 
 import { SETTINGS } from '../shared/constants'
 import { read as readSymlinkSettings } from '../managers/symlink-settings'
-import { disposeWatchers, log } from '../shared/state'
+import { disposeWatchers } from './state'
+import { log } from '../shared/log'
 
 export function makeWatchers() {
   log('Creating watchers...')

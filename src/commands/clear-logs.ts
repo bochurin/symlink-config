@@ -1,4 +1,4 @@
-import { clearLogs } from '../shared/state'
+import { clearLogs } from '../shared/log'
 
 export function clearLogsCommand() {
   clearLogs()

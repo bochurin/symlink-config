@@ -4,7 +4,9 @@ import {
 } from '../shared/hooks/use-settings-watcher'
 import { handleEvent as handleSymlinkConfigEvent } from '../managers/symlink-settings'
 import { SETTINGS, WATCHERS } from '../shared/constants'
-import { queue, registerWatcher, log } from '../shared/state'
+import { registerWatcher } from '../extension/state'
+import { log } from '../shared/log'
+import { queue } from '../extension/queue'
 
 export function symlinkSettingsWatcher() {
   log('Symlink settings watcher registered')

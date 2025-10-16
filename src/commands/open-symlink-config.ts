@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
-import { getWorkspaceRoot } from '../shared/state'
+import { getWorkspaceRoot } from '../extension/state'
 import { FILE_NAMES } from '../shared/constants'
 
 export async function openSymlinkConfig(treeItem: any) {

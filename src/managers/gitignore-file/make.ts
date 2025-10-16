@@ -1,7 +1,7 @@
 import { assembleGitignore } from '../../shared/gitignore-ops'
 import { generate } from './generate'
 import { read } from './read'
-import { log } from '../../shared/state'
+import { log } from '../../shared/log'
 import { write } from './write'
 
 export async function make() {

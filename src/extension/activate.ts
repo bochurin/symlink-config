@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import * as state from '../shared/state'
+import * as state from './state'
 import { SymlinkTreeProvider } from '../views/symlink-tree'
 import { registerCommands } from './register-commands'
 import { init, reset } from './ini'
