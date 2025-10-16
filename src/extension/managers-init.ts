@@ -7,8 +7,8 @@ import { SETTINGS } from '../shared/constants'
 import { read as readSymlinkSettings } from '../managers/symlink-settings'
 import { log } from '../shared/state'
 
-export async function managersInit(forse?: boolean) {
-  forse = forse || false
+export async function managersInit(force?: boolean) {
+  force = force || false
 
   const gitignoreServiceFiles = readSymlinkSettings(
     SETTINGS.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES,
@@ -20,8 +20,8 @@ export async function managersInit(forse?: boolean) {
   log('Initializing managers...')
   await Promise.all([
     initFileExclude(),
-    ...(forse || gitignoreServiceFiles ? [initGitignore()] : []),
-    ...(forse || watchWorkspace ? [initNextConfig(), initCurrentConfig()] : []),
+    ...(force || gitignoreServiceFiles ? [initGitignore()] : []),
+    ...(force || watchWorkspace ? [initNextConfig(), initCurrentConfig()] : []),
   ])
   log('Managers initialized')
 }
