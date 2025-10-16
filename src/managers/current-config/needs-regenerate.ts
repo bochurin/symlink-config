@@ -1,4 +1,4 @@
-import { FileEvent } from '../../hooks/use-file-watcher'
+import { FileEvent } from '../../shared/hooks/use-file-watcher'
 import { log } from '../../shared/state'
 import { generate } from './generate'
 import { read } from './read'

@@ -1,4 +1,4 @@
-import { SettingsEvent } from '../../hooks/use-settings-watcher'
+import { SettingsEvent } from '../../shared/hooks/use-settings-watcher'
 import { info } from '../../shared/vscode'
 import { read as readSymlinkSettings } from '../symlink-settings'
 import { make } from './make'

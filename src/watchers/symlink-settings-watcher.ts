@@ -1,7 +1,7 @@
 import {
   SettingsEvent,
   useSettingsWatcher,
-} from '../hooks/use-settings-watcher'
+} from '../shared/hooks/use-settings-watcher'
 import { handleEvent as handleSymlinkConfigEvent } from '../managers/symlink-settings'
 import { SETTINGS, WATCHERS } from '../shared/constants'
 import { queue, registerWatcher, log } from '../shared/state'

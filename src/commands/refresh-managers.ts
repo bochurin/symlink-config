@@ -1,7 +1,7 @@
-import { initManagers } from '../extension/init-managers'
+import { managersInit } from '../extension/managers-init'
 import { log } from '../shared/state'
 
 export async function refreshManagers() {
   log('Manual refresh triggered')
-  await initManagers(true)
+  await managersInit(true)
 }

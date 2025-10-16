@@ -1,6 +1,6 @@
 import { needsRegenerate } from './needs-regenerate'
 import { make } from './make'
-import { FileEventType } from '../../hooks/use-file-watcher'
+import { FileEventType } from '../../shared/hooks/use-file-watcher'
 import { info } from '../../shared/vscode'
 
 export async function handleEvent(event: string) {

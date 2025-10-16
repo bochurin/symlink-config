@@ -3,7 +3,7 @@ import { make as makeExclusion, ExclusionPart } from '../file-exclude-settings'
 import { info } from '../../shared/vscode'
 import { SETTINGS } from '../../shared/constants'
 import { makeWatchers } from '../../extension/make-watchers'
-import { SettingsEvent } from '../../hooks/use-settings-watcher'
+import { SettingsEvent } from '../../shared/hooks/use-settings-watcher'
 
 export async function handleEvent(event: SettingsEvent) {
   switch (event.section) {

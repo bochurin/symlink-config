@@ -7,7 +7,7 @@ import { SETTINGS } from '../shared/constants'
 import { read as readSymlinkSettings } from '../managers/symlink-settings'
 import { log } from '../shared/state'
 
-export async function initManagers(forse?: boolean) {
+export async function managersInit(forse?: boolean) {
   forse = forse || false
 
   const gitignoreServiceFiles = readSymlinkSettings(

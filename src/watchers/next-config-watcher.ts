@@ -1,4 +1,4 @@
-import { useFileWatcher, FileEventType } from '../hooks/use-file-watcher'
+import { useFileWatcher, FileEventType } from '../shared/hooks/use-file-watcher'
 import { handleEvent as handleNextConfigEvent } from '../managers/next-config-file'
 import { FILE_NAMES, WATCHERS } from '../shared/constants'
 import { isRootFile } from '../shared/file-ops'

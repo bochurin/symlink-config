@@ -1,4 +1,4 @@
-import { SettingsEvent } from '../../hooks/use-settings-watcher'
+import { SettingsEvent } from '../../shared/hooks/use-settings-watcher'
 import { log } from '../../shared/state'
 import { generate } from './generate'
 import { read } from './read'

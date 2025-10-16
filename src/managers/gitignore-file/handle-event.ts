@@ -1,4 +1,4 @@
-import { FileEvent, FileEventType } from '../../hooks/use-file-watcher'
+import { FileEvent, FileEventType } from '../../shared/hooks/use-file-watcher'
 import { info } from '../../shared/vscode'
 import { make } from './make'
 import { needsRegenerate } from './needs-regenerate'
