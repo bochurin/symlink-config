@@ -1,22 +1,23 @@
 import * as vscode from 'vscode'
-import * as state from './state'
+import { setOutputChannel, setTreeProvider, disposeWatchers } from './state'
+import { log } from '../shared/log'
 import { SymlinkTreeProvider } from '../views/symlink-tree'
 import { registerCommands } from './register-commands'
 import { init, reset } from './ini'
 
 export async function activate(context: vscode.ExtensionContext) {
   const outputChannel = vscode.window.createOutputChannel('symlink-config', { log: true })
-  state.setOutputChannel(outputChannel)
+  setOutputChannel(outputChannel)
   context.subscriptions.push(outputChannel)
 
-  state.log('Extension activated')
+  log('Extension activated')
 
   const treeProvider = new SymlinkTreeProvider()
   vscode.window.createTreeView('symlink-config', {
     treeDataProvider: treeProvider,
   })
 
-  state.setTreeProvider(treeProvider)
+  setTreeProvider(treeProvider)
   registerCommands(context, treeProvider)
 
   const dispose = await init()
@@ -26,7 +27,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const workspaceListener = vscode.workspace.onDidChangeWorkspaceFolders(
     async () => {
-      state.log('Workspace folders changed, reinitializing...')
+      log('Workspace folders changed, reinitializing...')
       reset()
       const dispose = await init()
       if (dispose) {
@@ -39,6 +40,6 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-  state.log('Extension deactivated')
-  state.disposeWatchers()
+  log('Extension deactivated')
+  disposeWatchers()
 }

@@ -38,7 +38,7 @@ function scanWorkspaceSymlinks(): ExistingSymlink[] {
 
   function scanDirectory(dirPath: string, relativePath: string = '') {
     try {
-      const entries = readDir(relativePath || '.')
+      const entries = readDir(workspaceRoot, relativePath || '.')
 
       for (const entry of entries) {
         const fullPath = path.join(dirPath, entry.name)
@@ -48,8 +48,8 @@ function scanWorkspaceSymlinks(): ExistingSymlink[] {
 
         if (entry.isSymbolicLink()) {
           try {
-            const linkTarget = readSymlink(relativeEntryPath)
-            const stats = statFile(relativeEntryPath)
+            const linkTarget = readSymlink(workspaceRoot, relativeEntryPath)
+            const stats = statFile(workspaceRoot, relativeEntryPath)
 
             // Convert to workspace root relative (@-path)
             const absoluteSource = path.resolve(

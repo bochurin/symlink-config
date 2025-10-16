@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
-import * as state from './state'
+import { setWorkspaceRoot, setWorkspaceName, disposeWatchers } from './state'
+import { log } from '../shared/log'
 import { makeWatchers } from './make-watchers'
 import { managersInit } from './managers-init'
 import { makeManagers } from './make-managers'
@@ -14,9 +15,9 @@ export async function init(): Promise<(() => void) | undefined> {
   const workspaceRoot =
     vscode.workspace.workspaceFolders[0].uri.fsPath.split('\\').join('/') + '/'
   const workspaceName = vscode.workspace.workspaceFolders?.[0]?.name
-  state.setWorkspaceRoot(workspaceRoot)
-  state.setWorkspaceName(workspaceName)
-  state.log(`Workspace root: ${workspaceRoot}`)
+  setWorkspaceRoot(workspaceRoot)
+  setWorkspaceName(workspaceName)
+  log(`Workspace root: ${workspaceRoot}`)
   //TODO: calculate the shortest path from workspace folders and get it as project root,
   // save it to the workspace (only!) settings, and ask user to modify it if they need.
   // watch workspace folders changes and ask to check if the root path is still correct
@@ -32,10 +33,10 @@ export async function init(): Promise<(() => void) | undefined> {
 
   isInitialized = true
 
-  return state.disposeWatchers
+  return disposeWatchers
 }
 
 export function reset() {
-  state.disposeWatchers()
+  disposeWatchers()
   isInitialized = false
 }

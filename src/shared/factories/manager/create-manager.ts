@@ -2,9 +2,9 @@ import { info } from '../../vscode'
 import { log } from '../../log'
 import type { Manager, ManagerCallbacks } from './types'
 
-export function createManager<CT, ET>(
+export async function createManager<CT, ET>(
   callbacks: ManagerCallbacks<CT, ET>,
-): Manager<CT, ET> {
+): Promise<Manager<CT, ET>> {
   const readCB = callbacks.readCallback
   const makeCB = callbacks.makeCallbak
   const writeCB = callbacks.writeCallback || (() => Promise.resolve())
@@ -12,10 +12,9 @@ export function createManager<CT, ET>(
     callbacks.generateCallback || ((initialContent: CT) => initialContent)
   const needsRegenerateCB =
     callbacks.needsRegenerateCallback || ((content: CT, events?: ET) => true)
-  const nameCB = callbacks.nameCallback || (() => 'file') //TODO: ???
 
-  function read() {
-    const content = readCB()
+  async function read() {
+    const content = await readCB()
     return content
   }
 
@@ -23,43 +22,45 @@ export function createManager<CT, ET>(
     await writeCB(content)
   }
 
-  function generate(initialContent: CT) {
-    const newContent = generateCB(initialContent)
+  async function generate(initialContent: CT) {
+    const newContent = await generateCB(initialContent)
     return newContent
   }
 
   async function make(events?: ET) {
-    const initialContent = read()
-    const newContent = generate(initialContent)
+    const initialContent = await read()
+    const newContent = await generate(initialContent)
 
-    const finalContent = makeCB(initialContent, events, newContent)
+    const finalContent = await makeCB(initialContent, events, newContent)
 
     await write(finalContent)
 
-    log(`${nameCB()} updated`) // TODO: ???
+    log(`${name} updated`) // TODO: ???
   }
 
   async function init() {
-    if (needsRegenerate()) {
-      info(`${nameCB()} is inconsistent. Regenerating...`) //TODO: ???
+    if (await needsRegenerate()) {
+      info(`${name} is inconsistent. Regenerating...`) //TODO: ???
       await make()
     }
   }
 
-  function needsRegenerate(events?: ET) {
-    const content = readCB()
+  async function needsRegenerate(events?: ET) {
+    const content = await readCB()
     const result = needsRegenerateCB(content, events)
     return result
   }
 
   async function handleEvent(events: ET) {
-    const needsRegen = needsRegenerate(events)
+    const needsRegen = await needsRegenerate(events)
 
     if (needsRegen) {
-      info(`${nameCB()} was affected. Regenerating...`) //TODO: ???
+      info(`${name} was affected. Regenerating...`) //TODO: ???
       await make(events)
     }
   }
 
-  return { init, read, make, handleEvent }
+  const name = callbacks.name || 'managing object'
+
+  return { init, read, make, handleEvent, name }
 }

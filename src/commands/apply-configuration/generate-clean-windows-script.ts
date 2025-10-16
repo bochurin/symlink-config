@@ -41,5 +41,5 @@ export async function generateCleanWindowsScript(workspaceRoot: string) {
 
   const content = lines.join('\r\n')
   const relativePath = path.relative(workspaceRoot, scriptPath)
-  await writeFile(relativePath, content)
+  await writeFile(workspaceRoot, relativePath, content)
 }

@@ -64,5 +64,5 @@ export async function generateApplyUnixScript(
 
   const content = lines.join('\n')
   const relativePath = path.relative(workspaceRoot, scriptPath)
-  await writeFile(relativePath, content, 0o755)
+  await writeFile(workspaceRoot, relativePath, content, 0o755)
 }

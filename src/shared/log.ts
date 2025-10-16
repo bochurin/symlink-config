@@ -3,7 +3,7 @@ import { getOutputChannel } from '../extension/state'
 
 let logCount = 0
 
-export function log(message: string) {
+export async function log(message: string) {
   const outputChannel = getOutputChannel()
   if (!outputChannel) {
     console.log('[symlink-config]', message)

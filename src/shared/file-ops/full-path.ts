@@ -1,9 +1,6 @@
 import * as path from 'path'
 
-import * as state from '../state'
-
-export function fullPath(endPath: string): string {
-  const workspaceRoot = state.getWorkspaceRoot()
-  const fullPath = path.join(workspaceRoot, endPath)
+export function fullPath(rootPath: string, endPath: string): string {
+  const fullPath = path.join(rootPath, endPath)
   return fullPath
 }

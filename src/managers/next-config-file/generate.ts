@@ -20,7 +20,7 @@ function findConfigFiles(): string[] {
   function scanDirectory(dir: string) {
     try {
       const relativePath = path.relative(workspaceRoot, dir)
-      const entries = readDir(relativePath || '.')
+      const entries = readDir(workspaceRoot, relativePath || '.')
       for (const entry of entries) {
         const fullPath = path.join(dir, entry.name)
         if (entry.isDirectory()) {
@@ -93,8 +93,9 @@ function pathToAtSyntax(originalPath: string, configDir: string): string {
 
 function loadConfig(configPath: string): Config | null {
   try {
-    const relativePath = path.relative(getWorkspaceRoot(), configPath)
-    const content = readFile(relativePath)
+    const workspaceRoot = getWorkspaceRoot()
+    const relativePath = path.relative(workspaceRoot, configPath)
+    const content = readFile(workspaceRoot, relativePath)
     return JSON.parse(content)
   } catch (error) {
     console.error(`Failed to load config ${configPath}:`, error)

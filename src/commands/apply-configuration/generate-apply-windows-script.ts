@@ -65,5 +65,5 @@ export async function generateApplyWindowsScript(
 
   const content = lines.join('\r\n')
   const relativePath = path.relative(workspaceRoot, scriptPath)
-  await writeFile(relativePath, content)
+  await writeFile(workspaceRoot, relativePath, content)
 }

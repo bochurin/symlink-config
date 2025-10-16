@@ -1,6 +1,7 @@
 import { writeFile } from '../../shared/file-ops'
+import { getWorkspaceRoot } from '../../extension/state'
 import { FILE_NAMES } from '../../shared/constants'
 
 export async function write(content: string) {
-  await writeFile(FILE_NAMES.GITIGNORE, content)
+  await writeFile(getWorkspaceRoot(), FILE_NAMES.GITIGNORE, content)
 }
