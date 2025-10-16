@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 15.10.2025  
-**Version**: 0.0.59  
+**Generated**: 16.10.2025  
+**Version**: 0.0.60  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -230,14 +230,14 @@
 - `stat-file.ts`
 
 **Functions:**
-- `readFile(file: string): string`
-- `writeFile(file: string, content: string, mode?: number): Promise<void>`
-- `fullPath(endPath: string): string`
-- `isRootFile(uri: vscode.Uri): boolean`
+- `readFile(workspaceRoot: string, file: string): string`
+- `writeFile(workspaceRoot: string, file: string, content: string, mode?: number): Promise<void>`
+- `fullPath(workspaceRoot: string, endPath: string): string`
+- `isRootFile(workspaceRoot: string, uri: vscode.Uri): boolean`
 - `isSymlink(uri: vscode.Uri): Promise<boolean>` (uses bitwise AND for type checking)
-- `readDir(relativePath: string): fs.Dirent[]`
-- `readSymlink(file: string): string`
-- `statFile(file: string): fs.Stats`
+- `readDir(workspaceRoot: string, relativePath: string): fs.Dirent[]`
+- `readSymlink(workspaceRoot: string, file: string): string`
+- `statFile(workspaceRoot: string, file: string): fs.Stats`
 
 **Implementation Details:**
 - `isSymlink` uses `(stats.type & vscode.FileType.SymbolicLink) !== 0` to detect symlinks
@@ -247,6 +247,7 @@
 - `readSymlink` wraps `fs.readlinkSync()` for reading symlink targets
 - `statFile` wraps `fs.statSync()` for getting file/directory stats
 - **Architecture Rule**: Only file-ops module uses `fs` directly; all other code uses these abstractions
+- **Isolation Rule**: All functions accept `workspaceRoot` parameter instead of importing from extension/state
 
 ### `src/shared/gitignore-ops/`
 **Files:**
@@ -743,3 +744,4 @@
 - **Factory to Shared**: Moved managers/manager/ factory to shared/factories/manager/ for better organization
 - **Init Managers Rename**: Renamed init-managers.ts to managers-init.ts for consistency
 - **State/Queue/Log Separation**: Moved state.ts and queue.ts to extension/ (application-level), extracted log.ts to shared/ (reusable utility)
+- **Shared Module Isolation**: Changed file-ops functions to accept workspaceRoot parameter instead of importing from extension/state

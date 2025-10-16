@@ -1087,12 +1087,60 @@ export const WATCHERS = {
 - **Constants**: CONFIG renamed to SETTINGS throughout codebase
 - **Watcher Storage**: Changed from array to Map internally
 
+### ✅ Phase 1.42: Shared Module Isolation (Completed - 16.10.2025)
+
+- **Date**: 16.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Architecture Enforcement**: Removed all imports from extension/ in shared/ modules
+  - **Parameter Injection**: Changed file-ops functions to accept workspaceRoot parameter
+  - **Function Signature Updates**: Updated fullPath, isRootFile, readDir, readFile, writeFile, readSymlink, statFile
+  - **Caller Updates**: Updated all callers in managers, commands, and watchers to pass workspaceRoot
+  - **Clean Separation**: Enforces architectural rule that shared/ modules are self-contained utilities
+
+#### Technical Implementation Details
+
+**Function Signature Changes**:
+```typescript
+// Before: Imported workspaceRoot from state
+import { getWorkspaceRoot } from '../../extension/state'
+export function readFile(file: string): string {
+  const workspaceRoot = getWorkspaceRoot()
+  // ...
+}
+
+// After: Accept workspaceRoot as parameter
+export function readFile(workspaceRoot: string, file: string): string {
+  // ...
+}
+```
+
+**Affected Functions**:
+- `fullPath(workspaceRoot, endPath)` - Path resolution
+- `isRootFile(workspaceRoot, uri)` - Root file detection
+- `readDir(workspaceRoot, relativePath)` - Directory reading
+- `readFile(workspaceRoot, file)` - File reading
+- `writeFile(workspaceRoot, file, content, mode?)` - File writing
+- `readSymlink(workspaceRoot, file)` - Symlink target reading
+- `statFile(workspaceRoot, file)` - File stats
+
+**Caller Updates**:
+- **Managers** (6 files): Import getWorkspaceRoot() and pass to file-ops functions
+- **Commands** (4 files): Pass workspaceRoot parameter received from callers
+- **Watchers** (3 files): Import getWorkspaceRoot() and pass to filter functions
+
+**Benefits**:
+- **True Isolation**: shared/ modules have no dependencies on extension/ modules
+- **Reusability**: File-ops can be extracted to npm package without modifications
+- **Testability**: Functions can be tested with any workspaceRoot value
+- **Clear Architecture**: Explicit parameter passing shows data flow
+
 ## Current Status
 
-**Phase**: Phase 1.41 Complete - State/Queue/Log Separation  
+**Phase**: Phase 1.42 Complete - Shared Module Isolation  
 **Branch**: `main`  
-**Version**: 0.0.59  
-**Latest**: Separated application-level modules (state, queue) from reusable utilities (log)  
+**Version**: 0.0.60  
+**Latest**: Enforced shared module isolation with parameter injection pattern  
 **Extension Status**: Core development complete with clean architecture, ready for comprehensive testing  
 **Next**: Cross-platform testing and validation (Phase 2)
 
