@@ -849,6 +849,40 @@ export function executeHandlers(
 - **Reusable Logic**: Handler execution logic extracted for potential reuse
 - **Better Maintainability**: Smaller, focused files easier to understand and modify
 
+### ✅ Phase 1.40: Code Organization (Completed - 15.10.2025)
+
+- **Date**: 15.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Hooks to Shared**: Moved hooks/ folder to shared/hooks/ for better organization
+  - **Factory to Shared**: Moved managers/manager/ factory to shared/factories/manager/ for better organization
+  - **Init Managers Rename**: Renamed init-managers.ts to managers-init.ts for consistency
+  - **Import Updates**: Updated all imports throughout codebase to reflect new locations
+  - **Documentation**: Updated source-code-map.md and progress-log.md
+
+#### Technical Implementation Details
+
+**Folder Restructuring**:
+```
+// Before
+src/hooks/use-file-watcher/
+src/hooks/use-settings-watcher/
+src/managers/manager/
+src/extension/init-managers.ts
+
+// After
+src/shared/hooks/use-file-watcher/
+src/shared/hooks/use-settings-watcher/
+src/shared/factories/manager/
+src/extension/managers-init.ts
+```
+
+**Benefits**:
+- **Better Organization**: Hooks and factories grouped with other shared utilities
+- **Clearer Structure**: shared/ folder contains all reusable components
+- **Consistent Naming**: managers-init.ts matches other extension files
+- **Logical Grouping**: Related functionality organized together
+
 ### ✅ Phase 1.39: Manager Factory Pattern (Completed - 15.10.2025)
 
 - **Date**: 15.10.2025
@@ -1002,10 +1036,10 @@ export const WATCHERS = {
 
 ## Current Status
 
-**Phase**: Phase 1.39 Complete - Manager Factory Pattern  
+**Phase**: Phase 1.40 Complete - Code Organization  
 **Branch**: `main`  
-**Version**: 0.0.57  
-**Latest**: Created manager factory to encapsulate common manager pattern logic  
+**Version**: 0.0.58  
+**Latest**: Moved hooks and factories to shared/ for better organization  
 **Extension Status**: Core development complete with flexible watcher management, ready for comprehensive testing  
 **Next**: Cross-platform testing and validation (Phase 2)
 

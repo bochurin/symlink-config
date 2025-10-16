@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
 **Generated**: 15.10.2025  
-**Version**: 0.0.56  
+**Version**: 0.0.58  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -65,9 +65,9 @@
 - Creates and returns dispose function from watcher array
 - Gets treeProvider from state
 
-#### `src/extension/init-managers.ts`
+#### `src/extension/managers-init.ts`
 **Functions:**
-- `initManagers(force?: boolean): Promise<void>`
+- `managersInit(force?: boolean): Promise<void>`
 
 **Implementation Details:**
 - Logs initialization start and completion
@@ -169,10 +169,10 @@
   - `SYMLINK_CONFIGS: 'symlinkConfigs'`
   - `SYMLINKS: 'symlinks'`
 
-- `SETTINGS` two-level structure (renamed from CONFIG):
+- `SETTINGS` two-level structure:
   - `SYMLINK_CONFIG` object:
     - `SECTION: 'symlink-config'`
-    - `WATCH_WORKSPACE: 'enableFileWatchers'`
+    - `WATCH_WORKSPACE: 'watchWorkspace'`
     - `GITIGNORE_SERVICE_FILES: 'gitignoreServiceFiles'`
     - `HIDE_SERVICE_FILES: 'hideServiceFiles'`
     - `HIDE_SYMLINK_CONFIGS: 'hideSymlinkConfigs'`
@@ -258,39 +258,6 @@
 
 ## Manager Modules
 
-### `src/managers/manager/`
-**Purpose:** Manager factory for creating managers with common patterns
-
-**Files:**
-- `index.ts` (exports: Manager, ManagerCallbacks, createManager)
-- `types.ts`
-- `create-manager.ts`
-
-**Functions:**
-- `createManager<CT, ET>(callbacks: ManagerCallbacks<CT, ET>): Manager<CT, ET>`
-
-**Types:**
-- `ManagerCallbacks<CT, ET>` interface:
-  - `readCallback: () => CT`
-  - `writeCallback?: (content: CT) => Promise<void>`
-  - `makeCallbak: (initialContent: CT, events?: ET, newContent?: CT) => CT`
-  - `generateCallback?: (initialContent: CT) => CT`
-  - `needsRegenerateCallback?: (content: CT, events?: ET) => boolean`
-  - `nameCallback?: () => string`
-- `Manager<CT, ET>` interface:
-  - `init: () => Promise<void>`
-  - `read: () => CT`
-  - `make: () => Promise<void>`
-  - `handleEvent: (events: ET) => Promise<void>`
-
-**Implementation Details:**
-- Factory function that implements common manager pattern logic
-- Flow: read() → generate(initialContent) → makeCallback(initialContent, events, newContent) → write(finalContent) → log()
-- Provides default implementations for optional callbacks
-- Handles init logic: checks needsRegenerate() and calls make() if needed
-- Handles handleEvent logic: checks needsRegenerate(events) and calls make(events) if needed
-- All callbacks are synchronous (no async/await needed for generate/make)
-
 ### `src/managers/gitignore-file/`
 **Files:**
 - `index.ts` (exports: init, read, handle-event, make)
@@ -349,10 +316,10 @@
 - `convertToAtSyntax(entry: ConfigEntry, configDir: string): ConfigEntry` (internal)
 - `pathToAtSyntax(originalPath: string, configDir: string): string` (internal)
 - `loadConfig(configPath: string): Config | null` (internal)
-- `handleEvent(event: FileWatchEvent): Promise<void>`
+- `handleEvent(events: FileEvent[]): Promise<void>`
 - `init(): Promise<void>`
 - `make(): Promise<void>` (logs when next.symlink-config.json is updated)
-- `needsRegenerate(event?: FileEventType): boolean` (synchronous, logs event and result)
+- `needsRegenerate(events?: FileEvent[]): boolean` (synchronous, logs event and result)
 - `read(): string`
 
 **Types:**
@@ -372,7 +339,7 @@
 **Functions:**
 - `generate(): string` (synchronous)
 - `scanWorkspaceSymlinks(): ExistingSymlink[]` (internal, synchronous)
-- `handleEvent(event: string): Promise<void>`
+- `handleEvent(events: FileEvent[]): Promise<void>`
 - `init(): Promise<void>`
 - `make(): Promise<void>` (logs when current.symlink-config.json is updated)
 - `needsRegenerate(): boolean` (synchronous, logs result and errors)
@@ -403,9 +370,42 @@
 **Types:**
 - `ExclusionPart` enum with All, ServiceFiles, SymlinkConfigs values
 
-## Hook Modules
+## Shared Modules (continued)
 
-### `src/hooks/use-file-watcher/`
+### `src/shared/factories/manager/`
+**Purpose:** Manager factory for creating managers with common patterns
+
+**Files:**
+- `index.ts` (exports: Manager, ManagerCallbacks, createManager)
+- `types.ts`
+- `create-manager.ts`
+
+**Functions:**
+- `createManager<CT, ET>(callbacks: ManagerCallbacks<CT, ET>): Manager<CT, ET>`
+
+**Types:**
+- `ManagerCallbacks<CT, ET>` interface:
+  - `readCallback: () => CT`
+  - `writeCallback?: (content: CT) => Promise<void>`
+  - `makeCallback: (initialContent: CT, events?: ET, newContent?: CT) => CT`
+  - `generateCallback?: (initialContent: CT) => CT`
+  - `needsRegenerateCallback?: (content: CT, events?: ET) => boolean`
+  - `nameCallback?: () => string`
+- `Manager<CT, ET>` interface:
+  - `init: () => Promise<void>`
+  - `read: () => CT`
+  - `make: () => Promise<void>`
+  - `handleEvent: (events: ET) => Promise<void>`
+
+**Implementation Details:**
+- Factory function that implements common manager pattern logic
+- Flow: read() → generate(initialContent) → makeCallback(initialContent, events, newContent) → write(finalContent) → log()
+- Provides default implementations for optional callbacks
+- Handles init logic: checks needsRegenerate() and calls make() if needed
+- Handles handleEvent logic: checks needsRegenerate(events) and calls make(events) if needed
+- All callbacks are synchronous (no async/await needed for generate/make)
+
+### `src/shared/hooks/use-file-watcher/`
 **Files:**
 - `index.ts` (exports all)
 - `types.ts`
@@ -437,7 +437,7 @@
 - Filters work per-event before accumulation, all must return true
 - Filter receives FileEvent object for consistency with Handler signature
 
-### `src/hooks/use-settings-watcher/`
+### `src/shared/hooks/use-settings-watcher/`
 **Files:**
 - `index.ts` (exports all)
 - `types.ts`
@@ -658,7 +658,7 @@
 **Total Files**: ~72+ TypeScript files
 **Total Functions**: ~80+ exported functions
 **Total Types**: ~25+ interfaces, enums, and type aliases
-**Total Constants**: 2 major constant objects (FILE_NAMES, CONFIG) with ~20 properties
+**Total Constants**: 3 major constant objects (FILE_NAMES, WATCHERS, SETTINGS) with ~20 properties
 
 **Key Patterns:**
 - **Extension Structure**: Entry point (`main.ts`) → Extension module (`extension/`) with separate activate, initialize, register-commands, and init-managers files
@@ -672,8 +672,8 @@
 - Admin script is parameterized: `admin.symlink-config.bat [script-name]` for both apply and clear operations
 - User interaction logic in main command functions, not in generate functions
 - Type definitions are distributed across modules with clear interfaces
-- Constants are centralized in shared/constants.ts with two-level CONFIG structure
-- CONFIG structure combines sections, parameters, and defaults in unified hierarchy
+- Constants are centralized in shared/constants.ts with two-level SETTINGS structure
+- SETTINGS structure combines sections, parameters, and defaults in unified hierarchy
 - **Config Watcher Pattern**: Multiple parameters can share same handler via `configs` with `parameters` array
 - **File System Abstraction**: Only `shared/file-ops/` uses `fs` module directly; all other code uses abstraction functions
 - **State Management**: Centralized in `shared/state.ts` for workspace root, name, configuration, tree provider, watchers array, and processing queue
@@ -690,8 +690,8 @@
 - File watcher enhanced with event accumulation during debounce windows
 - Handler signature changed to always receive array for consistency
 - Symlink detection uses bitwise AND to handle combined file types
-- **Constants Refactoring**: CONFIG_SECTIONS, CONFIG_PARAMETERS, and SYMLINK_SETTINGS_DEFAULTS merged into single CONFIG object
-- **Extension Decomposition**: Separated extension.ts into extension/ folder with activate.ts, initialize.ts, init-managers.ts, register-commands.ts, set-watchers.ts
+- **Constants Refactoring**: CONFIG_SECTIONS, CONFIG_PARAMETERS, and SYMLINK_SETTINGS_DEFAULTS merged into single SETTINGS object (renamed from CONFIG)
+- **Extension Decomposition**: Separated extension.ts into extension/ folder with activate.ts, ini.ts, managers-init.ts, register-commands.ts, make-watchers.ts
 - **Entry Point**: main.ts serves as webpack entry point, re-exports from extension module
 - **State Module**: Moved from src/state.ts to src/shared/state.ts for better organization
 - **TreeProvider State Management**: TreeProvider stored in centralized state, eliminating parameter passing through initialization chain
@@ -722,3 +722,6 @@
 - **Hook Decomposition**: Decomposed hooks into separate folders (use-file-watcher/, use-settings-watcher/) with types.ts, implementation, and index.ts
 - **Handler Extraction**: Extracted executeHandlers logic to separate files in both hooks for cleaner separation of concerns
 - **Factory Pattern**: use-file-watcher uses createExecuteHandlers factory to maintain debounce state in closure
+- **Hooks to Shared**: Moved hooks/ folder to shared/hooks/ for better organization
+- **Factory to Shared**: Moved managers/manager/ factory to shared/factories/manager/ for better organization
+- **Init Managers Rename**: Renamed init-managers.ts to managers-init.ts for consistency
