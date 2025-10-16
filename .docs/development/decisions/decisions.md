@@ -17,6 +17,7 @@
 - **[File Watcher Filter System](file-watcher-filter-system.md)** - Enhanced filtering with debouncing and shared utilities
 - **[Watcher Self-Registration Pattern](watcher-self-registration-pattern.md)** - Modular watcher architecture with centralized state management
 - **[Manager Factory Pattern](manager-factory-pattern.md)** - Callback-based factory for common manager logic
+- **[State/Queue/Log Separation](state-queue-log-separation.md)** - Separation of application state, queue, and logging concerns
 
 ## Development Process
 

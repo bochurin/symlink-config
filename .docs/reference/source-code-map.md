@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
 **Generated**: 15.10.2025  
-**Version**: 0.0.58  
+**Version**: 0.0.59  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -95,9 +95,9 @@
 
 
 
-## Shared State Module
+## Extension State Module
 
-### `src/shared/state.ts`
+### `src/extension/state.ts`
 **Functions:**
 - `setWorkspaceRoot(path: string): void`
 - `getWorkspaceRoot(): string`
@@ -110,12 +110,9 @@
 - `setTreeProvider(provider: any): void`
 - `getTreeProvider(): any`
 - `setOutputChannel(channel: vscode.OutputChannel): void`
-- `log(message: string): void`
-- `clearLogs(): void`
-- `showLogs(): void`
+- `getOutputChannel(): vscode.OutputChannel`
 - `registerWatcher(name: string, watcher: vscode.Disposable): void`
 - `disposeWatchers(...names: string[]): void`
-- `queue(fn: () => Promise<void>): Promise<void>`
 
 **Variables:**
 - `workspaceRoot: string`
@@ -124,28 +121,47 @@
 - `sylentMode: boolean`
 - `treeProvider: any`
 - `outputChannel: vscode.OutputChannel`
-- `logCount: number`
 - `watchers: Map<string, vscode.Disposable>`
-- `processingQueue: Promise<void>`
 
 **Implementation Details:**
 - Output channel created during activation with `{ log: true }` option
-- `log()` includes timestamp `[HH:MM:SS]` and auto-rotation based on maxLogEntries setting
-- Falls back to console.log if outputChannel not initialized
-- `clearLogs()` resets counter and shows output panel
-- `showLogs()` explicitly shows output panel
-
-**Implementation Details:**
 - Watchers tracked by name in Map for selective disposal
 - `registerWatcher(name, watcher)` - disposes existing watcher with same name before registering
 - `disposeWatchers()` - disposes all watchers
 - `disposeWatchers('name1', 'name2')` - disposes specific watchers by name
+
+### `src/extension/queue.ts`
+**Functions:**
+- `queue(fn: () => Promise<void>): Promise<void>`
+
+**Variables:**
+- `processingQueue: Promise<void>`
+
+**Implementation Details:**
+- Serializes async operations to prevent race conditions
+- Chains promises to ensure sequential execution
 
 ### `src/types.ts`
 **Types:**
 - `VSCodeUri` (re-export from vscode.Uri)
 
 ## Shared Modules
+
+### `src/shared/log.ts`
+**Functions:**
+- `log(message: string): void`
+- `clearLogs(): void`
+- `showLogs(): void`
+
+**Variables:**
+- `logCount: number`
+
+**Implementation Details:**
+- Imports `getOutputChannel()` from extension/state
+- Includes timestamp `[HH:MM:SS]` and auto-rotation based on maxLogEntries setting
+- Falls back to console.log if outputChannel not initialized
+- `clearLogs()` resets counter and shows output panel
+- `showLogs()` explicitly shows output panel
 
 ### `src/shared/constants.ts`
 **Constants:**
@@ -676,9 +692,10 @@
 - SETTINGS structure combines sections, parameters, and defaults in unified hierarchy
 - **Config Watcher Pattern**: Multiple parameters can share same handler via `configs` with `parameters` array
 - **File System Abstraction**: Only `shared/file-ops/` uses `fs` module directly; all other code uses abstraction functions
-- **State Management**: Centralized in `shared/state.ts` for workspace root, name, configuration, tree provider, watchers array, and processing queue
+- **State Management**: Application state in `extension/state.ts` (workspace root, name, configuration, tree provider, watchers), queue in `extension/queue.ts`, logging in `shared/log.ts`
 - **Self-Registering Watchers**: Watchers register themselves via `registerWatcher()`, eliminating need to return and collect watcher arrays
-- **Queue Pattern**: Processing queue centralized in state module, accessible via `queue()` function to serialize async operations
+- **Queue Pattern**: Processing queue in `extension/queue.ts`, accessible via `queue()` function to serialize async operations
+- **Logging Utility**: Reusable logging functions in `shared/log.ts`, imports outputChannel from extension/state
 
 **Change Tracking Notes:**
 - Function signatures include parameter types and return types
@@ -693,7 +710,7 @@
 - **Constants Refactoring**: CONFIG_SECTIONS, CONFIG_PARAMETERS, and SYMLINK_SETTINGS_DEFAULTS merged into single SETTINGS object (renamed from CONFIG)
 - **Extension Decomposition**: Separated extension.ts into extension/ folder with activate.ts, ini.ts, managers-init.ts, register-commands.ts, make-watchers.ts
 - **Entry Point**: main.ts serves as webpack entry point, re-exports from extension module
-- **State Module**: Moved from src/state.ts to src/shared/state.ts for better organization
+- **State Module**: Moved from src/state.ts to src/shared/state.ts (Phase 1.35), then to src/extension/state.ts (Phase 1.41)
 - **TreeProvider State Management**: TreeProvider stored in centralized state, eliminating parameter passing through initialization chain
 - **Config Watcher Enhancement**: Renamed `parameters` to `configs`, each config can watch multiple parameters with shared handler
 - **Manager Initialization**: Extracted manager initialization into separate init-managers module
@@ -725,3 +742,4 @@
 - **Hooks to Shared**: Moved hooks/ folder to shared/hooks/ for better organization
 - **Factory to Shared**: Moved managers/manager/ factory to shared/factories/manager/ for better organization
 - **Init Managers Rename**: Renamed init-managers.ts to managers-init.ts for consistency
+- **State/Queue/Log Separation**: Moved state.ts and queue.ts to extension/ (application-level), extracted log.ts to shared/ (reusable utility)

@@ -883,6 +883,59 @@ src/extension/managers-init.ts
 - **Consistent Naming**: managers-init.ts matches other extension files
 - **Logical Grouping**: Related functionality organized together
 
+### ✅ Phase 1.41: State/Queue/Log Separation (Completed - 15.10.2025)
+
+- **Date**: 15.10.2025
+- **Status**: Complete
+- **Details**:
+  - **State to Extension**: Moved state.ts from shared/ to extension/ (application-level)
+  - **Queue to Extension**: Moved queue.ts from shared/ to extension/ (application-level)
+  - **Log to Shared**: Extracted log.ts to shared/ (reusable utility)
+  - **Import Updates**: Updated 31 files across watchers, commands, managers, extension, views
+  - **Architecture Clarity**: Clear separation between application logic and reusable utilities
+
+#### Technical Implementation Details
+
+**Folder Restructuring**:
+```
+// Before
+src/shared/state.ts (state + queue + log)
+
+// After
+src/extension/state.ts (application state)
+src/extension/queue.ts (operation serialization)
+src/shared/log.ts (logging utility)
+```
+
+**State Module Changes**:
+- Removed `log()`, `clearLogs()`, `showLogs()` functions
+- Removed `queue()` function
+- Added `getOutputChannel()` getter for log module
+- Kept workspace state and watcher registry
+
+**Log Module**:
+- Extracted to `shared/log.ts` as reusable utility
+- Imports `getOutputChannel()` from extension/state
+- Contains `log()`, `clearLogs()`, `showLogs()` functions
+
+**Queue Module**:
+- Extracted to `extension/queue.ts` as application-level module
+- Contains `queue()` function for operation serialization
+
+**Import Updates**:
+- Watchers (7 files): Import from extension/state, extension/queue, shared/log
+- Commands (4 files): Import from extension/state, extension/queue, shared/log
+- Managers (3 files): Import from shared/log
+- Extension (4 files): Import from extension/state, extension/queue
+- Views (1 file): Import from extension/state
+- Shared (1 file): Import from extension/state
+
+**Benefits**:
+- **Clear Architecture**: Application logic in extension/, reusable utilities in shared/
+- **Better Organization**: State and queue are application-level, log is reusable
+- **Improved Maintainability**: Clear separation of concerns
+- **Logical Structure**: Modules grouped by their purpose and scope
+
 ### ✅ Phase 1.39: Manager Factory Pattern (Completed - 15.10.2025)
 
 - **Date**: 15.10.2025
@@ -1036,11 +1089,11 @@ export const WATCHERS = {
 
 ## Current Status
 
-**Phase**: Phase 1.40 Complete - Code Organization  
+**Phase**: Phase 1.41 Complete - State/Queue/Log Separation  
 **Branch**: `main`  
-**Version**: 0.0.58  
-**Latest**: Moved hooks and factories to shared/ for better organization  
-**Extension Status**: Core development complete with flexible watcher management, ready for comprehensive testing  
+**Version**: 0.0.59  
+**Latest**: Separated application-level modules (state, queue) from reusable utilities (log)  
+**Extension Status**: Core development complete with clean architecture, ready for comprehensive testing  
 **Next**: Cross-platform testing and validation (Phase 2)
 
 ## Extension Completion Summary
