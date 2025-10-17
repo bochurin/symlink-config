@@ -1,0 +1,67 @@
+{
+  "folders": [
+    {
+      "name": "📚 Documentation",
+      "path": ".docs",
+    },
+    {
+      "name": "1️⃣ Entry Point",
+      "path": "src/main.ts",
+    },
+    {
+      "name": "2️⃣ Extension Lifecycle",
+      "path": "src/extension",
+    },
+    {
+      "name": "3️⃣ State Management",
+      "path": "src/state",
+    },
+    {
+      "name": "3️⃣ Queue",
+      "path": "src/queue",
+    },
+    {
+      "name": "4️⃣ Watchers",
+      "path": "src/watchers",
+    },
+    {
+      "name": "5️⃣ Managers",
+      "path": "src/managers",
+    },
+
+    {
+      "name": "7️⃣ Views",
+      "path": "src/views",
+    },
+    {
+      "name": "6️⃣ Commands",
+      "path": "src/commands",
+    },
+    {
+      "name": "🔧 Shared",
+      "path": "src/shared",
+    },
+    {
+      "name": "📁 Project Root",
+      "path": ".",
+    },
+  ],
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+    "eslint.validate": ["typescript"],
+    "files.exclude": {
+      "**/.git": true,
+      "**/.svn": true,
+      "**/.hg": true,
+      "**/.DS_Store": true,
+      "**/Thumbs.db": true,
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/out": true,
+      "**/.vscode-test": true
+    },
+    "explorerExclude.backup": {}
+  }
+}
