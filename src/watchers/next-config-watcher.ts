@@ -24,5 +24,5 @@ export function nextConfigWatcher() {
       },
     },
   })
-  registerWatcher(WATCHERS.NEXT_CONFIG, watcher)
+  registerWatcher(WATCHERS.NEXT_SYMLINK_CONFIG, watcher)
 }

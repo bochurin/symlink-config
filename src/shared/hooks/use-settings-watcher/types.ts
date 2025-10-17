@@ -8,7 +8,7 @@ export type SettingsEvent = {
 export type Handler = (event: SettingsEvent) => void
 
 export type HandleConfig = {
-  parameters: string | string[]
+  properties: string | string[]
   onChange: Handler | Handler[]
 }
 

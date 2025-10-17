@@ -14,7 +14,7 @@ export function filesSettingsWatcher() {
     sections: {
       section: SETTINGS.FILES.SECTION,
       handlers: {
-        parameters: SETTINGS.FILES.EXCLUDE,
+        properties: SETTINGS.FILES.EXCLUDE,
         onChange: (event: SettingsEvent) => {
           log(
             `files.exclude changed: ${Object.keys(event.value || {}).length} patterns`,

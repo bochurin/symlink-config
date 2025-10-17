@@ -23,12 +23,12 @@ export function useSettingsWatcher(
       : [sectionConfig.handlers]
 
     configs.forEach((configItem) => {
-      const parameters = Array.isArray(configItem.parameters)
-        ? configItem.parameters
-        : [configItem.parameters]
-      parameters.forEach((parameter) => {
-        previousValues[sectionConfig.section][parameter] =
-          initialSettings.get(parameter)
+      const parameters = Array.isArray(configItem.properties)
+        ? configItem.properties
+        : [configItem.properties]
+      parameters.forEach((property) => {
+        previousValues[sectionConfig.section][property] =
+          initialSettings.get(property)
       })
     })
   })
@@ -46,22 +46,22 @@ export function useSettingsWatcher(
           : [sectionConfig.handlers]
 
         handlers.forEach((configItem) => {
-          const parameters = Array.isArray(configItem.parameters)
-            ? configItem.parameters
-            : [configItem.parameters]
+          const properties = Array.isArray(configItem.properties)
+            ? configItem.properties
+            : [configItem.properties]
 
-          parameters.forEach((parameter) => {
-            const value = newConfig.get(parameter)
-            const oldValue = previousValues[sectionConfig.section][parameter]
+          properties.forEach((property) => {
+            const value = newConfig.get(property)
+            const oldValue = previousValues[sectionConfig.section][property]
 
             if (value !== oldValue) {
               executeHandlers(configItem.onChange, {
                 section,
-                parameter,
+                parameter: property,
                 value,
                 oldValue,
               })
-              previousValues[sectionConfig.section][parameter] = value
+              previousValues[sectionConfig.section][property] = value
             }
           })
         })

@@ -2,9 +2,9 @@ import { info } from '../../vscode'
 import { log } from '../../log'
 import type { Manager, ManagerCallbacks } from './types'
 
-export async function createManager<CT, ET>(
+export function createManager<CT, ET>(
   callbacks: ManagerCallbacks<CT, ET>,
-): Promise<Manager<CT, ET>> {
+): Manager<CT, ET> {
   const readCB = callbacks.readCallback
   const makeCB = callbacks.makeCallback
   const writeCB = callbacks.writeCallback || (() => Promise.resolve())
@@ -60,7 +60,7 @@ export async function createManager<CT, ET>(
     }
   }
 
-  const name = callbacks.name || 'managed object'
+  const name = callbacks.name
 
   return { init, read, make, handleEvent, name }
 }

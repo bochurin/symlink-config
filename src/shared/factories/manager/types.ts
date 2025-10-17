@@ -8,7 +8,7 @@ export interface ManagerCallbacks<CT, ET> {
   ) => Promise<CT>
   generateCallback?: (initialContent: CT) => Promise<CT>
   needsRegenerateCallback?: (content: CT, events?: ET) => Promise<boolean>
-  name?: string
+  name: string
 }
 
 export interface Manager<CT, ET> {

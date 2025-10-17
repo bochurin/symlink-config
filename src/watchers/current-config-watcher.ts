@@ -30,5 +30,5 @@ export function currentConfigWatcher() {
       },
     },
   })
-  registerWatcher(WATCHERS.CURRENT_CONFIG, watcher)
+  registerWatcher(WATCHERS.CURRENT_SYMLINK_CONFIG, watcher)
 }

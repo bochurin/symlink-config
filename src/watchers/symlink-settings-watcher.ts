@@ -14,7 +14,7 @@ export function symlinkSettingsWatcher() {
     sections: {
       section: SETTINGS.SYMLINK_CONFIG.SECTION,
       handlers: {
-        parameters: [
+        properties: [
           SETTINGS.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES,
           SETTINGS.SYMLINK_CONFIG.GITIGNORE_SYMLINKS,
           SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES,
@@ -30,5 +30,5 @@ export function symlinkSettingsWatcher() {
       },
     },
   })
-  registerWatcher(WATCHERS.SYMLINK_SETTINGS, watcher)
+  registerWatcher(WATCHERS.SYMLINK_CONFIG_SETTINGS, watcher)
 }
