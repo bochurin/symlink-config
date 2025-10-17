@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 16.10.2025  
-**Version**: 0.0.60  
+**Generated**: 17.10.2025  
+**Version**: 0.0.61  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -95,42 +95,71 @@
 
 
 
-## Extension State Module
+## State Module
 
-### `src/extension/state.ts`
+### `src/state/`
+**Purpose:** Application state management at src/ level
+
+#### `src/state/index.ts`
+**Exports:** All state functions and types
+
+#### `src/state/types.ts`
+**Types:**
+- `Watcher` = `FileWatcher | SettingsWatcher`
+
+#### `src/state/workspace.ts`
 **Functions:**
 - `setWorkspaceRoot(path: string): void`
 - `getWorkspaceRoot(): string`
 - `setWorkspaceName(path: string): void`
 - `getWorkspaceName(): string`
-- `setNextConfig(config: string): void`
-- `getNextConfig(): string`
+
+**Variables:**
+- `workspaceRoot: string`
+- `workspaceName: string`
+
+#### `src/state/ui.ts`
+**Functions:**
 - `setSilentMode(mode: boolean): void`
 - `getSilentMode(): boolean`
 - `setTreeProvider(provider: any): void`
 - `getTreeProvider(): any`
 - `setOutputChannel(channel: vscode.OutputChannel): void`
-- `getOutputChannel(): vscode.OutputChannel`
-- `registerWatcher(name: string, watcher: vscode.Disposable): void`
+- `getOutputChannel(): vscode.OutputChannel | undefined`
+
+#### `src/state/managers.ts`
+**Functions:**
+- `registerManager(name: string, manager: Manager<any, any>): void`
+- `getManagers(...names: string[]): Manager<any, any>[]`
+
+**Variables:**
+- `managers: Map<string, Manager<any, any>>`
+
+#### `src/state/watchers.ts`
+**Functions:**
+- `registerWatcher(name: string, watcher: Watcher): void`
+- `getWatchers(...names: string[]): Watcher[]`
 - `disposeWatchers(...names: string[]): void`
 
 **Variables:**
-- `workspaceRoot: string`
-- `workspaceName: string`
-- `nextSymlinkConfig: string`
-- `sylentMode: boolean`
-- `treeProvider: any`
-- `outputChannel: vscode.OutputChannel`
-- `watchers: Map<string, vscode.Disposable>`
+- `watchers: Map<string, Watcher>`
 
 **Implementation Details:**
-- Output channel created during activation with `{ log: true }` option
 - Watchers tracked by name in Map for selective disposal
 - `registerWatcher(name, watcher)` - disposes existing watcher with same name before registering
 - `disposeWatchers()` - disposes all watchers
 - `disposeWatchers('name1', 'name2')` - disposes specific watchers by name
+- `getWatchers(...names)` - returns array of watchers, filters out undefined
 
-### `src/extension/queue.ts`
+## Queue Module
+
+### `src/queue/`
+**Purpose:** Operation serialization at src/ level
+
+#### `src/queue/index.ts`
+**Exports:** Queue function
+
+#### `src/queue/queue.ts`
 **Functions:**
 - `queue(fn: () => Promise<void>): Promise<void>`
 
@@ -693,10 +722,11 @@
 - SETTINGS structure combines sections, parameters, and defaults in unified hierarchy
 - **Config Watcher Pattern**: Multiple parameters can share same handler via `configs` with `parameters` array
 - **File System Abstraction**: Only `shared/file-ops/` uses `fs` module directly; all other code uses abstraction functions
-- **State Management**: Application state in `extension/state.ts` (workspace root, name, configuration, tree provider, watchers), queue in `extension/queue.ts`, logging in `shared/log.ts`
+- **State Management**: Application state in `state/` (workspace, ui, managers, watchers), queue in `queue/`, logging in `shared/log.ts`
 - **Self-Registering Watchers**: Watchers register themselves via `registerWatcher()`, eliminating need to return and collect watcher arrays
-- **Queue Pattern**: Processing queue in `extension/queue.ts`, accessible via `queue()` function to serialize async operations
-- **Logging Utility**: Reusable logging functions in `shared/log.ts`, imports outputChannel from extension/state
+- **Queue Pattern**: Processing queue in `queue/`, accessible via `queue()` function to serialize async operations
+- **Logging Utility**: Reusable logging functions in `shared/log.ts`, imports outputChannel from state
+- **Watcher Types**: Custom `FileWatcher` and `SettingsWatcher` types defined in hook modules, `Watcher` union in state/types
 
 **Change Tracking Notes:**
 - Function signatures include parameter types and return types
@@ -711,7 +741,7 @@
 - **Constants Refactoring**: CONFIG_SECTIONS, CONFIG_PARAMETERS, and SYMLINK_SETTINGS_DEFAULTS merged into single SETTINGS object (renamed from CONFIG)
 - **Extension Decomposition**: Separated extension.ts into extension/ folder with activate.ts, ini.ts, managers-init.ts, register-commands.ts, make-watchers.ts
 - **Entry Point**: main.ts serves as webpack entry point, re-exports from extension module
-- **State Module**: Moved from src/state.ts to src/shared/state.ts (Phase 1.35), then to src/extension/state.ts (Phase 1.41)
+- **State Module**: Moved from src/state.ts to src/shared/state.ts (Phase 1.35), then to src/extension/state.ts (Phase 1.41), then decomposed to src/state/ (Phase 1.43)
 - **TreeProvider State Management**: TreeProvider stored in centralized state, eliminating parameter passing through initialization chain
 - **Config Watcher Enhancement**: Renamed `parameters` to `configs`, each config can watch multiple parameters with shared handler
 - **Manager Initialization**: Extracted manager initialization into separate init-managers module
@@ -745,3 +775,4 @@
 - **Init Managers Rename**: Renamed init-managers.ts to managers-init.ts for consistency
 - **State/Queue/Log Separation**: Moved state.ts and queue.ts to extension/ (application-level), extracted log.ts to shared/ (reusable utility)
 - **Shared Module Isolation**: Changed file-ops functions to accept workspaceRoot parameter instead of importing from extension/state
+- **State/Queue Reorganization**: Moved state and queue from extension/ to src/ level with modular structure

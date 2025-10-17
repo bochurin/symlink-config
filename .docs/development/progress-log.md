@@ -1135,12 +1135,77 @@ export function readFile(workspaceRoot: string, file: string): string {
 - **Testability**: Functions can be tested with any workspaceRoot value
 - **Clear Architecture**: Explicit parameter passing shows data flow
 
+### ✅ Phase 1.43: State/Queue Module Reorganization (Completed - 17.10.2025)
+
+- **Date**: 17.10.2025
+- **Status**: Complete
+- **Details**:
+  - **State to src/ Level**: Moved state from extension/state/ to src/state/
+  - **State Decomposition**: Split into types, workspace, ui, managers, watchers files
+  - **Queue to src/ Level**: Moved queue from extension/queue.ts to src/queue/
+  - **Custom Watcher Types**: Added FileWatcher and SettingsWatcher types in hook modules
+  - **Watcher Union**: Created Watcher type (FileWatcher | SettingsWatcher) in state/types
+  - **Getter Enhancement**: Changed getManager/getWatcher to getManagers/getWatchers accepting multiple names
+  - **ESLint Rules**: Added module boundary enforcement for state/ and queue/
+  - **Import Updates**: Updated 31 import paths across all modules
+  - **Cleanup**: Removed unused nextSymlinkConfig state
+
+#### Technical Implementation Details
+
+**State Module Structure**:
+```
+src/state/
+├── types.ts          # Watcher union type
+├── workspace.ts      # Workspace root and name
+├── ui.ts             # Silent mode, tree provider, output channel
+├── managers.ts       # Manager registry
+├── watchers.ts       # Watcher registry
+└── index.ts          # Public exports
+```
+
+**Queue Module Structure**:
+```
+src/queue/
+├── queue.ts          # Queue implementation
+└── index.ts          # Public exports
+```
+
+**Custom Watcher Types**:
+```typescript
+// In use-file-watcher/use-file-watcher.ts
+export type FileWatcher = vscode.FileSystemWatcher
+
+// In use-settings-watcher/use-settings-watcher.ts
+export type SettingsWatcher = vscode.Disposable
+
+// In state/types.ts
+export type Watcher = FileWatcher | SettingsWatcher
+```
+
+**Enhanced Getters**:
+```typescript
+// Before: Single item
+getManager(name: string): Manager | undefined
+getWatcher(name: string): Watcher | undefined
+
+// After: Multiple items, filtered array
+getManagers(...names: string[]): Manager[]
+getWatchers(...names: string[]): Watcher[]
+```
+
+**Benefits**:
+- **Better Organization**: State and queue at src/ level alongside other core modules
+- **Modular State**: Each state concern in separate file for clarity
+- **Type Safety**: Custom watcher types defined in appropriate modules
+- **Flexible Getters**: Can retrieve multiple items in single call
+- **Consistent Structure**: Both state and queue follow same folder pattern
+
 ## Current Status
 
-**Phase**: Phase 1.42 Complete - Shared Module Isolation  
+**Phase**: Phase 1.43 Complete - State/Queue Module Reorganization  
 **Branch**: `main`  
-**Version**: 0.0.60  
-**Latest**: Enforced shared module isolation with parameter injection pattern  
+**Version**: 0.0.61  
+**Latest**: Reorganized state and queue to src/ level with modular structure  
 **Extension Status**: Core development complete with clean architecture, ready for comprehensive testing  
 **Next**: Cross-platform testing and validation (Phase 2)
 
