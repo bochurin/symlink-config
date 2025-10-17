@@ -68,3 +68,13 @@ This index provides an overview of all development sessions. Each session is doc
 **Topics**: Manager factory pattern, documentation accuracy review  
 **Key Changes**: v0.0.56 → v0.0.57, manager factory implementation  
 **Phase**: 1.38 → 1.39
+
+### [Session 14 - October 16, 2025](session-2025-10-16.md)
+**Topics**: State/queue/log separation, chat history restructuring  
+**Key Changes**: v0.0.58 → v0.0.59, separated concerns  
+**Phase**: 1.40 → 1.41
+
+### [Session 15 - October 17, 2025](session-2025-10-17.md)
+**Topics**: Manager factory fixes, state/queue reorganization, workspace configuration  
+**Key Changes**: v0.0.60 → v0.0.62, modular state, multiroot workspace  
+**Phase**: 1.42 → 1.43
