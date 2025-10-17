@@ -27,7 +27,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const workspaceListener = vscode.workspace.onDidChangeWorkspaceFolders(
     async () => {
-      log('Workspace folders changed, reinitializing...')
+      log('Workspace folders changed, checking project root...')
+      await checkProjectRootAfterWorkspaceChange()
       reset()
       const dispose = await init()
       if (dispose) {
@@ -42,4 +43,21 @@ export async function activate(context: vscode.ExtensionContext) {
 export function deactivate() {
   log('Extension deactivated')
   disposeWatchers()
+}
+
+async function checkProjectRootAfterWorkspaceChange() {
+  const config = vscode.workspace.getConfiguration('symlink-config')
+  const existingRoot = config.get<string>('projectRoot')
+  
+  if (existingRoot) {
+    const choice = await vscode.window.showInformationMessage(
+      'Workspace folders changed. Check if project root is still correct?',
+      'Check Now', 'Keep Current'
+    )
+    
+    if (choice === 'Check Now') {
+      // This will trigger the project root calculation in init()
+      await config.update('projectRoot', undefined, vscode.ConfigurationTarget.Workspace)
+    }
+  }
 }

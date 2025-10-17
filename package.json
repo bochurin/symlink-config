@@ -2,7 +2,7 @@
   "name": "@bochurin/symlink-config",
   "displayName": "symlink-config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.63",
+  "version": "0.0.64",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -81,6 +81,7 @@
         "symlink-config.scriptGeneration": {
           "order": 1,
           "type": "string",
+          "scope": "resource",
           "enum": [
             "windows-only",
             "unix-only",
@@ -93,6 +94,7 @@
         "symlink-config.symlinkPathMode": {
           "order": 2,
           "type": "string",
+          "scope": "resource",
           "enum": [
             "relative",
             "absolute"
@@ -103,42 +105,55 @@
         "symlink-config.watchWorkspace": {
           "order": 3,
           "type": "boolean",
+          "scope": "resource",
           "default": true,
           "description": "Enable automatic workspace watching and updating configuration."
         },
         "symlink-config.gitignoreServiceFiles": {
           "order": 4,
           "type": "boolean",
+          "scope": "resource",
           "default": true,
           "description": "Automatically .gitignore service files."
         },
         "symlink-config.gitignoreSymlinks": {
           "order": 5,
           "type": "boolean",
+          "scope": "resource",
           "default": true,
           "description": "Automatically .gitignore handled symlinks."
         },
         "symlink-config.hideServiceFiles": {
           "order": 6,
           "type": "boolean",
+          "scope": "resource",
           "default": false,
           "description": "Automatically hide service files from VSCode Explorer."
         },
         "symlink-config.hideSymlinkConfigs": {
           "order": 7,
           "type": "boolean",
+          "scope": "resource",
           "default": false,
           "description": "Automatically hide symlink-config.json files from VSCode Explorer."
         },
         "symlink-config.silent": {
           "order": 8,
           "type": "boolean",
+          "scope": "resource",
           "default": false,
           "description": "Silent mode - no VS Studio information messages."
         },
-        "symlink-config.maxLogEntries": {
+        "symlink-config.projectRoot": {
           "order": 9,
+          "type": "string",
+          "scope": "resource",
+          "description": "Project root path for symlink operations. Auto-calculated from workspace folders."
+        },
+        "symlink-config.maxLogEntries": {
+          "order": 10,
           "type": "number",
+          "scope": "resource",
           "default": 1000,
           "minimum": 100,
           "description": "Maximum number of log entries before auto-clear. Set to 0 for unlimited."

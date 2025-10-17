@@ -1,8 +1,12 @@
 import * as vscode from 'vscode'
+import { normalizePath } from './normalize-path'
+import { toFsPath } from './to-fs-path'
 
-export function isRootFile(rootPath: string, uri: vscode.Uri) {
-  if (!rootPath) return false
-  const root = rootPath.split('\\').join('/')
-  const uriDir = uri.fsPath.split('\\').slice(0, -1).join('/') + '/'
+export function isRootFile(rootPath: string | vscode.Uri, pathOrUri: string | vscode.Uri) {
+  const rootFsPath = toFsPath(rootPath)
+  if (!rootFsPath) return false
+  const root = normalizePath(rootFsPath, true)
+  const fsPath = toFsPath(pathOrUri)
+  const uriDir = normalizePath(fsPath.split(/[\\/]/).slice(0, -1).join('/'), true)
   return uriDir === root
 }
