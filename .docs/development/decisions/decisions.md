@@ -20,6 +20,7 @@
 - **[State/Queue/Log Separation](state-queue-log-separation.md)** - Separation of application state, queue, and logging concerns
 - **[Shared Module Isolation](shared-module-isolation.md)** - Parameter injection pattern for shared module independence
 - **[State/Queue Reorganization](state-queue-reorganization.md)** - Moving state and queue to src/ level with modular structure
+- **[Settings Scope Restriction](settings-scope-restriction.md)** - Restricting all settings to workspace/folder scope for proper isolation
 
 ## Development Process
 

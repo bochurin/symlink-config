@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: Current  
-**Version**: 0.0.57+  
+**Generated**: 17.10.2025  
+**Version**: 0.0.64  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -52,10 +52,11 @@
 - `symlink-config.clearLogs` - Clears output channel logs
 - `symlink-config.showLogs` - Opens output panel with extension logs
 
-#### `src/extension/initialize.ts`
+#### `src/extension/ini.ts`
 **Functions:**
-- `initialize(): Promise<(() => void) | undefined>`
+- `init(): Promise<(() => void) | undefined>`
 - `reset(): void`
+- `calculateAndSetProjectRoot(): Promise<{ workspaceRoot: string; workspaceName: string }>` (internal)
 
 **Variables:**
 - `isInitialized: boolean` (internal)
@@ -63,7 +64,10 @@
 **Implementation Details:**
 - Orchestrates initialization: workspace setup, manager init, watcher setup
 - Creates and returns dispose function from watcher array
-- Gets treeProvider from state
+- Implements project root calculation with workspace settings integration
+- Uses `findCommonPath()` to calculate shortest common path from workspace folders
+- Saves calculated project root to workspace settings with `ConfigurationTarget.Workspace`
+- Workspace name logic: uses `vscode.workspace.name` for multiroot, falls back to folder name
 
 #### `src/extension/managers-init.ts`
 **Functions:**
@@ -225,6 +229,7 @@
     - `SCRIPT_GENERATION: 'scriptGeneration'`
     - `SYMLINK_PATH_MODE: 'symlinkPathMode'`
     - `MAX_LOG_ENTRIES: 'maxLogEntries'`
+    - `PROJECT_ROOT: 'projectRoot'`
     - `DEFAULT` object:
       - `WATCH_WORKSPACE: true`
       - `GITIGNORE_SERVICE_FILES: true`
@@ -260,17 +265,23 @@
 - `read-symlink.ts`
 - `stat-file.ts`
 - `basename.ts`
+- `normalize-path.ts`
+- `find-common-path.ts`
+- `to-fs-path.ts`
 
 **Functions:**
-- `readFile(workspaceRoot: string, file: string): string`
-- `writeFile(workspaceRoot: string, file: string, content: string, mode?: number): Promise<void>`
-- `fullPath(workspaceRoot: string, endPath: string): string`
-- `isRootFile(workspaceRoot: string, uri: vscode.Uri): boolean`
-- `isSymlink(uri: vscode.Uri): Promise<boolean>` (uses bitwise AND for type checking)
-- `readDir(workspaceRoot: string, relativePath: string): fs.Dirent[]`
-- `readSymlink(workspaceRoot: string, file: string): string`
-- `statFile(workspaceRoot: string, file: string): fs.Stats`
-- `basename(uri: vscode.Uri): string`
+- `readFile(workspaceRoot: string, file: string | vscode.Uri): string`
+- `writeFile(workspaceRoot: string, file: string | vscode.Uri, content: string, mode?: number): Promise<void>`
+- `fullPath(workspaceRoot: string, endPath: string | vscode.Uri): string`
+- `isRootFile(workspaceRoot: string, uri: string | vscode.Uri): boolean`
+- `isSymlink(uri: string | vscode.Uri): Promise<boolean>` (uses bitwise AND for type checking)
+- `readDir(workspaceRoot: string, relativePath: string | vscode.Uri): fs.Dirent[]`
+- `readSymlink(workspaceRoot: string, file: string | vscode.Uri): string`
+- `statFile(workspaceRoot: string, file: string | vscode.Uri): fs.Stats`
+- `basename(uri: string | vscode.Uri): string`
+- `normalizePath(path: string, addTrailingSlash?: boolean): string`
+- `findCommonPath(paths: string[]): string`
+- `toFsPath(pathOrUri: string | vscode.Uri): string`
 
 **Implementation Details:**
 - `isSymlink` uses `(stats.type & vscode.FileType.SymbolicLink) !== 0` to detect symlinks
@@ -281,6 +292,9 @@
 - `statFile` wraps `fs.statSync()` for getting file/directory stats
 - **Architecture Rule**: Only file-ops module uses `fs` directly; all other code uses these abstractions
 - **Isolation Rule**: All functions accept `workspaceRoot` parameter instead of importing from extension/state
+- **Consistency Rule**: All file-ops functions accept both `string | vscode.Uri` parameters with internal normalization via `toFsPath()`
+- **Path Normalization**: `normalizePath()` ensures cross-platform compatibility with forward slashes and optional trailing slashes
+- **Common Path Calculation**: `findCommonPath()` calculates shortest common path from multiple folder paths for project root determination
 
 ### `src/shared/gitignore-ops/`
 **Files:**
@@ -801,3 +815,7 @@
 - **Parameter Constants**: Updated all managers to use SETTINGS constants instead of string literals for parameter names
 - **Optional Parameters**: Made generate function parameters optional with default values for better maintainability
 - **Symlink Settings Handler**: Added proper logging for WATCH_WORKSPACE setting changes and fixed parameter handling
+- **Project Root Management**: Implemented automatic project root calculation from workspace folders with workspace settings integration
+- **File-ops Standardization**: Updated all file-ops functions to accept both string and VSCode URI parameters consistently
+- **Path Utilities**: Added normalize-path, find-common-path, and to-fs-path utilities for centralized path handling
+- **Settings Scope Restriction**: All symlink-config settings restricted to workspace/folder scope with `"scope": "resource"`

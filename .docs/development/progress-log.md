@@ -1226,10 +1226,10 @@ getWatchers(...names: string[]): Watcher[]
 
 ## Current Status
 
-**Phase**: Phase 1.44 Complete - Gitignore Symlinks Feature Enhancement  
+**Phase**: Phase 1.45 Complete - Project Root Management and File-ops Standardization  
 **Branch**: `main`  
-**Version**: 0.0.63  
-**Latest**: Enhanced gitignore symlinks feature with proper current config handling and settings watcher fixes  
+**Version**: 0.0.64  
+**Latest**: Implemented project root management with workspace settings integration and standardized file-ops APIs  
 **Extension Status**: Core development complete with clean architecture, ready for comprehensive testing  
 **Next**: Cross-platform testing and validation (Phase 2)
 
@@ -1249,10 +1249,10 @@ I'm continuing development on the Symlink Config VSCode extension. Please review
 @.docs/.amazonq/rules/symlink-config-rules.md - Development rules and patterns
 
 Key context:
-- Current version: 0.0.63
-- Phase: 1.44 Complete (Gitignore Symlinks Feature Enhancement)
+- Current version: 0.0.64
+- Phase: 1.45 Complete (Project Root Management and File-ops Standardization)
 - Architecture: Modular state at src/ level, shared module isolation enforced
-- Recent changes: Gitignore symlinks feature, settings watcher fixes, parameter constants
+- Recent changes: Project root calculation, file-ops standardization, settings scope restriction
 
 Please confirm you've reviewed the documentation and are ready to continue development.
 ```
