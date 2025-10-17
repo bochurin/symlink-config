@@ -1,5 +1,6 @@
 import { useFileWatcher, FileEventType } from '../shared/hooks/use-file-watcher'
 import { handleEvent as handleCurrentConfigEvent } from '../managers/current-config'
+import { handleEvent as handleGitignoreEvent } from '../managers/gitignore-file'
 import { FILE_NAMES, WATCHERS } from '../shared/constants'
 import { isRootFile } from '../shared/file-ops'
 import { getTreeProvider, getWorkspaceRoot, registerWatcher } from '../state'
@@ -21,9 +22,10 @@ export function currentConfigWatcher() {
       ],
       handlers: (events) => {
         log(
-          `current.symlink-config.json: ${events[0].event} at ${events[0].uri.fsPath}`,
+          `current.symlink-config.json: ${events[0].eventType} at ${events[0].uri.fsPath}`,
         )
-        queue(() => handleCurrentConfigEvent(events[0].event))
+        queue(() => handleCurrentConfigEvent(events))
+        queue(() => handleGitignoreEvent(events))
         treeProvider?.refresh()
       },
     },

@@ -16,7 +16,7 @@ export function gitignoreWatcher() {
       on: [FileEventType.Modified, FileEventType.Deleted],
       handlers: (events) => {
         log(
-          `.gitignore changed: ${events.map((e) => `${e.event} ${e.uri.fsPath}`).join(', ')}`,
+          `.gitignore changed: ${events.map((e) => `${e.eventType} ${e.uri.fsPath}`).join(', ')}`,
         )
         return queue(() => handleGitignoreEvent(events))
       },

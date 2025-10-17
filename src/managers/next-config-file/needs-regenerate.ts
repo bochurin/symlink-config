@@ -4,7 +4,9 @@ import { generate } from './generate'
 import { read } from './read'
 
 export function needsRegenerate(events?: FileEvent | FileEvent[]): boolean {
-  const eventType = Array.isArray(events) ? events[0].event : events?.event
+  const eventType = Array.isArray(events)
+    ? events[0].eventType
+    : events?.eventType
 
   const generated = generate()
   const current = read()

@@ -16,24 +16,17 @@ export function symlinkSettingsWatcher() {
       handlers: {
         parameters: [
           SETTINGS.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES,
+          SETTINGS.SYMLINK_CONFIG.GITIGNORE_SYMLINKS,
           SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES,
           SETTINGS.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS,
           SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE,
         ],
-        onChange: [
-          (event: SettingsEvent) => {
-            log(
-              `Setting changed: ${event.parameter} (${event.oldValue} → ${event.value})`,
-            )
-            return queue(() => handleSymlinkConfigEvent(event))
-          },
-          (event: SettingsEvent) => {
-            log(
-              `Setting changed: ${event.parameter} (${event.oldValue} → ${event.value})`,
-            )
-            return queue(() => handleSymlinkConfigEvent(event))
-          },
-        ],
+        onChange: (event: SettingsEvent) => {
+          log(
+            `Setting changed: ${event.parameter} (${event.oldValue} → ${event.value})`,
+          )
+          return queue(() => handleSymlinkConfigEvent(event))
+        },
       },
     },
   })

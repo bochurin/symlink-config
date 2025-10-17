@@ -4,7 +4,9 @@ import { make } from './make'
 import { needsRegenerate } from './needs-regenerate'
 
 export async function handleEvent(events: FileEvent | FileEvent[]) {
-  const eventType = Array.isArray(events) ? events[0].event : events.event
+  const eventType = Array.isArray(events)
+    ? events[0].eventType
+    : events.eventType
 
   const needsRegen =
     eventType === FileEventType.Deleted || needsRegenerate(events)

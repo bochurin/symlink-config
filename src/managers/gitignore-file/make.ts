@@ -3,9 +3,10 @@ import { generate } from './generate'
 import { read } from './read'
 import { log } from '../../shared/log'
 import { write } from './write'
+import { GitignoringPart } from './types'
 
-export async function make() {
-  const generatedEntries = await generate()
+export async function make(mode?: GitignoringPart) {
+  const generatedEntries = await generate(mode ?? GitignoringPart.All)
 
   const currentEntries = await read()
   const originalSpacing = Object.fromEntries(

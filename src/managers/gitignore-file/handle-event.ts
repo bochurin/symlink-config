@@ -1,16 +1,14 @@
-import { FileEvent, FileEventType } from '../../shared/hooks/use-file-watcher'
+import { FileEvent } from '../../shared/hooks/use-file-watcher'
 import { info } from '../../shared/vscode'
 import { make } from './make'
 import { needsRegenerate } from './needs-regenerate'
+import { basename } from '../../shared/file-ops'
 
 export async function handleEvent(events: FileEvent | FileEvent[]) {
-  const eventType = Array.isArray(events) ? events[0].event : events.event
+  const event = Array.isArray(events) ? events[0] : events
 
-  const needsRegen =
-    eventType === FileEventType.Deleted || needsRegenerate(events)
-
-  if (needsRegen) {
-    info(`.gitignore was ${eventType}. Regenerating...`)
+  if (needsRegenerate(events)) {
+    info(`${basename(event.uri)} was ${event.eventType}. Regenerating...`)
     await make()
   }
 }

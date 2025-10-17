@@ -1,13 +1,16 @@
 import { read as readSymlinkSettings } from '../symlink-settings'
 import { ExclusionPart } from './types'
-import { FILE_NAMES } from '../../shared/constants'
+import { FILE_NAMES, SETTINGS } from '../../shared/constants'
 
-export function generate(mode: ExclusionPart): Record<string, boolean> {
+export function generate(mode?: ExclusionPart): Record<string, boolean> {
+  mode = mode ?? ExclusionPart.All
   const generatedExclusions: Record<string, boolean> = {}
 
   try {
     if (mode == ExclusionPart.All || mode == ExclusionPart.ServiceFiles) {
-      const hideServiceFiles = readSymlinkSettings('hideServiceFiles') as boolean
+      const hideServiceFiles = readSymlinkSettings(
+        SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES,
+      ) as boolean
       generatedExclusions[FILE_NAMES.NEXT_SYMLINK_CONFIG] = hideServiceFiles
       generatedExclusions[FILE_NAMES.CURRENT_SYMLINK_CONFIG] = hideServiceFiles
       generatedExclusions[FILE_NAMES.APPLY_SYMLINKS_BAT] = hideServiceFiles
@@ -18,7 +21,9 @@ export function generate(mode: ExclusionPart): Record<string, boolean> {
     }
 
     if (mode == ExclusionPart.All || mode == ExclusionPart.SymlinkConfigs) {
-      const hideSymlinkConfigs = readSymlinkSettings('hideSymlinkConfigs') as boolean
+      const hideSymlinkConfigs = readSymlinkSettings(
+        SETTINGS.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS,
+      ) as boolean
       generatedExclusions[`**/${FILE_NAMES.SYMLINK_CONFIG}`] =
         hideSymlinkConfigs
     }

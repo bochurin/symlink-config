@@ -1,5 +1,5 @@
-import { symlinkSettingsManager } from '../managers/symlink-settings/symlink-settings'
+// import { symlinkSettingsManager } from '../managers/symlink-settings/symlink-settings'
 
 export function makeManagers() {
-  symlinkSettingsManager()
+  // symlinkSettingsManager()
 }

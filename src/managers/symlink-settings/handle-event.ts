@@ -1,4 +1,4 @@
-import { make as makeGitignore } from '../gitignore-file'
+import { GitignoringPart, make as makeGitignore } from '../gitignore-file'
 import { make as makeExclusion, ExclusionPart } from '../file-exclude-settings'
 import { info } from '../../shared/vscode'
 import { SETTINGS } from '../../shared/constants'
@@ -14,7 +14,14 @@ export async function handleEvent(event: SettingsEvent) {
             //TODO: use constants for messages
             `Gitignoring service files ${event.value ? 'enabled' : 'disabled'}.`,
           )
-          await makeGitignore()
+          await makeGitignore(GitignoringPart.ServiceFiles)
+          break
+
+        case SETTINGS.SYMLINK_CONFIG.GITIGNORE_SYMLINKS:
+          info(
+            `Gitignoring created symlinks ${event.value ? 'enabled' : 'disabled'}.`,
+          )
+          await makeGitignore(GitignoringPart.Symlinks)
           break
 
         case SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES:
@@ -33,6 +40,7 @@ export async function handleEvent(event: SettingsEvent) {
           break
 
         case SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE:
+          info(`Workspace watching ${event.value ? 'enabled' : 'disabled'}.`)
           break
 
         default:

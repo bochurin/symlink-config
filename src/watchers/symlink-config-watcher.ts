@@ -19,7 +19,7 @@ export function symlinkConfigsWatcher() {
       handlers: [
         (events) => {
           const details = events
-            .map((e) => `${e.event} ${e.uri.fsPath}`)
+            .map((e) => `${e.eventType} ${e.uri.fsPath}`)
             .join(', ')
           log(`symlink-config.json: ${details}`)
           return queue(() => handleNextConfigEvent(events))

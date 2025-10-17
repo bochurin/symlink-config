@@ -28,6 +28,7 @@ export const SETTINGS = {
     SECTION: 'symlink-config',
     WATCH_WORKSPACE: 'enableFileWatchers',
     GITIGNORE_SERVICE_FILES: 'gitignoreServiceFiles',
+    GITIGNORE_SYMLINKS: 'gitignoreSymlinks',
     HIDE_SERVICE_FILES: 'hideServiceFiles',
     HIDE_SYMLINK_CONFIGS: 'hideSymlinkConfigs',
     SCRIPT_GENERATION: 'scriptGeneration',
@@ -36,6 +37,7 @@ export const SETTINGS = {
     DEFAULT: {
       WATCH_WORKSPACE: true,
       GITIGNORE_SERVICE_FILES: true,
+      GITIGNORE_SYMLINKS: true,
       HIDE_SERVICE_FILES: false,
       HIDE_SYMLINK_CONFIGS: false,
       SCRIPT_GENERATION: 'auto' as const,

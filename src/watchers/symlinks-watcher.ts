@@ -16,10 +16,10 @@ export function symlinksWatcher() {
       on: [FileEventType.Created, FileEventType.Deleted],
       handlers: (events) => {
         const details = events
-          .map((e) => `${e.event} ${e.uri.fsPath}`)
+          .map((e) => `${e.eventType} ${e.uri.fsPath}`)
           .join(', ')
         log(`Symlinks: ${details}`)
-        return queue(() => handleCurrentConfigEvent('modified'))
+        return queue(() => handleCurrentConfigEvent(events))
       },
     },
   })

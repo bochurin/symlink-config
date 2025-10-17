@@ -16,13 +16,13 @@ export function createExecuteHandlers(
     if (filters) {
       const filterArray = Array.isArray(filters) ? filters : [filters]
       for (const filter of filterArray) {
-        const passed = await filter({ uri, event: eventType })
+        const passed = await filter({ uri, eventType: eventType })
         if (!passed) return
       }
     }
 
     if (debounce) {
-      accumulatedEvents.push({ uri, event: eventType })
+      accumulatedEvents.push({ uri, eventType: eventType })
       if (debounceTimeout) {
         clearTimeout(debounceTimeout)
       }
@@ -32,7 +32,7 @@ export function createExecuteHandlers(
         handlers.forEach((handler) => handler(events))
       }, debounce)
     } else {
-      handlers.forEach((handler) => handler([{ uri, event: eventType }]))
+      handlers.forEach((handler) => handler([{ uri, eventType: eventType }]))
     }
   }
 }

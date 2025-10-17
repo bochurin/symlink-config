@@ -5,36 +5,35 @@
       "path": ".docs",
     },
     {
-      "name": "1️⃣ Entry Point",
-      "path": "src/main.ts",
+      "name": "🎯 Selected",
+      "path": "selected",
     },
     {
-      "name": "2️⃣ Extension Lifecycle",
+      "name": "🚀 Extension Lifecycle",
       "path": "src/extension",
     },
     {
-      "name": "3️⃣ State Management",
+      "name": "💾 State Management",
       "path": "src/state",
     },
     {
-      "name": "3️⃣ Queue",
+      "name": "⏳ Queue",
       "path": "src/queue",
     },
     {
-      "name": "4️⃣ Watchers",
+      "name": "👁️ Watchers",
       "path": "src/watchers",
     },
     {
-      "name": "5️⃣ Managers",
+      "name": "⚙️ Managers",
       "path": "src/managers",
     },
-
     {
-      "name": "7️⃣ Views",
+      "name": "🖼️ Views",
       "path": "src/views",
     },
     {
-      "name": "6️⃣ Commands",
+      "name": "⌨️ Commands",
       "path": "src/commands",
     },
     {
@@ -42,13 +41,17 @@
       "path": "src/shared",
     },
     {
-      "name": "📁 Project Root",
+      "name": "test-workspace",
+      "path": "test-workspace",
+    },
+    {
+      "name": "@",
       "path": ".",
     },
   ],
   "settings": {
     "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit"
+      "source.fixAll.eslint": "explicit",
     },
     "eslint.validate": ["typescript"],
     "files.exclude": {
@@ -60,8 +63,21 @@
       "**/node_modules": true,
       "**/dist": true,
       "**/out": true,
-      "**/.vscode-test": true
+      "**/.vscode-test": true,
+      "**/symlink-config.json": false,
     },
-    "explorerExclude.backup": {}
-  }
+    "explorerExclude.backup": {},
+    "symlink-config.hideServiceFiles": false,
+    "symlink-config.hideSymlinkConfigs": true,
+    "symlink-config.gitignoreServiceFiles": true,
+    "symlink-config.gitignoreSymlinks": true,
+    "symlink-config.silent": true,
+    "symlink-config.scriptGeneration": "auto",
+    "symlink-config.symlinkPathMode": "relative",
+    "symlink-config.watchWorkspace": true,
+    "editor.tokenColorCustomizations": {
+      "comments": "",
+      "textMateRules": [],
+    },
+  },
 }

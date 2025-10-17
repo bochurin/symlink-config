@@ -4,7 +4,7 @@ export enum FileEventType {
   Deleted = 'Deleted',
 }
 
-export type FileEvent = { uri: import('vscode').Uri; event: FileEventType }
+export type FileEvent = { uri: import('vscode').Uri; eventType: FileEventType }
 
 export type Handler = (events: FileEvent[]) => void
 export type Filter = (event: FileEvent) => Promise<boolean> | boolean

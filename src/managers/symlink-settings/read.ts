@@ -14,6 +14,8 @@ export function read(
         return readConfig<string>(configKey, defaults.SCRIPT_GENERATION)
       case SETTINGS.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES:
         return readConfig<boolean>(configKey, defaults.GITIGNORE_SERVICE_FILES)
+      case SETTINGS.SYMLINK_CONFIG.GITIGNORE_SYMLINKS:
+        return readConfig<boolean>(configKey, defaults.GITIGNORE_SYMLINKS)
       case SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES:
       case SETTINGS.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS:
         return readConfig<boolean>(

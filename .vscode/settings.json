@@ -10,7 +10,15 @@
     "**/.DS_Store": true,
     "**/Thumbs.db": true,
     "**/node_modules": true,
-    "**/dist": true
+    "**/dist": true,
+    "next.symlink-config.json": false,
+    "current.symlink-config.json": false,
+    "apply.symlink-config.bat": false,
+    "apply.symlink-config.sh": false,
+    "clear.symlink-config.bat": false,
+    "clear.symlink-config.sh": false,
+    "admin.symlink-config.bat": false,
+    "**/symlink-config.json": false
   },
   "explorerExclude.backup": {}
 }
