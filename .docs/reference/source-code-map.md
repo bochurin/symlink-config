@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
 **Generated**: 17.10.2025  
-**Version**: 0.0.64  
+**Version**: 0.0.65  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -174,9 +174,14 @@
 - Serializes async operations to prevent race conditions
 - Chains promises to ensure sequential execution
 
-### `src/types.ts`
-**Types:**
-- `VSCodeUri` (re-export from vscode.Uri)
+### `src/types/`
+**Purpose:** TypeScript type declarations
+
+#### `src/types/package.json.d.ts`
+**Type Declarations:**
+- Complete package.json structure for VSCode extensions
+- Enables build-time import of package.json with full type safety
+- Supports `resolveJsonModule` TypeScript configuration
 
 ## Shared Modules
 
@@ -196,7 +201,13 @@
 - `clearLogs()` resets counter and shows output panel
 - `showLogs()` explicitly shows output panel
 
-### `src/shared/constants.ts`
+### `src/shared/constants/`
+**Purpose:** Modular constants organization with cross-references
+
+#### `src/shared/constants/index.ts`
+**Exports:** All constants from files, settings, watchers, managers modules
+
+#### `src/shared/constants/files.ts`
 **Constants:**
 - `FILE_NAMES` object with properties:
   - `SYMLINK_CONFIG: 'symlink-config.json'`
@@ -206,19 +217,17 @@
   - `APPLY_SYMLINKS_SH: 'apply.symlink-config.sh'`
   - `CLEAR_SYMLINKS_BAT: 'clear.symlink-config.bat'`
   - `CLEAR_SYMLINKS_SH: 'clear.symlink-config.sh'`
-  - `RUN_ADMIN_BAT: 'admin.symlink-config.bat'` (parameterized: accepts script name)
+  - `RUN_ADMIN_BAT: 'admin.symlink-config.bat'`
   - `GITIGNORE: '.gitignore'`
 
-- `WATCHERS` constant object:
-  - `SYMLINK_SETTINGS: 'symlinkSettings'`
-  - `FILES_SETTINGS: 'filesSettings'`
-  - `GITIGNORE: 'gitignore'`
-  - `NEXT_CONFIG: 'nextConfig'`
-  - `CURRENT_CONFIG: 'currentConfig'`
-  - `SYMLINK_CONFIGS: 'symlinkConfigs'`
-  - `SYMLINKS: 'symlinks'`
+#### `src/shared/constants/settings.ts`
+**Implementation Details:**
+- **Build-time package.json import**: Reads default values from package.json at compile time
+- **DRY principle**: Section and property names defined once and reused
+- **Type safety**: Full TypeScript support with package.json type declarations
 
-- `SETTINGS` two-level structure:
+**Constants:**
+- `SETTINGS` structure with build-time defaults:
   - `SYMLINK_CONFIG` object:
     - `SECTION: 'symlink-config'`
     - `WATCH_WORKSPACE: 'watchWorkspace'`
@@ -228,20 +237,34 @@
     - `HIDE_SYMLINK_CONFIGS: 'hideSymlinkConfigs'`
     - `SCRIPT_GENERATION: 'scriptGeneration'`
     - `SYMLINK_PATH_MODE: 'symlinkPathMode'`
-    - `MAX_LOG_ENTRIES: 'maxLogEntries'`
     - `PROJECT_ROOT: 'projectRoot'`
-    - `DEFAULT` object:
-      - `WATCH_WORKSPACE: true`
-      - `GITIGNORE_SERVICE_FILES: true`
-      - `GITIGNORE_SYMLINKS: true`
-      - `HIDE_SERVICE_FILES: false`
-      - `HIDE_SYMLINK_CONFIGS: false`
-      - `SCRIPT_GENERATION: 'auto'`
-      - `SYMLINK_PATH_MODE: 'relative'`
-      - `MAX_LOG_ENTRIES: 1000`
+    - `MAX_LOG_ENTRIES: 'maxLogEntries'`
+    - `DEFAULT` object (populated from package.json):
+      - All default values read from `packageJson.contributes.configuration.properties`
   - `FILES` object:
     - `SECTION: 'files'`
     - `EXCLUDE: 'exclude'`
+
+#### `src/shared/constants/watchers.ts`
+**Constants:**
+- `WATCHERS` object using file names as identifiers:
+  - `SYMLINK_CONFIG_SETTINGS: SETTINGS.SYMLINK_CONFIG.SECTION`
+  - `FILES_SETTINGS: SETTINGS.FILES.SECTION`
+  - `GITIGNORE: FILE_NAMES.GITIGNORE`
+  - `NEXT_SYMLINK_CONFIG: FILE_NAMES.NEXT_SYMLINK_CONFIG`
+  - `CURRENT_SYMLINK_CONFIG: FILE_NAMES.CURRENT_SYMLINK_CONFIG`
+  - `SYMLINK_CONFIGS: FILE_NAMES.SYMLINK_CONFIG`
+  - `SYMLINKS: 'handled symlinks'`
+
+#### `src/shared/constants/managers.ts`
+**Constants:**
+- `MANAGERS` object using cross-referenced identifiers:
+  - `SYMLINK_CONFIG_SETTINGS: SETTINGS.SYMLINK_CONFIG.SECTION`
+  - `FILES_SETTINGS: SETTINGS.FILES.SECTION`
+  - `GITIGNORE: FILE_NAMES.GITIGNORE`
+  - `NEXT_SYMLINK_CONFIG: FILE_NAMES.NEXT_SYMLINK_CONFIG`
+  - `CURRENT_SYMLINK_CONFIG: FILE_NAMES.CURRENT_SYMLINK_CONFIG`
+  - `SYMLINK_CONFIGS: FILE_NAMES.SYMLINK_CONFIG`
 
 ### `src/shared/config-ops/`
 **Files:**
@@ -454,7 +477,7 @@
 - `create-manager.ts`
 
 **Functions:**
-- `createManager<CT, ET>(callbacks: ManagerCallbacks<CT, ET>): Manager<CT, ET>`
+- `createManager<CT, ET>(callbacks: ManagerCallbacks<CT, ET>): Manager<CT, ET>` (synchronous return)
 
 **Types:**
 - `ManagerCallbacks<CT, ET>` interface:
@@ -524,7 +547,7 @@
 **Types:**
 - `SettingsEvent` type: `{ section: string; parameter: string; value: any; oldValue: any }`
 - `Handler` type: `(event: SettingsEvent) => void`
-- `HandleConfig` interface with parameters (string | string[]), onChange (Handler | Handler[]) properties
+- `HandleConfig` interface with properties (string | string[]), onChange (Handler | Handler[]) properties
 - `SectionConfig` interface with section, handlers (HandleConfig | HandleConfig[]) properties
 - `SettingsWatcherConfig` interface with sections property
 
@@ -533,8 +556,8 @@
 - `executeHandlers` utility function normalizes handlers to array and executes each with event
 - Renamed from use-config-watcher.ts
 - `handlers` can be single HandleConfig or array of HandleConfigs
-- Each HandleConfig can watch single parameter or array of parameters
-- All parameters in a HandleConfig share the same onChange handler
+- Each HandleConfig can watch single property or array of properties (renamed from parameters)
+- All properties in a HandleConfig share the same onChange handler
 
 ## Watcher Modules
 
@@ -767,6 +790,11 @@
 - Handler signature changed to always receive array for consistency
 - Symlink detection uses bitwise AND to handle combined file types
 - **Constants Refactoring**: CONFIG_SECTIONS, CONFIG_PARAMETERS, and SYMLINK_SETTINGS_DEFAULTS merged into single SETTINGS object (renamed from CONFIG)
+- **Constants Decomposition**: Split constants.ts into modular folder structure (files, settings, watchers, managers)
+- **Build-time Package.json Import**: Settings defaults read from package.json at compile time with full type safety
+- **DRY Constants**: Section and property names defined once and reused throughout structure
+- **Manager Factory Fix**: Fixed return type from Promise<Manager> to Manager for synchronous operation
+- **Terminology Alignment**: Renamed "parameters" to "properties" in settings watcher to match VSCode API terminology
 - **Extension Decomposition**: Separated extension.ts into extension/ folder with activate.ts, ini.ts, managers-init.ts, register-commands.ts, make-watchers.ts
 - **Entry Point**: main.ts serves as webpack entry point, re-exports from extension module
 - **State Module**: Moved from src/state.ts to src/shared/state.ts (Phase 1.35), then to src/extension/state.ts (Phase 1.41), then decomposed to src/state/ (Phase 1.43)

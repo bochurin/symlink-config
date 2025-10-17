@@ -1174,6 +1174,34 @@ export function readFile(workspaceRoot: string, file: string): string {
   - **Logging Improvements**: Added proper logging for WATCH_WORKSPACE setting changes
   - **Current Config Watcher**: Enhanced to trigger both current-config and gitignore managers on changes
 
+### ✅ Phase 1.45: Project Root Management and File-ops Standardization (Completed - 17.10.2025)
+
+- **Date**: 17.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Project Root Calculation**: Implemented automatic project root calculation from workspace folders using `findCommonPath()`
+  - **Workspace Settings Integration**: Project root saved to workspace settings with user interaction for multiroot workspaces
+  - **File-ops Standardization**: Updated all file-ops functions to accept both `string | vscode.Uri` parameters consistently
+  - **Path Utilities**: Added `normalize-path.ts`, `find-common-path.ts`, and `to-fs-path.ts` for centralized path handling
+  - **Settings Scope Restriction**: All symlink-config settings restricted to workspace/folder scope with `"scope": "resource"`
+  - **Cross-Platform Path Handling**: Centralized normalization ensures forward slashes and trailing slash consistency
+  - **URI Conversion**: `toFsPath()` helper provides consistent string/URI conversion throughout file-ops
+  - **Workspace Name Logic**: Uses `vscode.workspace.name` for multiroot, falls back to folder name for single folders
+
+### ✅ Phase 1.46: Constants Decomposition and Build-time Package.json Integration (Completed - 17.10.2025)
+
+- **Date**: 17.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Constants Decomposition**: Split `shared/constants.ts` into modular folder structure with separate files
+  - **Build-time Package.json Import**: Settings defaults read from package.json at compile time with full type safety
+  - **TypeScript Configuration**: Added `resolveJsonModule: true` and package.json type declarations
+  - **DRY Principle**: Section and property names defined once and reused throughout constants structure
+  - **Cross-Referenced Constants**: WATCHERS and MANAGERS use values from FILE_NAMES and SETTINGS for consistency
+  - **Manager Factory Fix**: Fixed return type from `Promise<Manager>` to `Manager` for synchronous operation
+  - **Terminology Alignment**: Renamed "parameters" to "properties" in settings watcher to match VSCode API
+  - **Type Safety**: Complete package.json structure typed for VSCode extensions with proper ambient module declarations
+
 #### Technical Implementation Details
 
 **State Module Structure**:
@@ -1226,10 +1254,10 @@ getWatchers(...names: string[]): Watcher[]
 
 ## Current Status
 
-**Phase**: Phase 1.45 Complete - Project Root Management and File-ops Standardization  
+**Phase**: Phase 1.46 Complete - Constants Decomposition and Build-time Package.json Integration  
 **Branch**: `main`  
-**Version**: 0.0.64  
-**Latest**: Implemented project root management with workspace settings integration and standardized file-ops APIs  
+**Version**: 0.0.65  
+**Latest**: Decomposed constants into modular structure with build-time package.json integration and full type safety  
 **Extension Status**: Core development complete with clean architecture, ready for comprehensive testing  
 **Next**: Cross-platform testing and validation (Phase 2)
 
@@ -1249,10 +1277,10 @@ I'm continuing development on the Symlink Config VSCode extension. Please review
 @.docs/.amazonq/rules/symlink-config-rules.md - Development rules and patterns
 
 Key context:
-- Current version: 0.0.64
-- Phase: 1.45 Complete (Project Root Management and File-ops Standardization)
+- Current version: 0.0.65
+- Phase: 1.46 Complete (Constants Decomposition and Build-time Package.json Integration)
 - Architecture: Modular state at src/ level, shared module isolation enforced
-- Recent changes: Project root calculation, file-ops standardization, settings scope restriction
+- Recent changes: Constants decomposition, build-time package.json import, manager factory fixes
 
 Please confirm you've reviewed the documentation and are ready to continue development.
 ```

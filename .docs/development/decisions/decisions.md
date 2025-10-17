@@ -21,6 +21,7 @@
 - **[Shared Module Isolation](shared-module-isolation.md)** - Parameter injection pattern for shared module independence
 - **[State/Queue Reorganization](state-queue-reorganization.md)** - Moving state and queue to src/ level with modular structure
 - **[Settings Scope Restriction](settings-scope-restriction.md)** - Restricting all settings to workspace/folder scope for proper isolation
+- **[Constants Decomposition and Build-time Integration](constants-decomposition-build-time-integration.md)** - Modular constants with build-time package.json integration
 
 ## Development Process
 
