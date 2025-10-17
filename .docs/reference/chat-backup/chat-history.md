@@ -78,3 +78,8 @@ This index provides an overview of all development sessions. Each session is doc
 **Topics**: Manager factory fixes, state/queue reorganization, workspace configuration, context prompt  
 **Key Changes**: v0.0.60 → v0.0.62, modular state, multiroot workspace, reusable context prompt  
 **Phase**: 1.42 → 1.43
+
+### [Session 16 - October 17, 2025](session-2025-10-17-b.md)
+**Topics**: Constants decomposition, build-time package.json integration, manager factory fixes  
+**Key Changes**: v0.0.63 → v0.0.65, modular constants, build-time type safety, terminology alignment  
+**Phase**: 1.44 → 1.46
