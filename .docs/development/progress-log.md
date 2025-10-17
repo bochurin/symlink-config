@@ -1159,6 +1159,21 @@ export function readFile(workspaceRoot: string, file: string): string {
   - **Import Updates**: Updated 31 import paths across all modules
   - **Cleanup**: Removed unused nextSymlinkConfig state
 
+### ✅ Phase 1.44: Gitignore Symlinks Feature Enhancement (Completed - 17.10.2025)
+
+- **Date**: 17.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Gitignore Symlinks Setting**: Added `gitignoreSymlinks` setting (default: true) to automatically .gitignore created symlinks
+  - **Current Config Integration**: Enhanced gitignore manager to read current.symlink-config.json and add symlink targets
+  - **Settings Watcher Fix**: Fixed configuration structure in symlink-settings-watcher to properly detect changes
+  - **Parameter Constants**: Updated all managers to use SETTINGS constants instead of string literals
+  - **Gitignore Generation Fix**: Fixed to properly handle current config structure with directories and files sections
+  - **Basename Utility**: Added basename() function to file-ops for extracting filenames from VSCode URIs
+  - **Optional Parameters**: Made generate function parameters optional with default values for maintainability
+  - **Logging Improvements**: Added proper logging for WATCH_WORKSPACE setting changes
+  - **Current Config Watcher**: Enhanced to trigger both current-config and gitignore managers on changes
+
 #### Technical Implementation Details
 
 **State Module Structure**:
@@ -1211,10 +1226,10 @@ getWatchers(...names: string[]): Watcher[]
 
 ## Current Status
 
-**Phase**: Phase 1.43 Complete - State/Queue Module Reorganization  
+**Phase**: Phase 1.44 Complete - Gitignore Symlinks Feature Enhancement  
 **Branch**: `main`  
-**Version**: 0.0.62  
-**Latest**: Added multiroot workspace configuration and context prompt  
+**Version**: 0.0.63  
+**Latest**: Enhanced gitignore symlinks feature with proper current config handling and settings watcher fixes  
 **Extension Status**: Core development complete with clean architecture, ready for comprehensive testing  
 **Next**: Cross-platform testing and validation (Phase 2)
 
@@ -1234,10 +1249,10 @@ I'm continuing development on the Symlink Config VSCode extension. Please review
 @.docs/.amazonq/rules/symlink-config-rules.md - Development rules and patterns
 
 Key context:
-- Current version: 0.0.62
-- Phase: 1.43 Complete (State/Queue Module Reorganization)
+- Current version: 0.0.63
+- Phase: 1.44 Complete (Gitignore Symlinks Feature Enhancement)
 - Architecture: Modular state at src/ level, shared module isolation enforced
-- Recent changes: Multiroot workspace, state decomposition, custom watcher types
+- Recent changes: Gitignore symlinks feature, settings watcher fixes, parameter constants
 
 Please confirm you've reviewed the documentation and are ready to continue development.
 ```

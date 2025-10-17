@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 17.10.2025  
-**Version**: 0.0.61  
+**Generated**: Current  
+**Version**: 0.0.57+  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -219,6 +219,7 @@
     - `SECTION: 'symlink-config'`
     - `WATCH_WORKSPACE: 'watchWorkspace'`
     - `GITIGNORE_SERVICE_FILES: 'gitignoreServiceFiles'`
+    - `GITIGNORE_SYMLINKS: 'gitignoreSymlinks'`
     - `HIDE_SERVICE_FILES: 'hideServiceFiles'`
     - `HIDE_SYMLINK_CONFIGS: 'hideSymlinkConfigs'`
     - `SCRIPT_GENERATION: 'scriptGeneration'`
@@ -227,6 +228,7 @@
     - `DEFAULT` object:
       - `WATCH_WORKSPACE: true`
       - `GITIGNORE_SERVICE_FILES: true`
+      - `GITIGNORE_SYMLINKS: true`
       - `HIDE_SERVICE_FILES: false`
       - `HIDE_SYMLINK_CONFIGS: false`
       - `SCRIPT_GENERATION: 'auto'`
@@ -257,6 +259,7 @@
 - `read-dir.ts`
 - `read-symlink.ts`
 - `stat-file.ts`
+- `basename.ts`
 
 **Functions:**
 - `readFile(workspaceRoot: string, file: string): string`
@@ -267,6 +270,7 @@
 - `readDir(workspaceRoot: string, relativePath: string): fs.Dirent[]`
 - `readSymlink(workspaceRoot: string, file: string): string`
 - `statFile(workspaceRoot: string, file: string): fs.Stats`
+- `basename(uri: vscode.Uri): string`
 
 **Implementation Details:**
 - `isSymlink` uses `(stats.type & vscode.FileType.SymbolicLink) !== 0` to detect symlinks
@@ -315,12 +319,20 @@
 - `read.ts`
 
 **Functions:**
-- `generate(): Record<string, { spacing: string; active: boolean }>` (synchronous)
+- `generate(mode?: GitignoringPart): Promise<Record<string, { spacing: string; active: boolean }>>` (async)
 - `handleEvent(): Promise<void>`
 - `init(): Promise<void>`
 - `make(): Promise<void>` (logs when .gitignore is updated)
 - `needsRegenerate(events?: FileEvent | FileEvent[]): boolean` (synchronous, logs event and result)
 - `read(): Promise<Record<string, { spacing: string; active: boolean }>>`
+
+**Types:**
+- `GitignoringPart` enum with All, ServiceFiles, Symlinks values
+
+**Implementation Details:**
+- Enhanced to handle created symlinks from current.symlink-config.json
+- Reads current config and adds symlink targets to .gitignore when gitignoreSymlinks setting is enabled
+- Parses JSON string from readCurrentConfig() before accessing operations
 
 ### `src/managers/symlink-settings/`
 **Files:**
@@ -337,6 +349,7 @@
 - `SymlinkSettingsParameter` (union type):
   - `SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE`
   - `SETTINGS.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES`
+  - `SETTINGS.SYMLINK_CONFIG.GITIGNORE_SYMLINKS`
   - `SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES`
   - `SETTINGS.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS`
   - `SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION`
@@ -584,6 +597,7 @@
 **Implementation Details:**
 - Logs watcher registration and file changes
 - Watches current.symlink-config.json at workspace root
+- Triggers both current-config and gitignore-file managers on changes
 - Registers with name `WATCHERS.CURRENT_CONFIG`
 
 #### `src/watchers/symlinks-watcher.ts`
@@ -776,3 +790,14 @@
 - **State/Queue/Log Separation**: Moved state.ts and queue.ts to extension/ (application-level), extracted log.ts to shared/ (reusable utility)
 - **Shared Module Isolation**: Changed file-ops functions to accept workspaceRoot parameter instead of importing from extension/state
 - **State/Queue Reorganization**: Moved state and queue from extension/ to src/ level with modular structure
+- **Gitignore Symlinks Feature**: Added gitignoreSymlinks setting (default: true) to automatically add created symlinks to .gitignore
+- **Gitignore Manager Enhancement**: Enhanced to read current.symlink-config.json and add symlink targets to .gitignore based on setting
+- **Current Config Watcher Integration**: Current config watcher now triggers gitignore manager updates when symlinks change
+- **Basename Utility**: Added basename() function to file-ops for extracting filenames from VSCode URIs
+- **GitignoringPart Enum**: Added Symlinks value to GitignoringPart enum for selective gitignore generation
+- **Settings Constant Rename**: GITIGNORE_CREATED_SYMLINKS renamed to GITIGNORE_SYMLINKS for consistency
+- **Settings Watcher Fix**: Fixed configuration structure in symlink-settings-watcher to properly detect setting changes
+- **Gitignore Generation Fix**: Fixed to properly handle current config structure with directories and files sections
+- **Parameter Constants**: Updated all managers to use SETTINGS constants instead of string literals for parameter names
+- **Optional Parameters**: Made generate function parameters optional with default values for better maintainability
+- **Symlink Settings Handler**: Added proper logging for WATCH_WORKSPACE setting changes and fixed parameter handling
