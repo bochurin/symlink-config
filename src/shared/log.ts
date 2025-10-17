@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { getOutputChannel } from '../extension/state'
+import { getOutputChannel } from '../state'
 
 let logCount = 0
 

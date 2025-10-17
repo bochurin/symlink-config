@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { setWorkspaceRoot, setWorkspaceName, disposeWatchers } from './state'
+import { setWorkspaceRoot, setWorkspaceName, disposeWatchers } from '../state'
 import { log } from '../shared/log'
 import { makeWatchers } from './make-watchers'
 import { managersInit } from './managers-init'

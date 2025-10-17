@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { setOutputChannel, setTreeProvider, disposeWatchers } from './state'
+import { setOutputChannel, setTreeProvider, disposeWatchers } from '../state'
 import { log } from '../shared/log'
 import { SymlinkTreeProvider } from '../views/symlink-tree'
 import { registerCommands } from './register-commands'

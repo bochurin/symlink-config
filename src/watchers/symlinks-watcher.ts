@@ -1,9 +1,9 @@
 import { useFileWatcher, FileEventType } from '../shared/hooks/use-file-watcher'
 import { handleEvent as handleCurrentConfigEvent } from '../managers/current-config'
 import { isSymlink } from '../shared/file-ops'
-import { registerWatcher } from '../extension/state'
+import { registerWatcher } from '../state'
 import { log } from '../shared/log'
-import { queue } from '../extension/queue'
+import { queue } from '../queue'
 import { WATCHERS } from '../shared/constants'
 
 export function symlinksWatcher() {

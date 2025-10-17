@@ -2,9 +2,11 @@ import * as vscode from 'vscode'
 import type { SettingsWatcherConfig } from './types'
 import { executeHandlers } from './execute-handlers'
 
+export type SettingsWatcher = vscode.Disposable
+
 export function useSettingsWatcher(
   watcherConfig: SettingsWatcherConfig,
-): vscode.Disposable {
+): SettingsWatcher {
   const previousValues: Record<string, Record<string, any>> = {}
   const sections = Array.isArray(watcherConfig.sections)
     ? watcherConfig.sections

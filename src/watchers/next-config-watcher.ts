@@ -2,9 +2,9 @@ import { useFileWatcher, FileEventType } from '../shared/hooks/use-file-watcher'
 import { handleEvent as handleNextConfigEvent } from '../managers/next-config-file'
 import { FILE_NAMES, WATCHERS } from '../shared/constants'
 import { isRootFile } from '../shared/file-ops'
-import { getTreeProvider, getWorkspaceRoot, registerWatcher } from '../extension/state'
+import { getTreeProvider, getWorkspaceRoot, registerWatcher } from '../state'
 import { log } from '../shared/log'
-import { queue } from '../extension/queue'
+import { queue } from '../queue'
 
 export function nextConfigWatcher() {
   log('Next config watcher registered')

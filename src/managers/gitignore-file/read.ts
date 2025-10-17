@@ -1,5 +1,5 @@
 import { readFile } from '../../shared/file-ops'
-import { getWorkspaceRoot } from '../../extension/state'
+import { getWorkspaceRoot } from '../../state'
 import { parseGitignore } from '../../shared/gitignore-ops'
 import { FILE_NAMES } from '../../shared/constants'
 

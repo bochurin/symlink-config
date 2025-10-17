@@ -1,12 +1,14 @@
 export interface ManagerCallbacks<CT, ET> {
   readCallback: () => Promise<CT>
   writeCallback?: (content: CT) => Promise<void>
-
-  makeCallbak: (initialContent: CT, events?: ET, newContent?: CT) => Promise<CT>
+  makeCallback: (
+    initialContent: CT,
+    events?: ET,
+    newContent?: CT,
+  ) => Promise<CT>
   generateCallback?: (initialContent: CT) => Promise<CT>
   needsRegenerateCallback?: (content: CT, events?: ET) => Promise<boolean>
-
-  name: string
+  name?: string
 }
 
 export interface Manager<CT, ET> {

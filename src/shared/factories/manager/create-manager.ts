@@ -6,7 +6,7 @@ export async function createManager<CT, ET>(
   callbacks: ManagerCallbacks<CT, ET>,
 ): Promise<Manager<CT, ET>> {
   const readCB = callbacks.readCallback
-  const makeCB = callbacks.makeCallbak
+  const makeCB = callbacks.makeCallback
   const writeCB = callbacks.writeCallback || (() => Promise.resolve())
   const generateCB =
     callbacks.generateCallback || ((initialContent: CT) => initialContent)
@@ -60,7 +60,7 @@ export async function createManager<CT, ET>(
     }
   }
 
-  const name = callbacks.name || 'managing object'
+  const name = callbacks.name || 'managed object'
 
   return { init, read, make, handleEvent, name }
 }

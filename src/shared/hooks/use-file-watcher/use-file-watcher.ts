@@ -3,9 +3,9 @@ import * as vscode from 'vscode'
 import { FileEventType, Handler, WatcherConfig } from './types'
 import { createExecuteHandlers } from './execute-handlers'
 
-export function useFileWatcher(
-  config: WatcherConfig,
-): vscode.FileSystemWatcher {
+export type FileWatcher = vscode.FileSystemWatcher
+
+export function useFileWatcher(config: WatcherConfig): FileWatcher {
   const createHandlers: Handler[] = []
   const changeHandlers: Handler[] = []
   const deleteHandlers: Handler[] = []

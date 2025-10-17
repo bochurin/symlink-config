@@ -10,7 +10,7 @@ import {
 
 import { SETTINGS } from '../shared/constants'
 import { read as readSymlinkSettings } from '../managers/symlink-settings'
-import { disposeWatchers } from './state'
+import { disposeWatchers } from '../state'
 import { log } from '../shared/log'
 
 export function makeWatchers() {
@@ -25,12 +25,16 @@ export function makeWatchers() {
   const hideSymlinkConfigs = readSymlinkSettings(
     SETTINGS.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS,
   )
-  if (hideServiceFiles || hideSymlinkConfigs) filesSettingsWatcher()
+  if (hideServiceFiles || hideSymlinkConfigs) {
+    filesSettingsWatcher()
+  }
 
   const gitignoreServiceFiles = readSymlinkSettings(
     SETTINGS.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES,
   )
-  if (gitignoreServiceFiles) gitignoreWatcher()
+  if (gitignoreServiceFiles) {
+    gitignoreWatcher()
+  }
 
   const watchWorkspace = readSymlinkSettings(
     SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE,

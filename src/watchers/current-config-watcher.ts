@@ -2,9 +2,9 @@ import { useFileWatcher, FileEventType } from '../shared/hooks/use-file-watcher'
 import { handleEvent as handleCurrentConfigEvent } from '../managers/current-config'
 import { FILE_NAMES, WATCHERS } from '../shared/constants'
 import { isRootFile } from '../shared/file-ops'
-import { getTreeProvider, getWorkspaceRoot, registerWatcher } from '../extension/state'
+import { getTreeProvider, getWorkspaceRoot, registerWatcher } from '../state'
 import { log } from '../shared/log'
-import { queue } from '../extension/queue'
+import { queue } from '../queue'
 
 export function currentConfigWatcher() {
   log('Current config watcher registered')

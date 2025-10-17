@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 import * as fs from 'fs/promises'
-import { getWorkspaceRoot } from '../extension/state'
+import { getWorkspaceRoot } from '../state'
 import { info } from '../shared/vscode/info'
 import { isSymlink } from '../shared/file-ops'
 

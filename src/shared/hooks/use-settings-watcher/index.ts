@@ -5,5 +5,5 @@ export type {
   SectionConfig,
   SettingsWatcherConfig,
 } from './types'
-export { useSettingsWatcher } from './use-settings-watcher'
+export { useSettingsWatcher, SettingsWatcher } from './use-settings-watcher'
 export { executeHandlers } from './execute-handlers'

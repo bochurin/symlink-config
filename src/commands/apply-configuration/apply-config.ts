@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import * as os from 'os'
 import * as path from 'path'
-import { getWorkspaceRoot } from '../../extension/state'
+import { getWorkspaceRoot } from '../../state'
 import { log } from '../../shared/log'
 import { info } from '../../shared/vscode/info'
 import { generateTree } from '../../views/symlink-tree/generate'

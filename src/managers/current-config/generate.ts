@@ -1,5 +1,5 @@
 import * as path from 'path'
-import { getWorkspaceRoot } from '../../extension/state'
+import { getWorkspaceRoot } from '../../state'
 import { readDir, readSymlink, statFile } from '../../shared/file-ops'
 
 interface ExistingSymlink {

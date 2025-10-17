@@ -4,9 +4,9 @@ import {
 } from '../shared/hooks/use-settings-watcher'
 import { handleEvent as handleFileExcludeEvent } from '../managers/file-exclude-settings'
 import { SETTINGS, WATCHERS } from '../shared/constants'
-import { registerWatcher } from '../extension/state'
+import { registerWatcher } from '../state'
 import { log } from '../shared/log'
-import { queue } from '../extension/queue'
+import { queue } from '../queue'
 
 export function filesSettingsWatcher() {
   log('Files settings watcher registered')

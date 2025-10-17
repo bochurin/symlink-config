@@ -72,6 +72,14 @@ export default [
             {
               group: ['*/extension/*', '!*/extension/index'],
               message: 'Import from extension/index.ts only, not internal files'
+            },
+            {
+              group: ['*/state/*', '!*/state/index'],
+              message: 'Import from state/index.ts only, not internal files'
+            },
+            {
+              group: ['*/queue/*', '!*/queue/index'],
+              message: 'Import from queue/index.ts only, not internal files'
             }
           ]
         }
