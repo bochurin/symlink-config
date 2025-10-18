@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 17.10.2025  
-**Version**: 0.0.65  
+**Generated**: 18.10.2025  
+**Version**: 0.0.66  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -466,6 +466,65 @@
 **Types:**
 - `ExclusionPart` enum with All, ServiceFiles, SymlinkConfigs values
 
+## Path Aliases
+
+**TypeScript Configuration**: `tsconfig.json`
+```json
+{
+  "baseUrl": ".",
+  "paths": {
+    "@/*": ["./*"],
+    "@src/*": ["./src/*"],
+    "@extension": ["./src/extension"],
+    "@extension/*": ["./src/extension/*"],
+    "@state": ["./src/state"],
+    "@queue": ["./src/queue"],
+    "@commands": ["./src/commands"],
+    "@watchers": ["./src/watchers"],
+    "@managers/*": ["./src/managers/*"],
+    "@commands/*": ["./src/commands/*"],
+    "@watchers/*": ["./src/watchers/*"],
+    "@views/*": ["./src/views/*"],
+    "@shared/*": ["./src/shared/*"]
+  }
+}
+```
+
+**Webpack Configuration**: `webpack.config.js`
+```javascript
+resolve: {
+  alias: {
+    '@': path.resolve(__dirname),
+    '@src': path.resolve(__dirname, 'src'),
+    '@extension': path.resolve(__dirname, 'src/extension'),
+    '@state': path.resolve(__dirname, 'src/state'),
+    '@queue': path.resolve(__dirname, 'src/queue'),
+    '@commands': path.resolve(__dirname, 'src/commands'),
+    '@watchers': path.resolve(__dirname, 'src/watchers'),
+    '@managers': path.resolve(__dirname, 'src/managers'),
+    '@views': path.resolve(__dirname, 'src/views'),
+    '@shared': path.resolve(__dirname, 'src/shared')
+  }
+}
+```
+
+**Benefits**:
+- **Clean Imports**: `@shared/log` instead of `../../shared/log`
+- **Consistent Paths**: Same aliases work in TypeScript and webpack
+- **Better Refactoring**: Moving files doesn't break import paths
+- **Improved Readability**: Clear module relationships
+
+## Module Index Files
+
+### `src/commands/index.ts`
+**Exports**: All command functions for `@commands` imports
+
+### `src/watchers/index.ts`
+**Exports**: All watcher functions for `@watchers` imports
+
+### `src/extension/index.ts`
+**Exports**: activate, deactivate, makeWatchers, managersInit
+
 ## Shared Modules (continued)
 
 ### `src/shared/factories/manager/`
@@ -795,6 +854,10 @@
 - **DRY Constants**: Section and property names defined once and reused throughout structure
 - **Manager Factory Fix**: Fixed return type from Promise<Manager> to Manager for synchronous operation
 - **Terminology Alignment**: Renamed "parameters" to "properties" in settings watcher to match VSCode API terminology
+- **Path Aliases Implementation**: Added comprehensive path aliases for cleaner imports (@shared, @state, @commands, etc.)
+- **Module Index Files**: Created index.ts files for commands and watchers modules to enable direct imports
+- **Webpack Alias Configuration**: Synchronized webpack aliases with TypeScript paths for consistent module resolution
+- **Import Cleanup**: Replaced relative paths with clean alias-based imports throughout codebase
 - **Extension Decomposition**: Separated extension.ts into extension/ folder with activate.ts, ini.ts, managers-init.ts, register-commands.ts, make-watchers.ts
 - **Entry Point**: main.ts serves as webpack entry point, re-exports from extension module
 - **State Module**: Moved from src/state.ts to src/shared/state.ts (Phase 1.35), then to src/extension/state.ts (Phase 1.41), then decomposed to src/state/ (Phase 1.43)
