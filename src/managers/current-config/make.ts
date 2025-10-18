@@ -1,5 +1,5 @@
 import { generate } from './generate'
-import { log } from '../../shared/log'
+import { log } from '@shared/log'
 import { write } from './write'
 
 export async function make() {

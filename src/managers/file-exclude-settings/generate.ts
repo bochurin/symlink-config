@@ -1,6 +1,6 @@
-import { read as readSymlinkSettings } from '../symlink-settings'
+import { read as readSymlinkSettings } from '@managers/symlink-settings'
 import { ExclusionPart } from './types'
-import { FILE_NAMES, SETTINGS } from '../../shared/constants'
+import { FILE_NAMES, SETTINGS } from '@shared/constants'
 
 export function generate(mode?: ExclusionPart): Record<string, boolean> {
   mode = mode ?? ExclusionPart.All

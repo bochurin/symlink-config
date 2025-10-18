@@ -1,9 +1,9 @@
-import { useFileWatcher, FileEventType } from '../shared/hooks/use-file-watcher'
-import { handleEvent as handleNextConfigEvent } from '../managers/next-config-file'
-import { FILE_NAMES, WATCHERS } from '../shared/constants'
-import { getTreeProvider, registerWatcher } from '../state'
-import { log } from '../shared/log'
-import { queue } from '../queue'
+import { useFileWatcher, FileEventType } from '@shared/hooks/use-file-watcher'
+import { handleEvent as handleNextConfigEvent } from '@managers/next-config-file'
+import { FILE_NAMES, WATCHERS } from '@shared/constants'
+import { getTreeProvider, registerWatcher } from '@state'
+import { log } from '@shared/log'
+import { queue } from '@queue'
 
 export function symlinkConfigsWatcher() {
   log('Symlink configs watcher registered')

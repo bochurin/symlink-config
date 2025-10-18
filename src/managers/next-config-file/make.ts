@@ -1,4 +1,4 @@
-import { log } from '../../shared/log'
+import { log } from '@shared/log'
 import { write } from './write'
 import { generate } from './generate'
 

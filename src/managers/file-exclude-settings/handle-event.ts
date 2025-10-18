@@ -1,8 +1,8 @@
-import { SettingsEvent } from '../../shared/hooks/use-settings-watcher'
-import { info } from '../../shared/vscode'
-import { read as readSymlinkSettings } from '../symlink-settings'
+import { SettingsEvent } from '@shared/hooks/use-settings-watcher'
+import { info } from '@shared/vscode'
+import { read as readSymlinkSettings } from '@managers/symlink-settings'
 import { make } from './make'
-import { SETTINGS } from '../../shared/constants'
+import { SETTINGS } from '@shared/constants'
 
 export async function handleEvent(event: SettingsEvent) {
   const hideServiceFiles = readSymlinkSettings(

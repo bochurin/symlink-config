@@ -1,7 +1,7 @@
 import * as path from 'path'
-import { FILE_NAMES } from '../../shared/constants'
-import { read as readCurrentConfig } from '../../managers/current-config'
-import { writeFile } from '../../shared/file-ops'
+import { FILE_NAMES } from '@shared/constants'
+import { read as readCurrentConfig } from '@managers/current-config'
+import { writeFile } from '@shared/file-ops'
 
 export async function generateCleanUnixScript(workspaceRoot: string) {
   const scriptPath = path.join(workspaceRoot, FILE_NAMES.CLEAR_SYMLINKS_SH)

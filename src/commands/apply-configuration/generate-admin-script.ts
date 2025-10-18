@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
-import { FILE_NAMES } from '../../shared/constants'
+import { FILE_NAMES } from '@shared/constants'
 
 export async function generateAdminScript(
   workspaceRoot: string,

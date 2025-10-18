@@ -1,4 +1,4 @@
-import { SETTINGS } from '../../shared/constants'
+import { SETTINGS } from '@shared/constants'
 
 export type SymlinkSettingsParameter =
   | typeof SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE

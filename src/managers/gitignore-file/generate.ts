@@ -1,6 +1,6 @@
-import { read as readSettings } from '../symlink-settings'
-import { read as readCurrentConfig } from '../current-config'
-import { FILE_NAMES, SETTINGS } from '../../shared/constants'
+import { read as readSettings } from '@managers/symlink-settings'
+import { read as readCurrentConfig } from '@managers/current-config'
+import { FILE_NAMES, SETTINGS } from '@shared/constants'
 import { GitignoringPart } from './types'
 
 export async function generate(
@@ -54,7 +54,7 @@ export async function generate(
       const currentConfigString = readCurrentConfig()
       if (currentConfigString) {
         const currentConfig = JSON.parse(currentConfigString)
-        
+
         // Add directory symlinks to gitignore
         if (currentConfig.directories) {
           for (const dir of currentConfig.directories) {
@@ -64,7 +64,7 @@ export async function generate(
             }
           }
         }
-        
+
         // Add file symlinks to gitignore
         if (currentConfig.files) {
           for (const file of currentConfig.files) {

@@ -2,8 +2,8 @@ import * as path from 'path'
 
 import { SymlinkConfigEntry, TreeNode, treeBase } from '../types'
 
-import * as nextConfigManager from '../../../managers/next-config-file'
-import * as currentConfigManager from '../../../managers/current-config'
+import * as nextConfigManager from '@managers/next-config-file'
+import * as currentConfigManager from '@managers/current-config'
 
 import { parseConfig } from './parse-config'
 import { sortTree } from './sort-tree'

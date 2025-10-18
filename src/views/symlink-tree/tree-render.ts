@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import { treeBase, TreeNode } from './types'
 import { TreeItem } from './tree-item'
-import { FILE_NAMES } from '../../shared/constants'
+import { FILE_NAMES } from '@shared/constants'
 
 export function renderTree(
   tree: Record<string, TreeNode>,

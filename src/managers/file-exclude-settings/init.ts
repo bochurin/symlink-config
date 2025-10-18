@@ -1,4 +1,4 @@
-import { info } from '../../shared/vscode'
+import { info } from '@shared/vscode'
 import { make } from './make'
 import { needsRegenerate } from './needs-regenerate'
 

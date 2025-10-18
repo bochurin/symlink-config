@@ -1,9 +1,15 @@
-import { GitignoringPart, make as makeGitignore } from '../gitignore-file'
-import { make as makeExclusion, ExclusionPart } from '../file-exclude-settings'
-import { info } from '../../shared/vscode'
-import { SETTINGS } from '../../shared/constants'
-import { makeWatchers } from '../../extension/make-watchers'
-import { SettingsEvent } from '../../shared/hooks/use-settings-watcher'
+import {
+  GitignoringPart,
+  make as makeGitignore,
+} from '@managers/gitignore-file'
+import {
+  make as makeExclusion,
+  ExclusionPart,
+} from '@managers/file-exclude-settings'
+import { info } from '@shared/vscode'
+import { SETTINGS } from '@shared/constants'
+import { makeWatchers } from '@extension'
+import { SettingsEvent } from '@shared/hooks/use-settings-watcher'
 
 export async function handleEvent(event: SettingsEvent) {
   switch (event.section) {

@@ -18,4 +18,10 @@ clear.symlink-config.bat
 clear.symlink-config.sh
 admin.symlink-config.bat
 
-selected
+selected/apply.symlink-config.bat
+selected/.gitignore
+selected/main.ts
+selected/package.json
+selected/README.md
+selected/symlink-config.code-workspace
+selected/tsconfig.json

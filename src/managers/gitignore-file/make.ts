@@ -1,7 +1,7 @@
-import { assembleGitignore } from '../../shared/gitignore-ops'
+import { assembleGitignore } from '@shared/gitignore-ops'
 import { generate } from './generate'
 import { read } from './read'
-import { log } from '../../shared/log'
+import { log } from '@shared/log'
 import { write } from './write'
 import { GitignoringPart } from './types'
 

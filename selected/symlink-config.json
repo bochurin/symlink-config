@@ -1,0 +1,33 @@
+{
+  "directories": [],
+  "files": [
+    {
+      "target": "apply.symlink-config.bat",
+      "source": "@apply.symlink-config.bat"
+    },
+    {
+      "target": ".gitignore",
+      "source": "@.gitignore"
+    },
+    {
+      "target": "main.ts",
+      "source": "@src/main.ts"
+    },
+    {
+      "target": "package.json",
+      "source": "@package.json"
+    },
+    {
+      "target": "README.md",
+      "source": "@README.md"
+    },
+    {
+      "target": "symlink-config.code-workspace",
+      "source": "@symlink-config.code-workspace"
+    },
+    {
+      "target": "tsconfig.json",
+      "source": "@tsconfig.json"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
-import { info } from '../../vscode'
-import { log } from '../../log'
+import { info } from '@shared/vscode'
+import { log } from '@shared/log'
 import type { Manager, ManagerCallbacks } from './types'
 
 export function createManager<CT, ET>(

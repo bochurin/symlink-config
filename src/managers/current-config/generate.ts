@@ -1,6 +1,6 @@
 import * as path from 'path'
-import { getWorkspaceRoot } from '../../state'
-import { readDir, readSymlink, statFile } from '../../shared/file-ops'
+import { getWorkspaceRoot } from '@state'
+import { readDir, readSymlink, statFile } from '@shared/file-ops'
 
 interface ExistingSymlink {
   target: string

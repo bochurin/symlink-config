@@ -1,8 +1,8 @@
-import { FileEvent } from '../../shared/hooks/use-file-watcher'
-import { info } from '../../shared/vscode'
+import { FileEvent } from '@shared/hooks/use-file-watcher'
+import { info } from '@shared/vscode'
 import { make } from './make'
 import { needsRegenerate } from './needs-regenerate'
-import { basename } from '../../shared/file-ops'
+import { basename } from '@shared/file-ops'
 
 export async function handleEvent(events: FileEvent | FileEvent[]) {
   const event = Array.isArray(events) ? events[0] : events

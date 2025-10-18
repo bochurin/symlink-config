@@ -1,8 +1,8 @@
 import * as path from 'path'
-import { read as readSymlinkSettings } from '../../managers/symlink-settings'
-import { FILE_NAMES, SETTINGS } from '../../shared/constants'
+import { read as readSymlinkSettings } from '@managers/symlink-settings'
+import { FILE_NAMES, SETTINGS } from '@shared/constants'
 import { SymlinkOperation } from './types'
-import { writeFile } from '../../shared/file-ops'
+import { writeFile } from '@shared/file-ops'
 
 export async function generateApplyWindowsScript(
   operations: SymlinkOperation[],

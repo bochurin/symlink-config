@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
-import { setWorkspaceRoot, setWorkspaceName, disposeWatchers } from '../state'
-import { log } from '../shared/log'
-import { findCommonPath } from '../shared/file-ops'
+import { setWorkspaceRoot, setWorkspaceName, disposeWatchers } from '@state'
+import { log } from '@shared/log'
+import { findCommonPath } from '@shared/file-ops'
 import { makeWatchers } from './make-watchers'
 import { managersInit } from './managers-init'
 import { makeManagers } from './make-managers'
@@ -45,7 +45,9 @@ async function calculateAndSetProjectRoot(): Promise<{
   const config = vscode.workspace.getConfiguration('symlink-config')
   const existingRoot = config.get<string>('projectRoot')
   const workspaceName =
-    vscode.workspace.name || vscode.workspace.workspaceFolders?.[0]?.name || 'workspace'
+    vscode.workspace.name ||
+    vscode.workspace.workspaceFolders?.[0]?.name ||
+    'workspace'
 
   if (existingRoot) {
     return { workspaceRoot: existingRoot, workspaceName }
@@ -63,5 +65,3 @@ async function calculateAndSetProjectRoot(): Promise<{
   )
   return { workspaceRoot: normalizedPath, workspaceName }
 }
-
-

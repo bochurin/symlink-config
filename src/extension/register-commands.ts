@@ -9,8 +9,8 @@ import {
   refreshManagers,
   selectSymlinkSource,
   selectSymlinkTarget,
-  showLogsCommand,
-} from '../commands'
+
+} from '@commands'
 
 export function registerCommands(
   context: vscode.ExtensionContext,
@@ -59,10 +59,7 @@ export function registerCommands(
       'symlink-config.clearLogs',
       clearLogsCommand,
     ),
-    vscode.commands.registerCommand(
-      'symlink-config.showLogs',
-      showLogsCommand,
-    ),
+
   ]
 
   context.subscriptions.push(...commands)

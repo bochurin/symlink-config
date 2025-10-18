@@ -9,11 +9,11 @@
       "path": "selected",
     },
     {
-      "name": "🚀 Extension Lifecycle",
+      "name": "🚀 Extension",
       "path": "src/extension",
     },
     {
-      "name": "💾 State Management",
+      "name": "💾 State",
       "path": "src/state",
     },
     {
@@ -64,7 +64,7 @@
       "**/dist": true,
       "**/out": true,
       "**/.vscode-test": true,
-      "**/symlink-config.json": false,
+      "**/symlink-config.json": true,
     },
     "explorerExclude.backup": {},
     "symlink-config.hideServiceFiles": false,

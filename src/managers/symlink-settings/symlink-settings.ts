@@ -1,9 +1,9 @@
-import { SETTINGS } from '../../shared/constants'
-import { MANAGERS } from '../../shared/constants/managers'
-import { createManager } from '../../shared/factories/manager'
-import { SettingsEvent } from '../../shared/hooks/use-settings-watcher'
-import { log } from '../../shared/log'
-import { registerManager } from '../../state'
+import { SETTINGS } from '@shared/constants'
+import { MANAGERS } from '@shared/constants/managers'
+import { createManager } from '@shared/factories/manager'
+import { SettingsEvent } from '@shared/hooks/use-settings-watcher'
+import { log } from '@shared/log'
+import { registerManager } from '@state'
 import { SymlinkSettingsValue } from './types'
 
 export function symlinkSettingsManager() {

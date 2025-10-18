@@ -1,5 +1,5 @@
-import { FileEvent } from '../../shared/hooks/use-file-watcher'
-import { log } from '../../shared/log'
+import { FileEvent } from '@shared/hooks/use-file-watcher'
+import { log } from '@shared/log'
 import { generate } from './generate'
 import { read } from './read'
 

@@ -1,7 +1,7 @@
-import { SETTINGS } from '../../shared/constants'
-import { FileEvent } from '../../shared/hooks/use-file-watcher'
-import { log } from '../../shared/log'
-import { read as readSymlinkSettings } from '../symlink-settings'
+import { SETTINGS } from '@shared/constants'
+import { FileEvent } from '@shared/hooks/use-file-watcher'
+import { log } from '@shared/log'
+import { read as readSymlinkSettings } from '@managers/symlink-settings'
 
 export function needsRegenerate(events?: FileEvent | FileEvent[]): boolean {
   const eventType = Array.isArray(events)

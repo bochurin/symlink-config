@@ -1,7 +1,7 @@
 import { needsRegenerate } from './needs-regenerate'
 import { make } from './make'
-import { FileEvent, FileEventType } from '../../shared/hooks/use-file-watcher'
-import { info } from '../../shared/vscode'
+import { FileEvent, FileEventType } from '@shared/hooks/use-file-watcher'
+import { info } from '@shared/vscode'
 
 export async function handleEvent(events: FileEvent | FileEvent[]) {
   const eventType = Array.isArray(events)

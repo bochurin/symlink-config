@@ -6,12 +6,12 @@ import {
   symlinksWatcher,
   symlinkSettingsWatcher,
   filesSettingsWatcher,
-} from '../watchers'
+} from '@watchers'
 
-import { SETTINGS } from '../shared/constants'
-import { read as readSymlinkSettings } from '../managers/symlink-settings'
-import { disposeWatchers } from '../state'
-import { log } from '../shared/log'
+import { SETTINGS } from '@shared/constants'
+import { read as readSymlinkSettings } from '@managers/symlink-settings'
+import { disposeWatchers } from '@state'
+import { log } from '@shared/log'
 
 export function makeWatchers() {
   log('Creating watchers...')

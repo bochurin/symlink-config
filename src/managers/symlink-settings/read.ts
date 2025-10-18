@@ -1,5 +1,5 @@
-import { readConfig } from '../../shared/config-ops'
-import { SETTINGS } from '../../shared/constants'
+import { readConfig } from '@shared/config-ops'
+import { SETTINGS } from '@shared/constants'
 import { SymlinkSettingsParameter, SymlinkSettingsValue } from './types'
 
 export function read(

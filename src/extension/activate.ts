@@ -1,12 +1,14 @@
 import * as vscode from 'vscode'
-import { setOutputChannel, setTreeProvider, disposeWatchers } from '../state'
-import { log } from '../shared/log'
-import { SymlinkTreeProvider } from '../views/symlink-tree'
+import { setOutputChannel, setTreeProvider, disposeWatchers } from '@state'
+import { log } from '@shared/log'
+import { SymlinkTreeProvider } from '@views/symlink-tree'
 import { registerCommands } from './register-commands'
 import { init, reset } from './ini'
 
 export async function activate(context: vscode.ExtensionContext) {
-  const outputChannel = vscode.window.createOutputChannel('symlink-config', { log: true })
+  const outputChannel = vscode.window.createOutputChannel('symlink-config', {
+    log: true,
+  })
   setOutputChannel(outputChannel)
   context.subscriptions.push(outputChannel)
 
@@ -48,16 +50,21 @@ export function deactivate() {
 async function checkProjectRootAfterWorkspaceChange() {
   const config = vscode.workspace.getConfiguration('symlink-config')
   const existingRoot = config.get<string>('projectRoot')
-  
+
   if (existingRoot) {
     const choice = await vscode.window.showInformationMessage(
       'Workspace folders changed. Check if project root is still correct?',
-      'Check Now', 'Keep Current'
+      'Check Now',
+      'Keep Current',
     )
-    
+
     if (choice === 'Check Now') {
       // This will trigger the project root calculation in init()
-      await config.update('projectRoot', undefined, vscode.ConfigurationTarget.Workspace)
+      await config.update(
+        'projectRoot',
+        undefined,
+        vscode.ConfigurationTarget.Workspace,
+      )
     }
   }
 }

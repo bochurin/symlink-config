@@ -4,10 +4,10 @@ import * as path from 'path'
 
 import { generateCleanWindowsScript } from './generate-clean-windows-script'
 import { generateCleanUnixScript } from './generate-clean-unix-script'
-import { getWorkspaceRoot } from '../../state'
-import { log } from '../../shared/log'
-import { confirmWarning } from '../../shared/vscode'
-import { FILE_NAMES } from '../../shared/constants'
+import { getWorkspaceRoot } from '@state'
+import { log } from '@shared/log'
+import { confirmWarning } from '@shared/vscode'
+import { FILE_NAMES } from '@shared/constants'
 import { generateAdminScript } from './generate-admin-script'
 
 export async function cleanConfig(): Promise<void> {
@@ -28,7 +28,7 @@ export async function cleanConfig(): Promise<void> {
     log('Clean configuration cancelled by user')
     return
   }
-  
+
   log('Generating clean configuration scripts...')
 
   const isWindows = os.platform() === 'win32'

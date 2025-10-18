@@ -25,7 +25,19 @@ const extensionConfig = {
   },
   resolve: {
     // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js'],
+    alias: {
+      '@': path.resolve(__dirname),
+      '@src': path.resolve(__dirname, 'src'),
+      '@extension': path.resolve(__dirname, 'src/extension'),
+      '@state': path.resolve(__dirname, 'src/state'),
+      '@queue': path.resolve(__dirname, 'src/queue'),
+      '@commands': path.resolve(__dirname, 'src/commands'),
+      '@watchers': path.resolve(__dirname, 'src/watchers'),
+      '@managers': path.resolve(__dirname, 'src/managers'),
+      '@views': path.resolve(__dirname, 'src/views'),
+      '@shared': path.resolve(__dirname, 'src/shared')
+    }
   },
   module: {
     rules: [

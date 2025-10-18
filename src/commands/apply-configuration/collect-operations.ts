@@ -1,4 +1,4 @@
-import { TreeNode } from '../../views/symlink-tree/types'
+import { TreeNode } from '@views/symlink-tree/types'
 import { SymlinkOperation } from './types'
 
 export function collectSymlinkOperations(
@@ -6,7 +6,10 @@ export function collectSymlinkOperations(
 ): SymlinkOperation[] {
   const operations: SymlinkOperation[] = []
 
-  const traverse = (node: Record<string, TreeNode>, currentPath: string = '') => {
+  const traverse = (
+    node: Record<string, TreeNode>,
+    currentPath: string = '',
+  ) => {
     for (const [key, treeNode] of Object.entries(node)) {
       const nodePath = currentPath ? `${currentPath}/${key}` : key
 

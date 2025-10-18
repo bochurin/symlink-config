@@ -1,4 +1,4 @@
-import { Manager } from '../shared/factories/manager'
+import { Manager } from '@shared/factories/manager'
 
 const managers = new Map<string, Manager<any, any>>()
 
