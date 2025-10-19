@@ -12,9 +12,13 @@ import {
 } from '@managers/file-exclude-settings'
 import { makeWatchers } from '@/src/extension'
 
-export async function make(
-  event: SettingsEvent,
-): Promise<Record<string, SettingsPropertyValue> | undefined> {
+export async function make(params?: {
+  event?: SettingsEvent
+  [key: string]: any
+}): Promise<undefined> {
+  const event = params ? params.event : undefined
+  if (!event) return
+
   switch (event.section) {
     case SETTINGS.SYMLINK_CONFIG.SECTION:
       switch (event.parameter) {
@@ -57,5 +61,4 @@ export async function make(
       makeWatchers()
       break
   }
-  return undefined
 }

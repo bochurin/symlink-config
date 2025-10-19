@@ -2,12 +2,14 @@ import { readConfig } from '@shared/config-ops'
 import { SETTINGS } from '@shared/constants'
 import { SettingsProperty, SettingsPropertyValue } from './types'
 
-export function read(
-  parameter?: SettingsProperty,
-): SettingsPropertyValue | Record<string, SettingsPropertyValue> {
+export function read(params?: {
+  property?: SettingsProperty
+}): SettingsPropertyValue | Record<string, SettingsPropertyValue> {
+  const property = params ? params.property : undefined
+
   const defaults = SETTINGS.SYMLINK_CONFIG.DEFAULT
 
-  if (parameter === undefined) {
+  if (!property) {
     // Return all properties as record
     const result: Record<string, SettingsPropertyValue> = {}
     const properties = [
@@ -37,9 +39,9 @@ export function read(
 
   // Return specific property
   try {
-    const configKey = `${SETTINGS.SYMLINK_CONFIG.SECTION}.${parameter}`
-    return readConfig(configKey, defaults[parameter as keyof typeof defaults])
+    const configKey = `${SETTINGS.SYMLINK_CONFIG.SECTION}.${property}`
+    return readConfig(configKey, defaults[property as keyof typeof defaults])
   } catch {
-    return defaults[parameter as keyof typeof defaults]
+    return defaults[property as keyof typeof defaults]
   }
 }

@@ -3,10 +3,9 @@ import { log } from '@shared/log'
 import type { Manager, ManagerCallbacks } from './types'
 
 export function createManager<CT, ET>(
+  objectName: string,
   callbacks: ManagerCallbacks<CT, ET>,
 ): Manager<CT, ET> {
-  const objectName = callbacks.objectName
-
   // Base functions (no dependencies)
   function read(params?: { [key: string]: any }): CT | undefined {
     if (callbacks.readCallback) {
