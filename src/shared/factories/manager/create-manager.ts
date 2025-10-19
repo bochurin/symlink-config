@@ -1,23 +1,71 @@
+import { info } from '@shared/vscode'
+import { log } from '@shared/log'
 import type { Manager, ManagerCallbacks } from './types'
-import { createRead } from './read'
-import { createWrite } from './write'
-import { createGenerate } from './generate'
-import { createNeedsRegenerate } from './needs-regenerate'
-import { createMake } from './make'
-import { createHandleEvent } from './handle-event'
-import { createInit } from './init'
 
 export function createManager<CT, ET>(
   callbacks: ManagerCallbacks<CT, ET>,
 ): Manager<CT, ET> {
   const objectName = callbacks.objectName
-  const read = createRead(callbacks)
-  const write = createWrite(callbacks)
-  const generate = createGenerate(callbacks, read)
-  const needsRegenerate = createNeedsRegenerate(callbacks, read)
-  const make = createMake(callbacks, read, generate, write)
-  const handleEvent = createHandleEvent(callbacks, needsRegenerate, make)
-  const init = createInit(callbacks, needsRegenerate, make)
+
+  // Base functions (no dependencies)
+  function read(params?: { [key: string]: any }): CT | undefined {
+    if (callbacks.readCallback) {
+      return callbacks.readCallback(params)
+    }
+    return undefined
+  }
+
+  async function write(params?: { [key: string]: any }) {
+    if (callbacks.writeCallback) {
+      callbacks.writeCallback(params)
+    }
+  }
+
+  // Functions that depend on read()
+  function generate(params?: { [key: string]: any }): CT | undefined {
+    if (callbacks.generateCallback) {
+      const content = read()
+      return callbacks.generateCallback({ content, ...params })
+    }
+    return undefined
+  }
+
+  function needsRegenerate(params?: { [key: string]: any }): boolean {
+    if (callbacks.needsRegenerateCallback) {
+      const content = read()
+      return callbacks.needsRegenerateCallback({ content, ...params })
+    }
+    return true
+  }
+
+  // Functions that depend on read(), generate(), write()
+  async function make(params?: { [key: string]: any }) {
+    const initContent = read()
+    const newContent = generate(params)
+    const content = await callbacks.makeCallback({
+      initContent,
+      newContent,
+      ...params,
+    })
+    await write({ content, ...params })
+    log(`${objectName} updated`)
+  }
+
+  // Functions that depend on needsRegenerate(), make()
+  async function handleEvent(params?: { [key: string]: any }) {
+    const needsRegen = needsRegenerate(params)
+    if (needsRegen) {
+      info(`${objectName} was affected. Regenerating...`)
+      await make(params)
+    }
+  }
+
+  async function init() {
+    if (needsRegenerate()) {
+      info(`${objectName} is inconsistent. Regenerating...`)
+      await make()
+    }
+  }
 
   return { objectName, init, handleEvent, read }
 }

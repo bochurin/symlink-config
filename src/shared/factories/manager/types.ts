@@ -1,24 +1,31 @@
 export interface ManagerCallbacks<CT, ET> {
   objectName: string
-  makeCallback: (
-    initContent?: CT,
-    newContent?: CT,
-    events?: ET,
-    payload?: any,
-  ) => Promise<CT | undefined>
-  needsRegenerateCallback?: (
-    content?: CT,
-    events?: ET,
-    payload?: any,
-  ) => boolean
-  generateCallback?: (content?: CT, events?: ET, payload?: any) => CT
-  readCallback?: (spec?: any) => CT
-  writeCallback?: (content?: CT) => Promise<void>
+  makeCallback: (params?: {
+    initContent?: CT
+    newContent?: CT
+    events?: ET
+    [key: string]: any
+  }) => Promise<CT | undefined>
+  needsRegenerateCallback?: (params?: {
+    content?: CT
+    events?: ET
+    [key: string]: any
+  }) => boolean
+  generateCallback?: (params?: {
+    content?: CT
+    events?: ET
+    [key: string]: any
+  }) => CT
+  readCallback?: (params?: { [key: string]: any }) => CT
+  writeCallback?: (params?: {
+    content?: CT
+    [key: string]: any
+  }) => Promise<void>
 }
 
 export interface Manager<CT, ET> {
   objectName: string
   init: () => Promise<void>
-  handleEvent: (events?: ET, payload?: any) => Promise<void>
-  read: (spec?: any) => CT | undefined
+  handleEvent: (params?: { events?: ET; [key: string]: any }) => Promise<void>
+  read: (params?: { [key: string]: any }) => CT | undefined
 }
