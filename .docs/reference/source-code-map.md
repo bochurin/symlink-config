@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
 **Generated**: 19.10.2025  
-**Version**: 0.0.68  
+**Version**: 0.0.69  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -534,47 +534,41 @@ resolve: {
 - `index.ts` (exports: Manager, ManagerCallbacks, createManager)
 - `types.ts`
 - `create-manager.ts`
-- `read.ts`
-- `write.ts`
-- `generate.ts`
-- `needs-regenerate.ts`
-- `make.ts`
-- `handle-event.ts`
-- `init.ts`
 
 **Functions:**
-- `createManager<CT, ET>(callbacks: ManagerCallbacks<CT, ET>): Manager<CT, ET>` (synchronous return)
-- `createRead<CT, ET>(callbacks: ManagerCallbacks<CT, ET>): (spec?: any) => CT | undefined`
-- `createWrite<CT, ET>(callbacks: ManagerCallbacks<CT, ET>): (content?: CT) => Promise<void>`
-- `createGenerate<CT, ET>(callbacks, read): (events?: ET, payload?: any) => CT | undefined`
-- `createNeedsRegenerate<CT, ET>(callbacks, read): (events?: ET, payload?: any) => boolean`
-- `createMake<CT, ET>(callbacks, read, generate, write): (events?: ET, payload?: any) => Promise<void>`
-- `createHandleEvent<CT, ET>(callbacks, needsRegenerate, make): (events?: ET, payload?: any) => Promise<void>`
-- `createInit<CT, ET>(callbacks, needsRegenerate, make): () => Promise<void>`
+- `createManager<CT, ET>(objectName: string, callbacks: ManagerCallbacks<CT, ET>): Manager<CT, ET>` (synchronous return)
+
+**Internal Functions (in create-manager.ts):**
+- `read(params?: { [key: string]: any }): CT | undefined` (base level)
+- `write(params?: { [key: string]: any }): Promise<void>` (base level)
+- `generate(params?: { [key: string]: any }): CT | undefined` (level 2, depends on read)
+- `needsRegenerate(params?: { [key: string]: any }): boolean` (level 2, depends on read)
+- `make(params?: { [key: string]: any }): Promise<void>` (level 3, depends on read, generate, write)
+- `handleEvent(params?: { [key: string]: any }): Promise<void>` (entry point, depends on needsRegenerate, make)
+- `init(): Promise<void>` (entry point, depends on needsRegenerate, make)
 
 **Types:**
 - `ManagerCallbacks<CT, ET>` interface:
-  - `objectName: string`
-  - `makeCallback: (initContent?: CT, newContent?: CT, events?: ET, payload?: any) => Promise<CT | undefined>`
-  - `needsRegenerateCallback?: (content?: CT, events?: ET, payload?: any) => boolean`
-  - `generateCallback?: (content?: CT, events?: ET, payload?: any) => CT`
-  - `readCallback?: (spec?: any) => CT`
-  - `writeCallback?: (content?: CT) => Promise<void>`
+  - `makeCallback: (params?: { [key: string]: any }) => Promise<CT | undefined>`
+  - `needsRegenerateCallback?: (params?: { [key: string]: any }) => boolean`
+  - `generateCallback?: (params?: { content?: CT; [key: string]: any }) => CT`
+  - `readCallback?: (params?: { [key: string]: any }) => CT`
+  - `writeCallback?: (params?: { [key: string]: any }) => Promise<void>`
 - `Manager<CT, ET>` interface:
   - `objectName: string`
   - `init: () => Promise<void>`
-  - `handleEvent: (events?: ET, payload?: any) => Promise<void>`
-  - `read: (spec?: any) => CT | undefined`
+  - `handleEvent: (params?: { [key: string]: any }) => Promise<void>`
+  - `read: (params?: { [key: string]: any }) => CT | undefined`
 
 **Implementation Details:**
-- **Decomposed Architecture**: Factory decomposed into separate files for each function (read, write, generate, etc.)
-- **Modular Design**: Each function creator takes dependencies as parameters for clean separation
-- **Dependency Injection**: Functions like generate and needsRegenerate receive read function as dependency
-- **Optional Callbacks**: All callbacks except objectName and makeCallback are optional
+- **Consolidated Architecture**: Single create-manager.ts file with internal functions organized by call stack dependency
+- **Named Parameters Pattern**: All callbacks use named object parameters with `{ [key: string]: any }` index signature for flexibility
+- **Call Stack Organization**: Functions organized by dependency levels (base → level 2 → level 3 → entry points)
+- **Optional Callbacks**: All callbacks except makeCallback are optional
 - **Flexible Types**: Content type (CT) can be union types like `SettingsPropertyValue | Record<string, SettingsPropertyValue>`
-- **Payload Support**: Added optional payload parameter throughout for extensibility
+- **Parameter Spreading**: Functions spread additional parameters from input to callback invocations
 - **Error Handling**: Read function returns undefined when readCallback not provided
-- **Assembly Pattern**: createManager assembles all components and returns final manager interface
+- **Logging Integration**: make() function logs when objects are updated
 
 ### `src/shared/hooks/use-file-watcher/`
 **Files:**
@@ -881,6 +875,7 @@ resolve: {
 - **Union Content Types**: Manager factory supports union types like SettingsPropertyValue | Record<string, SettingsPropertyValue>
 - **Flexible Parameter System**: Added `[key: string]: any` index signature for extensible named parameters like `payload`, `spec`
 - **Call Stack Organization**: Functions organized by dependency order with clear comments marking each level
+- **Factory Simplification**: Removed over-engineered decomposition, consolidated to clean single-file implementation with flexible named parameters
 - **Extension Decomposition**: Separated extension.ts into extension/ folder with activate.ts, ini.ts, managers-init.ts, register-commands.ts, make-watchers.ts
 - **Entry Point**: main.ts serves as webpack entry point, re-exports from extension module
 - **State Module**: Moved from src/state.ts to src/shared/state.ts (Phase 1.35), then to src/extension/state.ts (Phase 1.41), then decomposed to src/state/ (Phase 1.43)

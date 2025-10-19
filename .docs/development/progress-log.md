@@ -1297,8 +1297,8 @@ getWatchers(...names: string[]): Watcher[]
 
 **Phase**: Phase 1.49 Complete - Manager Factory Consolidation and Named Parameters  
 **Branch**: `main`  
-**Version**: 0.0.68  
-**Latest**: Consolidated manager factory with named parameters pattern and flexible extensions  
+**Version**: 0.0.69  
+**Latest**: Fixed factory type compatibility and cleaned up implementation with flexible named parameters  
 **Extension Status**: Core development complete with clean architecture, ready for comprehensive testing  
 **Next**: Cross-platform testing and validation (Phase 2)
 
