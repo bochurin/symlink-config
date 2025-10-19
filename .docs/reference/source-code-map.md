@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 18.10.2025  
-**Version**: 0.0.66  
+**Generated**: 19.10.2025  
+**Version**: 0.0.68  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -534,31 +534,47 @@ resolve: {
 - `index.ts` (exports: Manager, ManagerCallbacks, createManager)
 - `types.ts`
 - `create-manager.ts`
+- `read.ts`
+- `write.ts`
+- `generate.ts`
+- `needs-regenerate.ts`
+- `make.ts`
+- `handle-event.ts`
+- `init.ts`
 
 **Functions:**
 - `createManager<CT, ET>(callbacks: ManagerCallbacks<CT, ET>): Manager<CT, ET>` (synchronous return)
+- `createRead<CT, ET>(callbacks: ManagerCallbacks<CT, ET>): (spec?: any) => CT | undefined`
+- `createWrite<CT, ET>(callbacks: ManagerCallbacks<CT, ET>): (content?: CT) => Promise<void>`
+- `createGenerate<CT, ET>(callbacks, read): (events?: ET, payload?: any) => CT | undefined`
+- `createNeedsRegenerate<CT, ET>(callbacks, read): (events?: ET, payload?: any) => boolean`
+- `createMake<CT, ET>(callbacks, read, generate, write): (events?: ET, payload?: any) => Promise<void>`
+- `createHandleEvent<CT, ET>(callbacks, needsRegenerate, make): (events?: ET, payload?: any) => Promise<void>`
+- `createInit<CT, ET>(callbacks, needsRegenerate, make): () => Promise<void>`
 
 **Types:**
 - `ManagerCallbacks<CT, ET>` interface:
-  - `readCallback: () => CT`
-  - `writeCallback?: (content: CT) => Promise<void>`
-  - `makeCallback: (initialContent: CT, events?: ET, newContent?: CT) => CT`
-  - `generateCallback?: (initialContent: CT) => CT`
-  - `needsRegenerateCallback?: (content: CT, events?: ET) => boolean`
-  - `nameCallback?: () => string`
+  - `objectName: string`
+  - `makeCallback: (initContent?: CT, newContent?: CT, events?: ET, payload?: any) => Promise<CT | undefined>`
+  - `needsRegenerateCallback?: (content?: CT, events?: ET, payload?: any) => boolean`
+  - `generateCallback?: (content?: CT, events?: ET, payload?: any) => CT`
+  - `readCallback?: (spec?: any) => CT`
+  - `writeCallback?: (content?: CT) => Promise<void>`
 - `Manager<CT, ET>` interface:
+  - `objectName: string`
   - `init: () => Promise<void>`
-  - `read: () => CT`
-  - `make: () => Promise<void>`
-  - `handleEvent: (events: ET) => Promise<void>`
+  - `handleEvent: (events?: ET, payload?: any) => Promise<void>`
+  - `read: (spec?: any) => CT | undefined`
 
 **Implementation Details:**
-- Factory function that implements common manager pattern logic
-- Flow: read() → generate(initialContent) → makeCallback(initialContent, events, newContent) → write(finalContent) → log()
-- Provides default implementations for optional callbacks
-- Handles init logic: checks needsRegenerate() and calls make() if needed
-- Handles handleEvent logic: checks needsRegenerate(events) and calls make(events) if needed
-- All callbacks are synchronous (no async/await needed for generate/make)
+- **Decomposed Architecture**: Factory decomposed into separate files for each function (read, write, generate, etc.)
+- **Modular Design**: Each function creator takes dependencies as parameters for clean separation
+- **Dependency Injection**: Functions like generate and needsRegenerate receive read function as dependency
+- **Optional Callbacks**: All callbacks except objectName and makeCallback are optional
+- **Flexible Types**: Content type (CT) can be union types like `SettingsPropertyValue | Record<string, SettingsPropertyValue>`
+- **Payload Support**: Added optional payload parameter throughout for extensibility
+- **Error Handling**: Read function returns undefined when readCallback not provided
+- **Assembly Pattern**: createManager assembles all components and returns final manager interface
 
 ### `src/shared/hooks/use-file-watcher/`
 **Files:**
@@ -858,6 +874,13 @@ resolve: {
 - **Module Index Files**: Created index.ts files for commands and watchers modules to enable direct imports
 - **Webpack Alias Configuration**: Synchronized webpack aliases with TypeScript paths for consistent module resolution
 - **Import Cleanup**: Replaced relative paths with clean alias-based imports throughout codebase
+- **Manager Factory Consolidation**: Consolidated decomposed factory back into single create-manager.ts file with internal functions
+- **Named Parameters Pattern**: Converted all callbacks to use named object parameters with flexible extensions
+- **Settings Manager Restructuring**: Moved symlink settings to managers/settings/symlink-config/ with flexible read function
+- **Type Derivation**: SettingsPropertyValue now derived from actual default values for automatic type safety
+- **Union Content Types**: Manager factory supports union types like SettingsPropertyValue | Record<string, SettingsPropertyValue>
+- **Flexible Parameter System**: Added `[key: string]: any` index signature for extensible named parameters like `payload`, `spec`
+- **Call Stack Organization**: Functions organized by dependency order with clear comments marking each level
 - **Extension Decomposition**: Separated extension.ts into extension/ folder with activate.ts, ini.ts, managers-init.ts, register-commands.ts, make-watchers.ts
 - **Entry Point**: main.ts serves as webpack entry point, re-exports from extension module
 - **State Module**: Moved from src/state.ts to src/shared/state.ts (Phase 1.35), then to src/extension/state.ts (Phase 1.41), then decomposed to src/state/ (Phase 1.43)
