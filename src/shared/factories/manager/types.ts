@@ -1,20 +1,24 @@
 export interface ManagerCallbacks<CT, ET> {
-  readCallback: () => Promise<CT>
-  writeCallback?: (content: CT) => Promise<void>
+  objectName: string
   makeCallback: (
-    initialContent: CT,
-    events?: ET,
+    initContent?: CT,
     newContent?: CT,
-  ) => Promise<CT>
-  generateCallback?: (initialContent: CT) => Promise<CT>
-  needsRegenerateCallback?: (content: CT, events?: ET) => Promise<boolean>
-  name: string
+    events?: ET,
+    payload?: any,
+  ) => Promise<CT | undefined>
+  needsRegenerateCallback?: (
+    content?: CT,
+    events?: ET,
+    payload?: any,
+  ) => boolean
+  generateCallback?: (content?: CT, events?: ET, payload?: any) => CT
+  readCallback?: (spec?: any) => CT
+  writeCallback?: (content?: CT) => Promise<void>
 }
 
 export interface Manager<CT, ET> {
+  objectName: string
   init: () => Promise<void>
-  read: () => Promise<CT>
-  make: () => Promise<void>
-  handleEvent: (events: ET) => Promise<void>
-  name: string
+  handleEvent: (events?: ET, payload?: any) => Promise<void>
+  read: (spec?: any) => CT | undefined
 }
