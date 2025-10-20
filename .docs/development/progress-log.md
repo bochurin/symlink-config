@@ -1256,6 +1256,46 @@ export function readFile(workspaceRoot: string, file: string): string {
   - **Hook-Based Architecture**: Managers can now be created on-demand using hooks instead of global registration
   - **Type Compatibility Issues**: Identified several type mismatches that need resolution (TODO items added)
 
+### ✅ Phase 1.51: Enum Extraction and Export Organization (Completed - 20.10.2025)
+
+- **Date**: 20.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Enum Extraction**: Extracted all enums from types.ts files to separate enums.ts files for better organization
+  - **Export Order Standardization**: Standardized index.ts export order: types first, then enums, then other exports
+  - **Type/Value Separation**: Clear separation between type-only exports (`export type *`) and value exports (`export *`)
+  - **Enum Organization**: FileEventType, ExclusionPart, GitignoringPart enums now in dedicated enums.ts files
+  - **Index File Updates**: Updated all affected index.ts files to follow consistent export pattern
+  - **Documentation Updates**: Updated source-code-map.md to reflect new file structure and enum locations
+
+#### Technical Implementation Details
+
+**Enum Files Created**:
+- `src/shared/hooks/use-file-watcher/enums.ts` - FileEventType enum
+- `src/managers/file-exclude-settings/enums.ts` - ExclusionPart enum
+- `src/managers/gitignore-file/enums.ts` - GitignoringPart enum
+- `src/managers/settings/files/enums.ts` - ExclusionPart enum
+
+**Export Order Pattern**:
+```typescript
+// Standardized index.ts structure
+export type * from './types'        // Types first
+export * from './enums'             // Enums second
+export * from './implementation'    // Other exports last
+```
+
+**Type/Value Separation**:
+- **Type Exports**: `export type *` for interfaces, type aliases
+- **Value Exports**: `export *` for enums, functions, classes
+- **Clear Distinction**: Runtime values separated from compile-time types
+
+**Benefits**:
+- **Better Organization**: Enums (runtime values) separated from pure type definitions
+- **Consistent Structure**: All modules follow same export order pattern
+- **Cleaner Architecture**: Clear separation between types and values
+- **Improved Maintainability**: Easier to locate and modify enum definitions
+- **TypeScript Best Practices**: Follows recommended patterns for type/value organization
+
 #### Technical Implementation Details
 
 **State Module Structure**:
@@ -1308,10 +1348,10 @@ getWatchers(...names: string[]): Watcher[]
 
 ## Current Status
 
-**Phase**: Phase 1.50 Complete - Manager Hook Pattern and Settings Watcher Enhancement  
+**Phase**: Phase 1.51 Complete - Enum Extraction and Export Organization  
 **Branch**: `main`  
-**Version**: 0.0.70  
-**Latest**: Implemented manager hook pattern with simplified API and enhanced settings watcher  
+**Version**: 0.0.71  
+**Latest**: Extracted all enums to separate files and standardized export order  
 **Extension Status**: Core development complete with clean architecture, ready for comprehensive testing  
 **Next**: Cross-platform testing and validation (Phase 2)
 
@@ -1331,8 +1371,8 @@ I'm continuing development on the Symlink Config VSCode extension. Please review
 @.docs/.amazonq/rules/symlink-config-rules.md - Development rules and patterns
 
 Key context:
-- Current version: 0.0.68
-- Phase: 1.49 Complete (Manager Factory Consolidation and Named Parameters)
+- Current version: 0.0.71
+- Phase: 1.51 Complete (Enum Extraction and Export Organization)
 - Architecture: Modular state at src/ level, shared module isolation enforced
 - Recent changes: Path aliases implementation, import cleanup, webpack synchronization
 

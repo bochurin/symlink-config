@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
 **Generated**: 20.10.2025  
-**Version**: 0.0.70  
+**Version**: 0.0.71  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -347,13 +347,15 @@
 
 ### `src/managers/gitignore-file/`
 **Files:**
-- `index.ts` (exports: init, read, handle-event, make)
+- `index.ts` (exports: types, enums, init, read, handle-event, make)
+- `enums.ts`
 - `generate.ts`
 - `handle-event.ts`
 - `init.ts`
 - `make.ts`
 - `needs-regenerate.ts`
 - `read.ts`
+- `types.ts`
 
 **Functions:**
 - `generate(mode?: GitignoringPart): Promise<Record<string, { spacing: string; active: boolean }>>` (async)
@@ -363,8 +365,8 @@
 - `needsRegenerate(events?: FileEvent | FileEvent[]): boolean` (synchronous, logs event and result)
 - `read(): Promise<Record<string, { spacing: string; active: boolean }>>`
 
-**Types:**
-- `GitignoringPart` enum with All, ServiceFiles, Symlinks values
+**Enums:**
+- `GitignoringPart` enum with All, ServiceFiles, Symlinks values (in enums.ts)
 
 **Implementation Details:**
 - Enhanced to handle created symlinks from current.symlink-config.json
@@ -446,7 +448,8 @@
 
 ### `src/managers/file-exclude-settings/`
 **Files:**
-- `index.ts` (exports: init, read, handle-event, make, types)
+- `index.ts` (exports: types, enums, init, read, handle-event, make)
+- `enums.ts`
 - `generate.ts`
 - `handle-event.ts`
 - `init.ts`
@@ -463,8 +466,8 @@
 - `needsRegenerate(event?: SettingsEvent): boolean` (synchronous, logs event and result)
 - `read(): Record<string, boolean>`
 
-**Types:**
-- `ExclusionPart` enum with All, ServiceFiles, SymlinkConfigs values
+**Enums:**
+- `ExclusionPart` enum with All, ServiceFiles, SymlinkConfigs values (in enums.ts)
 
 ## Path Aliases
 
@@ -578,6 +581,7 @@ resolve: {
 ### `src/shared/hooks/use-file-watcher/`
 **Files:**
 - `index.ts` (exports all)
+- `enums.ts`
 - `types.ts`
 - `use-file-watcher.ts`
 - `execute-handlers.ts`
@@ -586,8 +590,10 @@ resolve: {
 - `useFileWatcher(config: WatcherConfig): vscode.FileSystemWatcher`
 - `createExecuteHandlers(filters: Filter | Filter[] | undefined, debounce: number | undefined): (handlers: Handler[], uri: vscode.Uri, eventType: FileEventType) => Promise<void>`
 
+**Enums:**
+- `FileEventType` enum with Created, Modified, Deleted values (in enums.ts)
+
 **Types:**
-- `FileEventType` enum with Created, Modified, Deleted values
 - `FileEvent` type: `{ uri: vscode.Uri; event: FileEventType }`
 - `Handler` type: `(events: FileEvent[]) => void` (always receives array)
 - `Filter` type: `(event: FileEvent) => Promise<boolean> | boolean`
@@ -935,3 +941,7 @@ resolve: {
 - **File-ops Standardization**: Updated all file-ops functions to accept both string and VSCode URI parameters consistently
 - **Path Utilities**: Added normalize-path, find-common-path, and to-fs-path utilities for centralized path handling
 - **Settings Scope Restriction**: All symlink-config settings restricted to workspace/folder scope with `"scope": "resource"`
+- **Enum Extraction**: Extracted all enums from types.ts files to separate enums.ts files for better organization
+- **Export Order Standardization**: Standardized index.ts export order: types first, then enums, then other exports
+- **Type/Value Separation**: Clear separation between type-only exports (`export type *`) and value exports (`export *`)
+- **Enum Organization**: FileEventType, ExclusionPart, GitignoringPart enums now in dedicated enums.ts files
