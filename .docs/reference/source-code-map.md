@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 19.10.2025  
-**Version**: 0.0.69  
+**Generated**: 20.10.2025  
+**Version**: 0.0.70  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -531,12 +531,14 @@ resolve: {
 **Purpose:** Manager factory for creating managers with common patterns
 
 **Files:**
-- `index.ts` (exports: Manager, ManagerCallbacks, createManager)
+- `index.ts` (exports: Manager, ManagerCallbacks, ManagerSugar, createManager, useManager)
 - `types.ts`
 - `create-manager.ts`
+- `use-manager.ts`
 
 **Functions:**
-- `createManager<CT, ET>(objectName: string, callbacks: ManagerCallbacks<CT, ET>): Manager<CT, ET>` (synchronous return)
+- `createManager<CT>(callbacks: ManagerCallbacks<CT>): Manager<CT>` (synchronous return)
+- `useManager<CT>(callbacks: ManagerCallbacks<CT>): ManagerSugar<CT>` (manager hook)
 
 **Internal Functions (in create-manager.ts):**
 - `read(params?: { [key: string]: any }): CT | undefined` (base level)
@@ -548,14 +550,15 @@ resolve: {
 - `init(): Promise<void>` (entry point, depends on needsRegenerate, make)
 
 **Types:**
-- `ManagerCallbacks<CT, ET>` interface:
+- `ManagerCallbacks<CT>` interface:
+  - `objectNameCallback: (params?: { [key: string]: any }) => string`
   - `makeCallback: (params?: { [key: string]: any }) => Promise<CT | undefined>`
   - `needsRegenerateCallback?: (params?: { [key: string]: any }) => boolean`
   - `generateCallback?: (params?: { content?: CT; [key: string]: any }) => CT`
   - `readCallback?: (params?: { [key: string]: any }) => CT`
   - `writeCallback?: (params?: { [key: string]: any }) => Promise<void>`
-- `Manager<CT, ET>` interface:
-  - `objectName: string`
+- `Manager<CT>` interface:
+  - `objectName: (params?: { [key: string]: any }) => string`
   - `init: () => Promise<void>`
   - `handleEvent: (params?: { [key: string]: any }) => Promise<void>`
   - `read: (params?: { [key: string]: any }) => CT | undefined`
@@ -564,11 +567,13 @@ resolve: {
 - **Consolidated Architecture**: Single create-manager.ts file with internal functions organized by call stack dependency
 - **Named Parameters Pattern**: All callbacks use named object parameters with `{ [key: string]: any }` index signature for flexibility
 - **Call Stack Organization**: Functions organized by dependency levels (base → level 2 → level 3 → entry points)
-- **Optional Callbacks**: All callbacks except makeCallback are optional
+- **Callback-Based Object Names**: objectNameCallback provides dynamic object naming instead of static string parameter
+- **Simplified Generics**: Removed ET (event type) parameter, only CT (content type) needed
+- **Optional Callbacks**: All callbacks except objectNameCallback and makeCallback are optional
 - **Flexible Types**: Content type (CT) can be union types like `SettingsPropertyValue | Record<string, SettingsPropertyValue>`
 - **Parameter Spreading**: Functions spread additional parameters from input to callback invocations
 - **Error Handling**: Read function returns undefined when readCallback not provided
-- **Logging Integration**: make() function logs when objects are updated
+- **Logging Integration**: make() function logs when objects are updated using objectName() callback
 
 ### `src/shared/hooks/use-file-watcher/`
 **Files:**
@@ -876,6 +881,8 @@ resolve: {
 - **Flexible Parameter System**: Added `[key: string]: any` index signature for extensible named parameters like `payload`, `spec`
 - **Call Stack Organization**: Functions organized by dependency order with clear comments marking each level
 - **Factory Simplification**: Removed over-engineered decomposition, consolidated to clean single-file implementation with flexible named parameters
+- **Manager Hook Pattern**: Added useManager hook for simplified manager usage without global state
+- **Settings Watcher Enhancement**: Modified useSettingsWatcher to watch all properties when properties array is omitted
 - **Extension Decomposition**: Separated extension.ts into extension/ folder with activate.ts, ini.ts, managers-init.ts, register-commands.ts, make-watchers.ts
 - **Entry Point**: main.ts serves as webpack entry point, re-exports from extension module
 - **State Module**: Moved from src/state.ts to src/shared/state.ts (Phase 1.35), then to src/extension/state.ts (Phase 1.41), then decomposed to src/state/ (Phase 1.43)
