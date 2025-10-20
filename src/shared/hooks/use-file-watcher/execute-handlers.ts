@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
-import type { FileEvent, FileEventType, Handler, Filter } from './types'
+import type { FileEvent, Handler, Filter } from './types'
+import { FileEventType } from './enums'
 
 export function createExecuteHandlers(
   filters: Filter | Filter[] | undefined,

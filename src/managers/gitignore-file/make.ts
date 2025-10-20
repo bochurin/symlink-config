@@ -3,7 +3,7 @@ import { generate } from './generate'
 import { read } from './read'
 import { log } from '@shared/log'
 import { write } from './write'
-import { GitignoringPart } from './types'
+import { GitignoringPart } from './enums'
 
 export async function make(mode?: GitignoringPart) {
   const generatedEntries = await generate(mode ?? GitignoringPart.All)

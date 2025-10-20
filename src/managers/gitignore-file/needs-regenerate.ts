@@ -1,17 +1,19 @@
 import { SETTINGS } from '@shared/constants'
 import { FileEvent } from '@shared/hooks/use-file-watcher'
 import { log } from '@shared/log'
-import { read as readSymlinkSettings } from '@managers/symlink-settings'
+import { useSymlinkConfigSettingsMananger } from '@/src/managers'
 
 export function needsRegenerate(events?: FileEvent | FileEvent[]): boolean {
   const eventType = Array.isArray(events)
     ? events[0].eventType
     : events?.eventType
 
-  const gitignoreServiceFiles = readSymlinkSettings(
+  const settingsManager = useSymlinkConfigSettingsMananger()
+
+  const gitignoreServiceFiles = settingsManager.read(
     SETTINGS.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES,
   )
-  const gitignoreSymlinkConfigs = readSymlinkSettings(
+  const gitignoreSymlinkConfigs = settingsManager.read(
     SETTINGS.SYMLINK_CONFIG.GITIGNORE_SYMLINKS,
   )
 

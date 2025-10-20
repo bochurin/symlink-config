@@ -1,5 +1,1 @@
-export enum GitignoringPart {
-  All = 'All',
-  ServiceFiles = 'ServiceFiles',
-  Symlinks = 'Symlinks',
-}
+// Types moved to separate files

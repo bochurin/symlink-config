@@ -1,8 +1,4 @@
-export enum FileEventType {
-  Created = 'Created',
-  Modified = 'Modified',
-  Deleted = 'Deleted',
-}
+import { FileEventType } from './enums'
 
 export type FileEvent = { uri: import('vscode').Uri; eventType: FileEventType }
 

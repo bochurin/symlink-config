@@ -1,9 +1,3 @@
-export type {
-  SettingsEvent,
-  Handler,
-  HandleConfig,
-  SectionConfig,
-  SettingsWatcherConfig,
-} from './types'
-export { useSettingsWatcher, SettingsWatcher } from './use-settings-watcher'
-export { executeHandlers } from './execute-handlers'
+export * from './types'
+export * from './use-settings-watcher'
+export * from './execute-handlers'

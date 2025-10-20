@@ -7,13 +7,19 @@ export function createManager<CT>(
 ): Manager<CT> {
   const read = callbacks.readCallback
 
+  function objectName(params?: { [key: string]: any }): string {
+    if (!callbacks.objectNameCallback) {
+      return 'object'
+    }
+    return callbacks.objectNameCallback(params)
+  }
+
   async function write(params?: { [key: string]: any }) {
     if (callbacks.writeCallback) {
       callbacks.writeCallback(params)
     }
   }
 
-  // Functions that depend on read()
   function generate(params?: { [key: string]: any }): CT | undefined {
     if (callbacks.generateCallback) {
       if (read) {
@@ -38,7 +44,6 @@ export function createManager<CT>(
     return true
   }
 
-  // Functions that depend on read(), generate(), write()
   async function make(params?: { [key: string]: any }) {
     let content: CT | undefined
     if (read) {
@@ -63,7 +68,6 @@ export function createManager<CT>(
     }
   }
 
-  // Functions that depend on needsRegenerate(), make()
   async function handleEvent(params?: { [key: string]: any }) {
     const needsRegen = needsRegenerate(params)
     if (needsRegen) {
@@ -77,13 +81,6 @@ export function createManager<CT>(
       info(`${objectName()} is inconsistent. Regenerating...`)
       await make()
     }
-  }
-
-  function objectName(params?: { [key: string]: any }): string {
-    if (!callbacks.objectNameCallback) {
-      return 'object'
-    }
-    return callbacks.objectNameCallback(params)
   }
 
   if (read) {

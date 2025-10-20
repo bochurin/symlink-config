@@ -1,5 +1,5 @@
 import * as path from 'path'
-import { read as readSymlinkSettings } from '@managers/symlink-settings'
+import { useSymlinkConfigSettingsMananger } from '@/src/managers'
 import { FILE_NAMES, SETTINGS } from '@shared/constants'
 import { SymlinkOperation } from './types'
 import { writeFile } from '@shared/file-ops'
@@ -8,6 +8,8 @@ export async function generateApplyUnixScript(
   operations: SymlinkOperation[],
   workspaceRoot: string,
 ) {
+  const settingsManager = useSymlinkConfigSettingsMananger()
+
   const scriptPath = path.join(workspaceRoot, FILE_NAMES.APPLY_SYMLINKS_SH)
 
   const lines = ['#!/bin/bash', 'echo "Applying symlink configuration..."', '']
@@ -23,7 +25,7 @@ export async function generateApplyUnixScript(
       lines.push('fi')
     } else if (op.type === 'create' && op.source) {
       // Get path mode setting
-      const pathMode = readSymlinkSettings(
+      const pathMode = settingsManager.read(
         SETTINGS.SYMLINK_CONFIG.SYMLINK_PATH_MODE,
       )
 

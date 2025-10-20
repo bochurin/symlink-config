@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 
-import { FileEventType, Handler, WatcherConfig } from './types'
+import { Handler, WatcherConfig } from './types'
+import { FileEventType } from './enums'
 import { createExecuteHandlers } from './execute-handlers'
 
 export type FileWatcher = vscode.FileSystemWatcher

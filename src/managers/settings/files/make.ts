@@ -1,4 +1,4 @@
-import { ExclusionPart } from './types'
+import { ExclusionPart } from './enums'
 
 export async function make(params?: {
   mode?: ExclusionPart

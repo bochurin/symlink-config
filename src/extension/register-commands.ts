@@ -1,15 +1,14 @@
 import * as vscode from 'vscode'
 import {
-  applyConfiguration,
+  applyConfig,
   cancelSymlinkCreation,
-  cleanConfiguration,
+  cleanConfig,
   clearLogsCommand,
   collapseAll,
   openSymlinkConfig,
   refreshManagers,
   selectSymlinkSource,
   selectSymlinkTarget,
-
 } from '@commands'
 
 export function registerCommands(
@@ -44,11 +43,11 @@ export function registerCommands(
     ),
     vscode.commands.registerCommand(
       'symlink-config.applyConfiguration',
-      applyConfiguration,
+      applyConfig,
     ),
     vscode.commands.registerCommand(
       'symlink-config.cleanConfiguration',
-      cleanConfiguration,
+      cleanConfig,
     ),
     vscode.commands.registerCommand('symlink-config.collapseAll', collapseAll),
     vscode.commands.registerCommand(
@@ -59,7 +58,6 @@ export function registerCommands(
       'symlink-config.clearLogs',
       clearLogsCommand,
     ),
-
   ]
 
   context.subscriptions.push(...commands)

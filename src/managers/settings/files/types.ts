@@ -1,5 +1,1 @@
-export enum ExclusionPart {
-  All = 'All',
-  ServiceFiles = 'ServiceFiles',
-  SymlinkConfigs = 'SymlinkConfigs',
-}
+// Types moved to separate files

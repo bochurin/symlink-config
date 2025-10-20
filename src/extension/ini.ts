@@ -4,7 +4,6 @@ import { log } from '@shared/log'
 import { findCommonPath } from '@shared/file-ops'
 import { makeWatchers } from './make-watchers'
 import { managersInit } from './managers-init'
-import { makeManagers } from './make-managers'
 
 let isInitialized = false
 
@@ -18,9 +17,6 @@ export async function init(): Promise<(() => void) | undefined> {
   setWorkspaceRoot(workspaceRoot)
   setWorkspaceName(workspaceName)
   log(`Project root: ${workspaceRoot}`)
-
-  // Create all managers objects
-  makeManagers()
 
   // Establish all the watchers and subscribe managers to them
   makeWatchers()

@@ -1,18 +1,21 @@
-import { read as readSettings } from '@managers/symlink-settings'
+import { useSymlinkConfigSettingsMananger } from '@/src/managers'
 import { read as readCurrentConfig } from '@managers/current-config'
 import { FILE_NAMES, SETTINGS } from '@shared/constants'
-import { GitignoringPart } from './types'
+import { GitignoringPart } from './enums'
 
 export async function generate(
   mode?: GitignoringPart,
 ): Promise<Record<string, { spacing: string; active: boolean }>> {
   mode = mode ?? GitignoringPart.All
+
+  const settingsManager = useSymlinkConfigSettingsMananger()
+
   const generatedEntries: Record<string, { spacing: string; active: boolean }> =
     {}
 
   try {
     if (mode == GitignoringPart.All || mode == GitignoringPart.ServiceFiles) {
-      const gitignoreServiceFiles = readSettings(
+      const gitignoreServiceFiles = settingsManager.read(
         SETTINGS.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES,
       ) as boolean
       generatedEntries[FILE_NAMES.NEXT_SYMLINK_CONFIG] = {
@@ -47,7 +50,7 @@ export async function generate(
 
     if (mode == GitignoringPart.All || mode == GitignoringPart.Symlinks) {
       // Add created symlinks to gitignore
-      const gitignoreSymlinks = readSettings(
+      const gitignoreSymlinks = settingsManager.read(
         SETTINGS.SYMLINK_CONFIG.GITIGNORE_SYMLINKS,
       ) as boolean
 

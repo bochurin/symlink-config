@@ -1,14 +1,17 @@
-import { read as readSymlinkSettings } from '@managers/symlink-settings'
-import { ExclusionPart } from './types'
+import { useSymlinkConfigSettingsMananger } from '@/src/managers'
+import { ExclusionPart } from './enums'
 import { FILE_NAMES, SETTINGS } from '@shared/constants'
 
 export function generate(mode?: ExclusionPart): Record<string, boolean> {
   mode = mode ?? ExclusionPart.All
+
+  const settingsManager = useSymlinkConfigSettingsMananger()
+
   const generatedExclusions: Record<string, boolean> = {}
 
   try {
     if (mode == ExclusionPart.All || mode == ExclusionPart.ServiceFiles) {
-      const hideServiceFiles = readSymlinkSettings(
+      const hideServiceFiles = settingsManager.read(
         SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES,
       ) as boolean
       generatedExclusions[FILE_NAMES.NEXT_SYMLINK_CONFIG] = hideServiceFiles
@@ -21,7 +24,7 @@ export function generate(mode?: ExclusionPart): Record<string, boolean> {
     }
 
     if (mode == ExclusionPart.All || mode == ExclusionPart.SymlinkConfigs) {
-      const hideSymlinkConfigs = readSymlinkSettings(
+      const hideSymlinkConfigs = settingsManager.read(
         SETTINGS.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS,
       ) as boolean
       generatedExclusions[`**/${FILE_NAMES.SYMLINK_CONFIG}`] =

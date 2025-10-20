@@ -1,13 +1,15 @@
 import { SettingsEvent } from '@shared/hooks/use-settings-watcher'
 import { log } from '@shared/log'
 import { SETTINGS } from '@shared/constants'
-import { read as readSymlinkSettings } from '@managers/symlink-settings'
+import { useSymlinkConfigSettingsMananger } from '@/src/managers'
 
 export function needsRegenerate(event?: SettingsEvent): boolean {
-  const hideServiceFiles = readSymlinkSettings(
+  const settingsManager = useSymlinkConfigSettingsMananger()
+
+  const hideServiceFiles = settingsManager.read(
     SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES,
   )
-  const hideSymlinkConfigs = readSymlinkSettings(
+  const hideSymlinkConfigs = settingsManager.read(
     SETTINGS.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS,
   )
 

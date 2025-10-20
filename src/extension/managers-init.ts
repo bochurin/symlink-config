@@ -4,16 +4,17 @@ import { init as initCurrentConfig } from '@managers/current-config'
 import { init as initFileExclude } from '@managers/file-exclude-settings'
 
 import { SETTINGS } from '@shared/constants'
-import { read as readSymlinkSettings } from '@managers/symlink-settings'
+import { useSymlinkConfigSettingsMananger } from '@/src/managers'
 import { log } from '@shared/log'
 
 export async function managersInit(force?: boolean) {
   force = force || false
+  const settingsManager = useSymlinkConfigSettingsMananger()
 
-  const gitignoreServiceFiles = readSymlinkSettings(
+  const gitignoreServiceFiles = settingsManager.read(
     SETTINGS.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES,
   )
-  const watchWorkspace = readSymlinkSettings(
+  const watchWorkspace = settingsManager.read(
     SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE,
   )
 
