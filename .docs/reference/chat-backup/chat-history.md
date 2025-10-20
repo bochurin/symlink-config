@@ -98,3 +98,8 @@ This index provides an overview of all development sessions. Each session is doc
 **Topics**: Manager hook pattern implementation, settings watcher enhancement  
 **Key Changes**: v0.0.69 → v0.0.70, useManager hook, automatic property watching  
 **Phase**: 1.49 → 1.50
+
+### [Session 20 - October 20, 2025](session-2025-10-20-b.md)
+**Topics**: Enum extraction and export organization  
+**Key Changes**: v0.0.70 → v0.0.71, enum separation, export standardization  
+**Phase**: 1.50 → 1.51
