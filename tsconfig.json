@@ -16,9 +16,9 @@
       "@queue": ["./src/queue"],
       "@commands": ["./src/commands"],
       "@watchers": ["./src/watchers"],
+      "@managers": ["./src/managers"],
       "@managers/*": ["./src/managers/*"],
       "@commands/*": ["./src/commands/*"],
-      "@watchers/*": ["./src/watchers/*"],
       "@views/*": ["./src/views/*"],
       "@shared/*": ["./src/shared/*"]
     }

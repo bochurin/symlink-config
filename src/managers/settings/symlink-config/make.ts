@@ -1,5 +1,4 @@
 import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
-import { SettingsPropertyValue } from './types'
 import { SETTINGS } from '@/src/shared/constants'
 import { info } from '@/src/shared/vscode'
 import {
@@ -14,7 +13,6 @@ import { makeWatchers } from '@/src/extension'
 
 export async function make(params?: {
   event?: SettingsEvent
-  [key: string]: any
 }): Promise<undefined> {
   const event = params ? params.event : undefined
   if (!event) return

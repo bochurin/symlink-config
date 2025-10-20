@@ -2,13 +2,16 @@ import {
   SettingsEvent,
   useSettingsWatcher,
 } from '@shared/hooks/use-settings-watcher'
-import { handleEvent as handleSymlinkConfigEvent } from '@managers/symlink-settings'
 import { SETTINGS, WATCHERS } from '@shared/constants'
 import { registerWatcher } from '@state'
 import { log } from '@shared/log'
 import { queue } from '@queue'
+import { useSymlinkConfigSettingsMananger } from '@managers'
 
 export function symlinkSettingsWatcher() {
+  // TODO: Fix manager creation error handling, type compatibility, and method availability
+  const manager = useSymlinkConfigSettingsMananger()
+
   log('Symlink settings watcher registered')
   const watcher = useSettingsWatcher({
     sections: {
@@ -25,7 +28,7 @@ export function symlinkSettingsWatcher() {
           log(
             `Setting changed: ${event.parameter} (${event.oldValue} → ${event.value})`,
           )
-          return queue(() => handleSymlinkConfigEvent(event))
+          return queue(() => manager.handleEvent(event))
         },
       },
     },

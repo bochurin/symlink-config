@@ -1,3 +1,4 @@
+import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
 import { SETTINGS } from '@shared/constants'
 
 export type SettingsProperty =
@@ -12,3 +13,11 @@ export type SettingsProperty =
 
 export type SettingsPropertyValue =
   (typeof SETTINGS.SYMLINK_CONFIG.DEFAULT)[keyof typeof SETTINGS.SYMLINK_CONFIG.DEFAULT]
+
+export interface SymlinkConfigSettingsManager {
+  objectName: () => string
+  handleEvent: (event: SettingsEvent) => Promise<void>
+  read: (
+    property?: SettingsProperty,
+  ) => SettingsPropertyValue | Record<string, SettingsPropertyValue>
+}

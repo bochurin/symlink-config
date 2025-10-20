@@ -23,13 +23,22 @@ export function useSettingsWatcher(
       : [sectionConfig.handlers]
 
     configs.forEach((configItem) => {
-      const parameters = Array.isArray(configItem.properties)
-        ? configItem.properties
-        : [configItem.properties]
-      parameters.forEach((property) => {
-        previousValues[sectionConfig.section][property] =
-          initialSettings.get(property)
-      })
+      if (configItem.properties) {
+        const parameters = Array.isArray(configItem.properties)
+          ? configItem.properties
+          : [configItem.properties]
+        parameters.forEach((property) => {
+          previousValues[sectionConfig.section][property] =
+            initialSettings.get(property)
+        })
+      } else {
+        // Watch all properties in the section
+        const allKeys = Object.keys(initialSettings)
+        allKeys.forEach((property) => {
+          previousValues[sectionConfig.section][property] =
+            initialSettings.get(property)
+        })
+      }
     })
   })
 
@@ -46,9 +55,11 @@ export function useSettingsWatcher(
           : [sectionConfig.handlers]
 
         handlers.forEach((configItem) => {
-          const properties = Array.isArray(configItem.properties)
-            ? configItem.properties
-            : [configItem.properties]
+          const properties = configItem.properties
+            ? Array.isArray(configItem.properties)
+              ? configItem.properties
+              : [configItem.properties]
+            : Object.keys(previousValues[sectionConfig.section])
 
           properties.forEach((property) => {
             const value = newConfig.get(property)
