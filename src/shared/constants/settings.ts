@@ -41,5 +41,6 @@ export const SETTINGS = {
   FILES: {
     SECTION: 'files',
     EXCLUDE: 'exclude',
+    DEFAULT: false,
   },
 } as const

@@ -2,8 +2,10 @@ import { useSymlinkConfigSettingsMananger } from '@/src/managers'
 import { ExclusionPart } from './enums'
 import { FILE_NAMES, SETTINGS } from '@shared/constants'
 
-export function generate(mode?: ExclusionPart): Record<string, boolean> {
-  mode = mode ?? ExclusionPart.All
+export function generate(parameters?: {
+  mode?: ExclusionPart
+}): Record<string, boolean> {
+  const mode = parameters?.mode ?? ExclusionPart.All
 
   const settingsManager = useSymlinkConfigSettingsMananger()
 

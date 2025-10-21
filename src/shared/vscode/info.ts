@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
-import { readConfig } from '@shared/config-ops'
+import { readSettings } from '@/src/shared/settings-ops'
 
 export function info(message: string) {
-  const silent = readConfig<Boolean>('symlink-config.silent', false)
+  const silent = readSettings<Boolean>('symlink-config.silent', false)
   if (!silent) vscode.window.showInformationMessage(message)
 }

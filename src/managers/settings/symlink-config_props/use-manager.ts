@@ -1,8 +1,8 @@
 import { SETTINGS } from '@shared/constants'
 import { createManager } from '@shared/factories/manager'
 import {
-  SettingsProperty,
-  SettingsPropertyValue,
+  SymlinkConfigSettingsProperty,
+  SymlinkConfigSettingsPropertyValue,
   SymlinkConfigSettingsManager,
 } from './types'
 import { read } from './read'
@@ -11,7 +11,8 @@ import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
 
 export function useSymlinkConfigSettingsMananger(): SymlinkConfigSettingsManager {
   const manager = createManager<
-    SettingsPropertyValue | Record<string, SettingsPropertyValue>
+    | SymlinkConfigSettingsPropertyValue
+    | Record<string, SymlinkConfigSettingsPropertyValue>
   >({
     objectNameCallback: () => SETTINGS.SYMLINK_CONFIG.SECTION,
     readCallback: read,
@@ -21,8 +22,8 @@ export function useSymlinkConfigSettingsMananger(): SymlinkConfigSettingsManager
   return {
     objectName: () => manager.objectName(),
     handleEvent: async (event: SettingsEvent) =>
-      await manager.handleEvent({ event: event }),
-    read: (property?: SettingsProperty) =>
-      manager.read!({ property: property }),
+      await manager.handleEvent({ event }),
+    read: (property?: SymlinkConfigSettingsProperty) =>
+      manager.read!({ property }),
   }
 }

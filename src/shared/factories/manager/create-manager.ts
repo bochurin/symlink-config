@@ -14,20 +14,16 @@ export function createManager<CT>(
     return callbacks.objectNameCallback(params)
   }
 
-  async function write(params?: { [key: string]: any }) {
-    if (callbacks.writeCallback) {
+  async function write(params?: { content?: CT; [key: string]: any }) {
+    const content = params?.content
+    if (callbacks.writeCallback && content) {
       callbacks.writeCallback(params)
     }
   }
 
   function generate(params?: { [key: string]: any }): CT | undefined {
     if (callbacks.generateCallback) {
-      if (read) {
-        const content = read()
-        return callbacks.generateCallback({ content, ...params })
-      } else {
-        return callbacks.generateCallback(params)
-      }
+      return callbacks.generateCallback(params)
     }
     return undefined
   }
@@ -47,11 +43,14 @@ export function createManager<CT>(
   async function make(params?: { [key: string]: any }) {
     let content: CT | undefined
     if (read) {
-      const initContent = read()
-      const newContent = generate({ initContent, ...params })
+      const initialContent = read()
+      const generatedContent = generate({
+        initialContent,
+        ...params,
+      })
       content = await callbacks.makeCallback({
-        initContent,
-        newContent,
+        initialContent,
+        generatedContent,
         ...params,
       })
       await write({ content, ...params })
@@ -84,8 +83,8 @@ export function createManager<CT>(
   }
 
   if (read) {
-    return { objectName, init, handleEvent, read }
+    return { objectName, init, handleEvent, make, read }
   } else {
-    return { objectName, init, handleEvent }
+    return { objectName, init, handleEvent, make }
   }
 }

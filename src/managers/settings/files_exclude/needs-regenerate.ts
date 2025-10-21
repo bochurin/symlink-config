@@ -3,7 +3,10 @@ import { log } from '@shared/log'
 import { SETTINGS } from '@shared/constants'
 import { useSymlinkConfigSettingsMananger } from '@/src/managers'
 
-export function needsRegenerate(event?: SettingsEvent): boolean {
+export function needsRegenerate(parameters?: {
+  event?: SettingsEvent
+}): boolean {
+  const event = parameters?.event
   const settingsManager = useSymlinkConfigSettingsMananger()
 
   const hideServiceFiles = settingsManager.read(

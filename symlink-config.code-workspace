@@ -1,51 +1,56 @@
 {
   "folders": [
     {
-      "name": "📚 Documentation",
+      "name": "📖 .docs",
       "path": ".docs",
     },
     {
-      "name": "🎯 Selected",
+      "name": "📌 selected",
       "path": "selected",
     },
     {
-      "name": "🚀 Extension",
+      "name": "🧩 @extension",
       "path": "src/extension",
     },
     {
-      "name": "💾 State",
+      "name": "💾 @state",
       "path": "src/state",
     },
     {
-      "name": "⏳ Queue",
+      "name": "🚦 @queue",
       "path": "src/queue",
     },
     {
-      "name": "👁️ Watchers",
-      "path": "src/watchers",
-    },
-    {
-      "name": "⚙️ Managers",
+      "name": "⚙️ @managers",
       "path": "src/managers",
     },
     {
-      "name": "🖼️ Views",
+      "name": "👀 @watchers",
+      "path": "src/watchers",
+    },
+
+    {
+      "name": "🖼️ @views",
       "path": "src/views",
     },
     {
-      "name": "⌨️ Commands",
+      "name": "⚡ @commands",
       "path": "src/commands",
     },
     {
-      "name": "🔧 Shared",
+      "name": "🧰 @shared",
       "path": "src/shared",
     },
     {
-      "name": "test-workspace",
+      "name": "🔬 test-workspace",
       "path": "test-workspace",
     },
     {
-      "name": "@",
+      "name": "📦 @src",
+      "path": "src",
+    },
+    {
+      "name": "🌳 @",
       "path": ".",
     },
   ],

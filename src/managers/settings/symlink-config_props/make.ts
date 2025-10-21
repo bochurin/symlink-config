@@ -1,21 +1,22 @@
 import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
 import { SETTINGS } from '@/src/shared/constants'
 import { info } from '@/src/shared/vscode'
+import { makeWatchers } from '@/src/extension'
+
 import {
   GitignoringPart,
   make as makeGitignore,
 } from '@managers/gitignore-file'
-import {
-  make as makeExclusion,
-  ExclusionPart,
-} from '@managers/file-exclude-settings'
-import { makeWatchers } from '@/src/extension'
+
+import { ExclusionPart, useFilesSettingsManager } from '../files_exclude'
 
 export async function make(params?: {
   event?: SettingsEvent
 }): Promise<undefined> {
-  const event = params ? params.event : undefined
+  const event = params?.event
   if (!event) return
+
+  const filesSettingsManager = useFilesSettingsManager()
 
   switch (event.section) {
     case SETTINGS.SYMLINK_CONFIG.SECTION:
@@ -47,7 +48,7 @@ export async function make(params?: {
               ? ExclusionPart.ServiceFiles
               : ExclusionPart.SymlinkConfigs
           info(`Hiding ${object} ${action}.`)
-          await makeExclusion(mode)
+          await filesSettingsManager.make(mode)
           break
 
         case SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE:
