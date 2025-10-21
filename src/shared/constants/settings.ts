@@ -3,7 +3,7 @@ import packageJson from '@/package.json'
 const props = packageJson.contributes.configuration.properties
 
 const SECTION = 'symlink-config'
-const PARAMETERS = {
+const PROPERTIES = {
   WATCH_WORKSPACE: 'watchWorkspace',
   GITIGNORE_SERVICE_FILES: 'gitignoreServiceFiles',
   GITIGNORE_SYMLINKS: 'gitignoreSymlinks',
@@ -18,24 +18,24 @@ const PARAMETERS = {
 export const SETTINGS = {
   SYMLINK_CONFIG: {
     SECTION,
-    ...PARAMETERS,
+    ...PROPERTIES,
     DEFAULT: {
       WATCH_WORKSPACE:
-        props[`${SECTION}.${PARAMETERS.WATCH_WORKSPACE}`].default,
+        props[`${SECTION}.${PROPERTIES.WATCH_WORKSPACE}`].default,
       GITIGNORE_SERVICE_FILES:
-        props[`${SECTION}.${PARAMETERS.GITIGNORE_SERVICE_FILES}`].default,
+        props[`${SECTION}.${PROPERTIES.GITIGNORE_SERVICE_FILES}`].default,
       GITIGNORE_SYMLINKS:
-        props[`${SECTION}.${PARAMETERS.GITIGNORE_SYMLINKS}`].default,
+        props[`${SECTION}.${PROPERTIES.GITIGNORE_SYMLINKS}`].default,
       HIDE_SERVICE_FILES:
-        props[`${SECTION}.${PARAMETERS.HIDE_SERVICE_FILES}`].default,
+        props[`${SECTION}.${PROPERTIES.HIDE_SERVICE_FILES}`].default,
       HIDE_SYMLINK_CONFIGS:
-        props[`${SECTION}.${PARAMETERS.HIDE_SYMLINK_CONFIGS}`].default,
+        props[`${SECTION}.${PROPERTIES.HIDE_SYMLINK_CONFIGS}`].default,
       SCRIPT_GENERATION:
-        props[`${SECTION}.${PARAMETERS.SCRIPT_GENERATION}`].default,
+        props[`${SECTION}.${PROPERTIES.SCRIPT_GENERATION}`].default,
       SYMLINK_PATH_MODE:
-        props[`${SECTION}.${PARAMETERS.SYMLINK_PATH_MODE}`].default,
+        props[`${SECTION}.${PROPERTIES.SYMLINK_PATH_MODE}`].default,
       MAX_LOG_ENTRIES:
-        props[`${SECTION}.${PARAMETERS.MAX_LOG_ENTRIES}`].default,
+        props[`${SECTION}.${PROPERTIES.MAX_LOG_ENTRIES}`].default,
     },
   },
   FILES: {

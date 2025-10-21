@@ -1,13 +1,13 @@
 import { useFileWatcher, FileEventType } from '@shared/hooks/use-file-watcher'
-import { handleEvent as handleGitignoreEvent } from '@managers/gitignore-file'
 import { FILE_NAMES, WATCHERS } from '@shared/constants'
 import { isRootFile } from '@shared/file-ops'
 import { getWorkspaceRoot, registerWatcher } from '@state'
 import { log } from '@shared/log'
 import { queue } from '@queue'
+import { use_gitignoreManager } from '@/src/managers/files/_gitignore'
 
 export function gitignoreWatcher() {
-  log('Gitignore watcher registered')
+  const _gitignoreFileManager = use_gitignoreManager()
   const workspaceRoot = getWorkspaceRoot()
   const watcher = useFileWatcher({
     pattern: `**/${FILE_NAMES.GITIGNORE}`,
@@ -18,9 +18,10 @@ export function gitignoreWatcher() {
         log(
           `.gitignore changed: ${events.map((e) => `${e.eventType} ${e.uri.fsPath}`).join(', ')}`,
         )
-        return queue(() => handleGitignoreEvent(events))
+        return queue(() => _gitignoreFileManager.handleEvent(events))
       },
     },
   })
   registerWatcher(WATCHERS.GITIGNORE, watcher)
+  log('Gitignore watcher registered')
 }

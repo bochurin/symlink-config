@@ -7,15 +7,34 @@ import {
 
 export function read(params?: {
   property?: SymlinkConfigSettingsProperty
-}): SymlinkConfigSettingsPropertyValue {
-  const property = params!.property!
+}):
+  | SymlinkConfigSettingsPropertyValue
+  | Record<string, SymlinkConfigSettingsPropertyValue> {
+  const property = params?.property
 
   const defaults = SETTINGS.SYMLINK_CONFIG.DEFAULT
 
-  try {
-    const configKey = `${SETTINGS.SYMLINK_CONFIG.SECTION}.${property}`
-    return readSettings(configKey, defaults[property as keyof typeof defaults])
-  } catch {
-    return defaults[property as keyof typeof defaults]
+  if (property) {
+    try {
+      const configKey = `${SETTINGS.SYMLINK_CONFIG.SECTION}.${property}`
+      return readSettings(
+        configKey,
+        defaults[property as keyof typeof defaults],
+      )
+    } catch {
+      return defaults[property as keyof typeof defaults]
+    }
   }
+
+  // Return all properties as record when no specific property requested
+  const allProperties: Record<string, SymlinkConfigSettingsPropertyValue> = {}
+  for (const [key, defaultValue] of Object.entries(defaults)) {
+    try {
+      const configKey = `${SETTINGS.SYMLINK_CONFIG.SECTION}.${key}`
+      allProperties[key] = readSettings(configKey, defaultValue)
+    } catch {
+      allProperties[key] = defaultValue
+    }
+  }
+  return allProperties
 }

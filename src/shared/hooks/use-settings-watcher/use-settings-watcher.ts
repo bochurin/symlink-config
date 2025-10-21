@@ -24,10 +24,10 @@ export function useSettingsWatcher(
 
     configs.forEach((configItem) => {
       if (configItem.properties) {
-        const parameters = Array.isArray(configItem.properties)
+        const params = Array.isArray(configItem.properties)
           ? configItem.properties
           : [configItem.properties]
-        parameters.forEach((property) => {
+        params.forEach((property) => {
           previousValues[sectionConfig.section][property] =
             initialSettings.get(property)
         })

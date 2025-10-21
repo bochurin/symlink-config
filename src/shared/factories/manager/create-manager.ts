@@ -48,7 +48,7 @@ export function createManager<CT>(
         initialContent,
         ...params,
       })
-      content = await callbacks.makeCallback({
+      content = callbacks.makeCallback({
         initialContent,
         generatedContent,
         ...params,
@@ -56,7 +56,7 @@ export function createManager<CT>(
       await write({ content, ...params })
     } else {
       const newContent = generate(params)
-      content = await callbacks.makeCallback({
+      content = callbacks.makeCallback({
         newContent,
         ...params,
       })

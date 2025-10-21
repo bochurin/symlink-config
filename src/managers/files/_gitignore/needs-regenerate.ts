@@ -3,10 +3,15 @@ import { FileEvent } from '@shared/hooks/use-file-watcher'
 import { log } from '@shared/log'
 import { useSymlinkConfigSettingsMananger } from '@/src/managers'
 
-export function needsRegenerate(events?: FileEvent | FileEvent[]): boolean {
-  const eventType = Array.isArray(events)
-    ? events[0].eventType
-    : events?.eventType
+export function needsRegenerate(params?: {
+  events?: FileEvent | FileEvent[]
+}): boolean {
+  const events = params?.events
+  const eventType = events
+    ? Array.isArray(events)
+      ? events[0].eventType
+      : events?.eventType
+    : undefined
 
   const settingsManager = useSymlinkConfigSettingsMananger()
 

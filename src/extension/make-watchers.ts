@@ -4,7 +4,7 @@ import {
   currentConfigWatcher,
   gitignoreWatcher,
   symlinksWatcher,
-  symlinkSettingsWatcher,
+  symlinkConfigSettingsWatcher,
   filesSettingsWatcher,
 } from '@watchers'
 
@@ -19,7 +19,7 @@ export function makeWatchers() {
   log('Creating watchers...')
   disposeWatchers()
 
-  symlinkSettingsWatcher()
+  symlinkConfigSettingsWatcher()
 
   const hideServiceFiles = settingsManager.read(
     SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES,
