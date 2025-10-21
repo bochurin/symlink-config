@@ -29,7 +29,7 @@ This index provides an overview of all development sessions. Each session is doc
 **Key Changes**: Complete tree provider, CollapsibleState discovery  
 **Phase**: 1.22 → 1.23
 
-### [Session 6 - October 10, 2025](session-2025-10-10.md)
+### [Session 6 - October 10, 2025](session-2025-10-10-a.md)
 **Topics**: Manager architecture refactoring, import system improvements  
 **Key Changes**: Descriptive folder naming, direct imports, type improvements  
 **Phase**: 1.23 → 1.24
@@ -49,7 +49,7 @@ This index provides an overview of all development sessions. Each session is doc
 **Key Changes**: Centralized file operations in shared/file-ops  
 **Phase**: 1.30 → 1.31
 
-### [Session 10 - October 14, 2025](session-2025-10-14.md)
+### [Session 10 - October 14, 2025](session-2025-10-14-a.md)
 **Topics**: Command organization, symlink validation  
 **Key Changes**: Clean command palette, symlink protection  
 **Phase**: 1.31 → 1.33
@@ -74,7 +74,7 @@ This index provides an overview of all development sessions. Each session is doc
 **Key Changes**: v0.0.58 → v0.0.59, separated concerns  
 **Phase**: 1.40 → 1.41
 
-### [Session 15 - October 17, 2025](session-2025-10-17.md)
+### [Session 15 - October 17, 2025](session-2025-10-17-a.md)
 **Topics**: Manager factory fixes, state/queue reorganization, workspace configuration, context prompt  
 **Key Changes**: v0.0.60 → v0.0.62, modular state, multiroot workspace, reusable context prompt  
 **Phase**: 1.42 → 1.43
@@ -94,7 +94,7 @@ This index provides an overview of all development sessions. Each session is doc
 **Key Changes**: v0.0.67 → v0.0.68, factory consolidation, flexible parameter system  
 **Phase**: 1.48 → 1.49
 
-### [Session 19 - October 20, 2025](session-2025-10-20.md)
+### [Session 19 - October 20, 2025](session-2025-10-20-a.md)
 **Topics**: Manager hook pattern implementation, settings watcher enhancement  
 **Key Changes**: v0.0.69 → v0.0.70, useManager hook, automatic property watching  
 **Phase**: 1.49 → 1.50
