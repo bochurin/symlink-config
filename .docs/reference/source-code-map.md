@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 20.10.2025  
-**Version**: 0.0.72  
+**Generated**: 21.10.2025  
+**Version**: 0.0.73  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -956,3 +956,4 @@ resolve: {
 - **Files Exclude Manager Restructure**: Moved to settings/files_exclude/ with factory-based approach and use-manager hook
 - **Symlink Config Manager Rename**: Renamed to symlink-config_props/ for clarity
 - **Watcher Updates**: Updated watchers to use new manager locations and naming
+- **Manager Factory Read Contract**: Fixed symlink-config_props read function to return all properties when no params provided, ensuring compatibility with factory internal logic
