@@ -104,7 +104,12 @@ This index provides an overview of all development sessions. Each session is doc
 **Key Changes**: v0.0.70 → v0.0.71, enum separation, export standardization  
 **Phase**: 1.50 → 1.51
 
-### [Session 21 - October 21, 2025](session-2025-10-21.md)
+### [Session 21 - October 21, 2025](session-2025-10-21-a.md)
 **Topics**: Manager factory read contract fix and additional restructuring  
 **Key Changes**: v0.0.72 → v0.0.73, factory compliance, gitignore manager restructuring  
 **Phase**: 1.52 → 1.53
+
+### [Session 22 - October 21, 2025](session-2025-10-21-b.md)
+**Topics**: Documentation maintenance and file organization  
+**Key Changes**: Session file renaming, chat history index updates  
+**Phase**: 1.53 (no version changes)
