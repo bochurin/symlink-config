@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
 **Generated**: 20.10.2025  
-**Version**: 0.0.71  
+**Version**: 0.0.72  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -266,15 +266,15 @@
   - `CURRENT_SYMLINK_CONFIG: FILE_NAMES.CURRENT_SYMLINK_CONFIG`
   - `SYMLINK_CONFIGS: FILE_NAMES.SYMLINK_CONFIG`
 
-### `src/shared/config-ops/`
+### `src/shared/settings-ops/`
 **Files:**
 - `index.ts` (exports all)
-- `read-config.ts`
-- `write-config.ts`
+- `read-settings.ts`
+- `write-settings.ts`
 
 **Functions:**
-- `readConfig<T>(parameter: string, defaultValue: T): T`
-- `writeConfig<T>(parameter: string, value: T): Promise<void>`
+- `readSettings<T>(parameter: string, defaultValue: T): T` (includes VSCode Configuration Proxy to plain object conversion)
+- `writeSettings<T>(parameter: string, value: T): Promise<void>`
 
 ### `src/shared/file-ops/`
 **Files:**
@@ -446,17 +446,17 @@
 **Types:**
 - `ExistingSymlink` interface with target, source, type properties
 
-### `src/managers/file-exclude-settings/`
+### `src/managers/settings/files_exclude/`
 **Files:**
-- `index.ts` (exports: types, enums, init, read, handle-event, make)
+- `index.ts` (exports: types, enums, use-manager)
 - `enums.ts`
 - `generate.ts`
-- `handle-event.ts`
-- `init.ts`
 - `make.ts`
 - `needs-regenerate.ts`
 - `read.ts`
 - `types.ts`
+- `use-manager.ts`
+- `write.ts`
 
 **Functions:**
 - `generate(mode: ExclusionPart): Record<string, boolean>` (synchronous)
@@ -468,6 +468,11 @@
 
 **Enums:**
 - `ExclusionPart` enum with All, ServiceFiles, SymlinkConfigs values (in enums.ts)
+
+**Functions:**
+- `useFilesSettingsManager()` - Manager hook for files.exclude settings
+- `read(params?: { pattern?: string; [key: string]: any }): boolean | Record<string, boolean>` - Read specific pattern or all exclusions
+- `make(params?: { initialContent?: Record<string, boolean>; generatedContent?: Record<string, boolean> }): Promise<Record<string, boolean> | undefined>` - Merge initial and generated exclusions
 
 ## Path Aliases
 
@@ -945,3 +950,9 @@ resolve: {
 - **Export Order Standardization**: Standardized index.ts export order: types first, then enums, then other exports
 - **Type/Value Separation**: Clear separation between type-only exports (`export type *`) and value exports (`export *`)
 - **Enum Organization**: FileEventType, ExclusionPart, GitignoringPart enums now in dedicated enums.ts files
+- **Settings Operations Rename**: Renamed config-ops to settings-ops with readSettings/writeSettings functions
+- **VSCode Configuration Proxy Fix**: Added automatic conversion from VSCode Configuration Proxy to plain objects in readSettings
+- **Manager Factory Enhancements**: Updated factory types and callbacks for better flexibility
+- **Files Exclude Manager Restructure**: Moved to settings/files_exclude/ with factory-based approach and use-manager hook
+- **Symlink Config Manager Rename**: Renamed to symlink-config_props/ for clarity
+- **Watcher Updates**: Updated watchers to use new manager locations and naming
