@@ -8,7 +8,7 @@ import { needsRegenerate } from './needs-regenerate'
 import { generate } from './generate'
 import { write } from './write'
 
-export function use_gitignoreManager() {
+export function useGitignoreManager() {
   const manager = createManager({
     objectNameCallback: () => FILE_NAMES.GITIGNORE,
     readCallback: read,

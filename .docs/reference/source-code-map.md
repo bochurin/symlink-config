@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
 **Generated**: 21.10.2025  
-**Version**: 0.0.73  
+**Version**: 0.0.74  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -345,25 +345,25 @@
 
 ## Manager Modules
 
-### `src/managers/gitignore-file/`
+### `src/managers/files/_gitignore/`
 **Files:**
-- `index.ts` (exports: types, enums, init, read, handle-event, make)
+- `index.ts` (exports: types, enums, use-manager)
 - `enums.ts`
 - `generate.ts`
-- `handle-event.ts`
-- `init.ts`
 - `make.ts`
 - `needs-regenerate.ts`
 - `read.ts`
 - `types.ts`
+- `use-manager.ts`
+- `write.ts`
 
 **Functions:**
-- `generate(mode?: GitignoringPart): Promise<Record<string, { spacing: string; active: boolean }>>` (async)
-- `handleEvent(): Promise<void>`
-- `init(): Promise<void>`
-- `make(): Promise<void>` (logs when .gitignore is updated)
+- `generate(mode?: GitignoringPart): Record<string, { spacing: string; active: boolean }>` (synchronous)
+- `make(): Promise<Record<string, { spacing: string; active: boolean }> | undefined>` (logs when .gitignore is updated)
 - `needsRegenerate(events?: FileEvent | FileEvent[]): boolean` (synchronous, logs event and result)
-- `read(): Promise<Record<string, { spacing: string; active: boolean }>>`
+- `read(): Record<string, { spacing: string; active: boolean }>`
+- `useGitignoreManager()` - Manager hook for .gitignore file management
+- `write(content: Record<string, { spacing: string; active: boolean }>): Promise<void>`
 
 **Enums:**
 - `GitignoringPart` enum with All, ServiceFiles, Symlinks values (in enums.ts)
@@ -373,28 +373,23 @@
 - Reads current config and adds symlink targets to .gitignore when gitignoreSymlinks setting is enabled
 - Parses JSON string from readCurrentConfig() before accessing operations
 
-### `src/managers/symlink-settings/`
+### `src/managers/settings/symlink-config_props/`
 **Files:**
-- `index.ts` (exports: read, handle-event)
+- `index.ts` (exports: types, use-manager)
+- `make.ts`
 - `read.ts`
-- `handle-event.ts`
 - `types.ts`
+- `use-manager.ts`
 
 **Functions:**
-- `read(parameter: SymlinkSettingsParameter): SymlinkSettingsValue`
-- `handleEvent(section: string, parameter: string, payload: any): Promise<void>`
+- `read(params?: { property?: SymlinkConfigSettingsProperty }): SymlinkConfigSettingsPropertyValue | Record<string, SymlinkConfigSettingsPropertyValue>`
+- `make(params?: { initialContent?: Record<string, SymlinkConfigSettingsPropertyValue>; generatedContent?: Record<string, SymlinkConfigSettingsPropertyValue> }): Promise<Record<string, SymlinkConfigSettingsPropertyValue> | undefined>`
+- `useSymlinkConfigManager()` - Manager hook for symlink-config settings
 
 **Types:**
-- `SymlinkSettingsParameter` (union type):
-  - `SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE`
-  - `SETTINGS.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES`
-  - `SETTINGS.SYMLINK_CONFIG.GITIGNORE_SYMLINKS`
-  - `SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES`
-  - `SETTINGS.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS`
-  - `SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION`
-  - `SETTINGS.SYMLINK_CONFIG.SYMLINK_PATH_MODE`
-  - `SETTINGS.SYMLINK_CONFIG.MAX_LOG_ENTRIES`
-- `SymlinkSettingsValue` (string | boolean | number | undefined)
+- `SymlinkConfigSettingsProperty` (union type of setting property names)
+- `SymlinkConfigSettingsPropertyValue` (string | boolean | number | undefined)
+- `SymlinkConfigSettingsManager` interface with objectName, handleEvent, read methods
 
 ### `src/managers/next-config-file/`
 **Files:**
@@ -470,9 +465,12 @@
 - `ExclusionPart` enum with All, ServiceFiles, SymlinkConfigs values (in enums.ts)
 
 **Functions:**
-- `useFilesSettingsManager()` - Manager hook for files.exclude settings
+- `useFilesExcludeManager()` - Manager hook for files.exclude settings
 - `read(params?: { pattern?: string; [key: string]: any }): boolean | Record<string, boolean>` - Read specific pattern or all exclusions
 - `make(params?: { initialContent?: Record<string, boolean>; generatedContent?: Record<string, boolean> }): Promise<Record<string, boolean> | undefined>` - Merge initial and generated exclusions
+- `generate(mode: ExclusionPart): Record<string, boolean>` (synchronous)
+- `needsRegenerate(event?: SettingsEvent): boolean` (synchronous, logs event and result)
+- `write(content: Record<string, boolean>): Promise<void>`
 
 ## Path Aliases
 
@@ -647,53 +645,55 @@ resolve: {
 ## Watcher Modules
 
 ### `src/watchers/`
-**Purpose:** Self-registering file watchers that monitor workspace changes
+**Purpose:** Self-registering file watchers organized by category (settings vs files)
 
 #### `src/watchers/index.ts`
 **Exports:**
-- `symlinkSettingsWatcher` (from `./symlink-settings-watcher`)
-- `filesSettingsWatcher` (from `./files-settings-watcher`)
-- `gitignoreWatcher` (from `./gitignore-watcher`)
-- `nextConfigWatcher` (from `./next-config-watcher`)
-- `currentConfigWatcher` (from `./current-config-watcher`)
-- `symlinkConfigsWatcher` (from `./symlink-config-watcher`)
-- `symlinksWatcher` (from `./symlinks-watcher`)
+- `symlinkConfigSettingsWatcher` (from `./settings/symlink-config_props`)
+- `filesSettingsWatcher` (from `./settings/files_exclude`)
+- `gitignoreWatcher` (from `./files/_gitignore`)
+- `nextConfigWatcher` (from `./files/next_symlink-config_json`)
+- `currentConfigWatcher` (from `./files/current_symlink-config_json`)
+- `symlinkConfigsWatcher` (from `./files/symlink-config_json-s`)
+- `symlinksWatcher` (from `./files/symlinks`)
 
-#### `src/watchers/symlink-settings-watcher.ts`
+#### `src/watchers/settings/symlink-config_props.ts`
 **Functions:**
-- `symlinkSettingsWatcher(): void`
+- `symlinkConfigSettingsWatcher(): void`
 
 **Implementation Details:**
 - Logs watcher registration and setting changes
-- Uses `useSettingsWatcher` hook
-- Watches symlink-config section settings changes
+- Uses `useSettingsWatcher` hook and `useSymlinkConfigManager()` manager hook
+- Watches specific symlink-config properties: gitignoreServiceFiles, gitignoreSymlinks, hideServiceFiles, hideSymlinkConfigs, watchWorkspace
 - Queues operations via `queue()` from state
-- Registers with name `WATCHERS.SYMLINK_SETTINGS`
+- Registers with name `WATCHERS.SYMLINK_CONFIG_SETTINGS`
 - Always runs (not conditional)
 
-#### `src/watchers/files-settings-watcher.ts`
+#### `src/watchers/settings/files_exclude.ts`
 **Functions:**
 - `filesSettingsWatcher(): void`
 
 **Implementation Details:**
 - Logs watcher registration and setting changes
-- Uses `useSettingsWatcher` hook
-- Watches files section settings changes (files.exclude)
+- Uses `useSettingsWatcher` hook and `useFilesExcludeManager()` manager hook
+- Watches files.exclude setting changes
 - Queues operations via `queue()` from state
 - Registers with name `WATCHERS.FILES_SETTINGS`
 - Conditionally created only when hideServiceFiles OR hideSymlinkConfigs is enabled
 
-#### `src/watchers/gitignore-watcher.ts`
+#### `src/watchers/files/_gitignore.ts`
 **Functions:**
 - `gitignoreWatcher(): void`
 
 **Implementation Details:**
 - Logs watcher registration and file changes
-- Watches .gitignore files
+- Uses `useFileWatcher` hook and `useGitignoreManager()` manager hook
+- Watches .gitignore files with root file filter
+- Monitors Modified and Deleted events
 - Queues operations via `queue()` from state
 - Registers with name `WATCHERS.GITIGNORE`
 
-#### `src/watchers/symlink-config-watcher.ts`
+#### `src/watchers/files/symlink-config_json-s.ts`
 **Functions:**
 - `symlinkConfigsWatcher(): void`
 
@@ -703,7 +703,7 @@ resolve: {
 - Refreshes tree view on changes
 - Registers with name `WATCHERS.SYMLINK_CONFIGS`
 
-#### `src/watchers/next-config-watcher.ts`
+#### `src/watchers/files/next_symlink-config_json.ts`
 **Functions:**
 - `nextConfigWatcher(): void`
 
@@ -712,7 +712,7 @@ resolve: {
 - Watches next.symlink-config.json at workspace root
 - Registers with name `WATCHERS.NEXT_CONFIG`
 
-#### `src/watchers/current-config-watcher.ts`
+#### `src/watchers/files/current_symlink-config_json.ts`
 **Functions:**
 - `currentConfigWatcher(): void`
 
@@ -722,7 +722,7 @@ resolve: {
 - Triggers both current-config and gitignore-file managers on changes
 - Registers with name `WATCHERS.CURRENT_CONFIG`
 
-#### `src/watchers/symlinks-watcher.ts`
+#### `src/watchers/files/symlinks.ts`
 **Functions:**
 - `symlinksWatcher(): void`
 
@@ -957,3 +957,9 @@ resolve: {
 - **Symlink Config Manager Rename**: Renamed to symlink-config_props/ for clarity
 - **Watcher Updates**: Updated watchers to use new manager locations and naming
 - **Manager Factory Read Contract**: Fixed symlink-config_props read function to return all properties when no params provided, ensuring compatibility with factory internal logic
+- **Watcher Organization**: Reorganized watchers into settings/ and files/ subdirectories for better categorization
+- **Manager Restructuring**: Moved gitignore-file to files/_gitignore/ with factory pattern adoption
+- **Manager Hook Integration**: Updated watchers to use manager hooks (useGitignoreManager, useFilesExcludeManager, useSymlinkConfigMananger)
+- **Manager Hook Typo Fix**: Fixed useSymlinkConfigManager function name typo
+- **File Watcher Enhancement**: File watchers now use manager hooks and proper event filtering
+- **Settings Watcher Specificity**: Settings watchers now watch specific properties instead of entire sections

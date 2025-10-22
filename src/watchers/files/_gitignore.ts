@@ -4,10 +4,10 @@ import { isRootFile } from '@shared/file-ops'
 import { getWorkspaceRoot, registerWatcher } from '@state'
 import { log } from '@shared/log'
 import { queue } from '@queue'
-import { use_gitignoreManager } from '@/src/managers/files/_gitignore'
+import { useGitignoreManager } from '@/src/managers/files/_gitignore'
 
 export function gitignoreWatcher() {
-  const _gitignoreFileManager = use_gitignoreManager()
+  const gitignoreManager = useGitignoreManager()
   const workspaceRoot = getWorkspaceRoot()
   const watcher = useFileWatcher({
     pattern: `**/${FILE_NAMES.GITIGNORE}`,
@@ -18,7 +18,7 @@ export function gitignoreWatcher() {
         log(
           `.gitignore changed: ${events.map((e) => `${e.eventType} ${e.uri.fsPath}`).join(', ')}`,
         )
-        return queue(() => _gitignoreFileManager.handleEvent(events))
+        return queue(() => gitignoreManager.handleEvent(events))
       },
     },
   })

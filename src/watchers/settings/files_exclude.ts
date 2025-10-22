@@ -6,10 +6,10 @@ import { SETTINGS, WATCHERS } from '@shared/constants'
 import { registerWatcher } from '@state'
 import { log } from '@shared/log'
 import { queue } from '@queue'
-import { useFilesSettingsManager } from '@/src/managers/settings/files_exclude'
+import { useFilesExcludeManager } from '@/src/managers/settings/files_exclude'
 
 export function filesSettingsWatcher() {
-  const filesSettingsManager = useFilesSettingsManager()
+  const filesExcludeManager = useFilesExcludeManager()
 
   log('Files settings watcher registered')
 
@@ -22,7 +22,7 @@ export function filesSettingsWatcher() {
           log(
             `files.exclude changed: ${Object.keys(event.value || {}).length} patterns`,
           )
-          return queue(() => filesSettingsManager.handleEvent(event))
+          return queue(() => filesExcludeManager.handleEvent(event))
         },
       },
     },

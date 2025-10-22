@@ -5,10 +5,10 @@ import { isRootFile } from '@shared/file-ops'
 import { getTreeProvider, getWorkspaceRoot, registerWatcher } from '@state'
 import { log } from '@shared/log'
 import { queue } from '@queue'
-import { use_gitignoreManager } from '@/src/managers/files/_gitignore'
+import { useGitignoreManager } from '@/src/managers/files/_gitignore'
 
 export function currentConfigWatcher() {
-  const _gitignoreFileManager = use_gitignoreManager()
+  const _gitignoreFileManager = useGitignoreManager()
   const treeProvider = getTreeProvider()
   const workspaceRoot = getWorkspaceRoot()
   const watcher = useFileWatcher({

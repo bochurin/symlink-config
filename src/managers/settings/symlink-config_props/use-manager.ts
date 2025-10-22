@@ -9,7 +9,7 @@ import { read } from './read'
 import { make } from './make'
 import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
 
-export function useSymlinkConfigSettingsMananger(): SymlinkConfigSettingsManager {
+export function useSymlinkConfigManager(): SymlinkConfigSettingsManager {
   const manager = createManager<
     | SymlinkConfigSettingsPropertyValue
     | Record<string, SymlinkConfigSettingsPropertyValue>

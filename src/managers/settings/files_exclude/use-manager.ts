@@ -8,7 +8,7 @@ import { ExclusionPart } from './enums'
 import { generate } from './generate'
 import { write } from './write'
 
-export function useFilesSettingsManager() {
+export function useFilesExcludeManager() {
   const manager = createManager({
     objectNameCallback: () => SETTINGS.FILES.SECTION,
     readCallback: read,
