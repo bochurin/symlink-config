@@ -1,21 +1,22 @@
 import { SETTINGS } from '@shared/constants'
 import { createManager } from '@shared/factories/manager'
-import { make } from './make'
-import { read } from './read'
+import { makeCallback } from './callbacks/make'
+import { readCallback } from './callbacks/read'
 import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
-import { needsRegenerate } from './needs-regenerate'
+import { needsRegenerateCallback } from './callbacks/needs-regenerate'
 import { ExclusionPart } from './enums'
-import { generate } from './generate'
-import { write } from './write'
+import { generateCallback } from './callbacks/generate'
+import { writeCallback } from './callbacks/write'
+import { FilesExcludeManager } from './types'
 
-export function useFilesExcludeManager() {
+export function useFilesExcludeManager(): FilesExcludeManager {
   const manager = createManager({
     objectNameCallback: () => SETTINGS.FILES.SECTION,
-    readCallback: read,
-    writeCallback: write,
-    makeCallback: make,
-    needsRegenerateCallback: needsRegenerate,
-    generateCallback: generate,
+    readCallback: readCallback,
+    writeCallback: writeCallback,
+    makeCallback: makeCallback,
+    needsRegenerateCallback: needsRegenerateCallback,
+    generateCallback: generateCallback,
   })
 
   return {

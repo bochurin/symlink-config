@@ -3,7 +3,7 @@ import { getWorkspaceRoot } from '@state'
 import { FILE_NAMES } from '@shared/constants'
 import { assembleGitignore } from '@/src/shared/gitignore-ops'
 
-export async function write(params?: {
+export async function writeCallback(params?: {
   content?: Record<string, { spacing: string; active: boolean }>
 }) {
   const entries = params!.content!

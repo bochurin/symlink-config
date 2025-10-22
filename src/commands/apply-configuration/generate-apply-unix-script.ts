@@ -1,5 +1,5 @@
 import * as path from 'path'
-import { useSymlinkConfigMananger } from '@/src/managers'
+import { useSymlinkConfigManager } from '@/src/managers'
 import { FILE_NAMES, SETTINGS } from '@shared/constants'
 import { SymlinkOperation } from './types'
 import { writeFile } from '@shared/file-ops'
@@ -8,7 +8,7 @@ export async function generateApplyUnixScript(
   operations: SymlinkOperation[],
   workspaceRoot: string,
 ) {
-  const settingsManager = useSymlinkConfigMananger()
+  const settingsManager = useSymlinkConfigManager()
 
   const scriptPath = path.join(workspaceRoot, FILE_NAMES.APPLY_SYMLINKS_SH)
 

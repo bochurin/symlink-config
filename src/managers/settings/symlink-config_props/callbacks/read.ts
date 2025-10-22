@@ -3,9 +3,9 @@ import { SETTINGS } from '@shared/constants'
 import {
   SymlinkConfigSettingsProperty,
   SymlinkConfigSettingsPropertyValue,
-} from './types'
+} from '../types'
 
-export function read(params?: {
+export function readCallback(params?: {
   property?: SymlinkConfigSettingsProperty
 }):
   | SymlinkConfigSettingsPropertyValue

@@ -5,8 +5,8 @@ import {
   SymlinkConfigSettingsPropertyValue,
   SymlinkConfigSettingsManager,
 } from './types'
-import { read } from './read'
-import { make } from './make'
+import { readCallback } from './callbacks/read'
+import { makeCallback } from './callbacks/make'
 import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
 
 export function useSymlinkConfigManager(): SymlinkConfigSettingsManager {
@@ -15,8 +15,8 @@ export function useSymlinkConfigManager(): SymlinkConfigSettingsManager {
     | Record<string, SymlinkConfigSettingsPropertyValue>
   >({
     objectNameCallback: () => SETTINGS.SYMLINK_CONFIG.SECTION,
-    readCallback: read,
-    makeCallback: make,
+    readCallback: readCallback,
+    makeCallback: makeCallback,
   })
 
   return {

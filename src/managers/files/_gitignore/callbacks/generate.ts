@@ -1,14 +1,14 @@
-import { useSymlinkConfigMananger } from '@/src/managers'
+import { useSymlinkConfigManager } from '@/src/managers'
 import { read as readCurrentConfig } from '@managers/current-config'
 import { FILE_NAMES, SETTINGS } from '@shared/constants'
-import { GitignoringPart } from './enums'
+import { GitignoringPart } from '../enums'
 
-export function generate(params?: {
+export function generateCallback(params?: {
   mode?: GitignoringPart
 }): Record<string, { spacing: string; active: boolean }> {
   const mode = params?.mode ?? GitignoringPart.All
 
-  const settingsManager = useSymlinkConfigMananger()
+  const settingsManager = useSymlinkConfigManager()
 
   const generatedEntries: Record<string, { spacing: string; active: boolean }> =
     {}

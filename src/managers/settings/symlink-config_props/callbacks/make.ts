@@ -2,10 +2,10 @@ import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
 import { SETTINGS } from '@/src/shared/constants'
 import { info } from '@/src/shared/vscode'
 import { makeWatchers } from '@/src/extension'
-import { ExclusionPart, useFilesExcludeManager } from '../files_exclude'
-import { GitignoringPart, useGitignoreManager } from '../../files/_gitignore'
+import { ExclusionPart, useFilesExcludeManager } from '@managers'
+import { GitignoringPart, useGitignoreManager } from '@managers'
 
-export function make(params?: { event?: SettingsEvent }): undefined {
+export function makeCallback(params?: { event?: SettingsEvent }): undefined {
   const event = params?.event
   if (!event) return
 

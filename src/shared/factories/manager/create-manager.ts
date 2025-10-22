@@ -41,28 +41,27 @@ export function createManager<CT>(
   }
 
   async function make(params?: { [key: string]: any }) {
-    let content: CT | undefined
-    if (read) {
-      const initialContent = read()
-      const generatedContent = generate({
-        initialContent,
-        ...params,
-      })
-      content = callbacks.makeCallback({
-        initialContent,
-        generatedContent,
-        ...params,
-      })
-      await write({ content, ...params })
-    } else {
-      const newContent = generate(params)
-      content = callbacks.makeCallback({
-        newContent,
-        ...params,
-      })
-    }
-    if (content) {
-      await write({ content, ...params })
+    // Read current content if available
+    const initialContent = read ? read() : undefined
+
+    // Generate new content
+    const generatedContent = generate({
+      initialContent,
+      ...params,
+    })
+
+    // Determine final content using makeCallback or generated content
+    const finalContent = callbacks.makeCallback
+      ? callbacks.makeCallback({
+          initialContent,
+          generatedContent,
+          ...params,
+        })
+      : generatedContent
+
+    // Write final content if it exists
+    if (finalContent) {
+      await write({ content: finalContent, ...params })
       log(`${objectName()} updated`)
     }
   }

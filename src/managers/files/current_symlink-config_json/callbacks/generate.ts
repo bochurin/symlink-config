@@ -1,0 +1,79 @@
+import { getWorkspaceRoot } from '@state'
+import { readDir, readSymlink, statFile, normalizePath } from '@shared/file-ops'
+
+interface ExistingSymlink {
+  target: string
+  source: string
+  type: 'dir' | 'file'
+}
+
+export function generateCallback(): string {
+  const symlinks = scanWorkspaceSymlinks()
+
+  const directories = symlinks
+    .filter((s) => s.type === 'dir')
+    .map((s) => ({
+      target: s.target,
+      source: s.source,
+    }))
+  const files = symlinks
+    .filter((s) => s.type === 'file')
+    .map((s) => ({
+      target: s.target,
+      source: s.source,
+    }))
+
+  const config = {
+    ...(directories.length > 0 && { directories }),
+    ...(files.length > 0 && { files }),
+  }
+
+  return JSON.stringify(config, null, 2)
+}
+
+function scanWorkspaceSymlinks(): ExistingSymlink[] {
+  const workspaceRoot = getWorkspaceRoot()
+  const symlinks: ExistingSymlink[] = []
+
+  function scanDirectory(dirPath: string, relativePath: string = '') {
+    try {
+      const entries = readDir(workspaceRoot, relativePath || '.')
+
+      for (const entry of entries) {
+        const relativeEntryPath = relativePath
+          ? `${relativePath}/${entry.name}`
+          : entry.name
+
+        if (entry.isSymbolicLink()) {
+          try {
+            const linkTarget = readSymlink(workspaceRoot, relativeEntryPath)
+            const stats = statFile(workspaceRoot, relativeEntryPath)
+
+            // Convert to workspace root relative (@-path)
+            const sourceTarget = linkTarget.startsWith('..')
+              ? linkTarget
+              : `@${normalizePath(linkTarget)}`
+
+            symlinks.push({
+              target: `@${relativeEntryPath}`,
+              source: sourceTarget,
+              type: stats.isDirectory() ? 'dir' : 'file',
+            })
+          } catch {
+            // Skip broken symlinks
+          }
+        } else if (entry.isDirectory() && !entry.name.startsWith('.')) {
+          scanDirectory(
+            workspaceRoot + '/' + relativeEntryPath,
+            relativeEntryPath,
+          )
+        }
+      }
+    } catch {
+      // Skip directories we can't read
+    }
+  }
+
+  scanDirectory(workspaceRoot)
+  return symlinks
+}

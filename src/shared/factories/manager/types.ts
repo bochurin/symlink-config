@@ -1,6 +1,6 @@
 export interface ManagerCallbacks<CT> {
   objectNameCallback: (params?: { [key: string]: any }) => string
-  makeCallback: (params?: { [key: string]: any }) => CT | undefined
+  makeCallback?: (params?: { [key: string]: any }) => CT | undefined
   needsRegenerateCallback?: (params?: { [key: string]: any }) => boolean
   generateCallback?: (params?: { [key: string]: any }) => CT
   readCallback?: (params?: { [key: string]: any }) => CT

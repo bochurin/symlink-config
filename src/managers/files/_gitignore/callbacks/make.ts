@@ -1,6 +1,6 @@
 import { log } from '@shared/log'
 
-export function make(params?: {
+export function makeCallback(params?: {
   initialContent?: Record<string, { spacing: string; active: boolean }>
   generatedContent?: Record<string, { spacing: string; active: boolean }>
 }): Record<string, { spacing: string; active: boolean }> | undefined {

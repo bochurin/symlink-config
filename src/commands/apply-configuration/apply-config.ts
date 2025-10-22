@@ -8,7 +8,7 @@ import { generateTree } from '@views/symlink-tree/generate'
 import { collectSymlinkOperations } from './collect-operations'
 import { generateApplyWindowsScript } from './generate-apply-windows-script'
 import { generateApplyUnixScript } from './generate-apply-unix-script'
-import { useSymlinkConfigMananger } from '@/src/managers'
+import { useSymlinkConfigManager } from '@managers'
 import { SETTINGS, FILE_NAMES } from '@shared/constants'
 import { confirm } from '@shared/vscode'
 import { generateAdminScript } from './generate-admin-script'
@@ -16,7 +16,7 @@ import { generateAdminScript } from './generate-admin-script'
 export async function applyConfig() {
   const workspaceRoot = getWorkspaceRoot()
 
-  const settingsManager = useSymlinkConfigMananger()
+  const settingsManager = useSymlinkConfigManager()
 
   // Confirmation dialog
   const confirmed = await confirm(

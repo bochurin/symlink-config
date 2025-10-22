@@ -1,4 +1,4 @@
-export function make(params?: {
+export function makeCallback(params?: {
   initialContent?: Record<string, boolean>
   generatedContent?: Record<string, boolean>
 }): Record<string, boolean> | undefined {
