@@ -113,3 +113,8 @@ This index provides an overview of all development sessions. Each session is doc
 **Topics**: Documentation maintenance and file organization  
 **Key Changes**: Session file renaming, chat history index updates  
 **Phase**: 1.53 (no version changes)
+
+### [Session 23 - October 22, 2025](session-2025-10-22.md)
+**Topics**: Callback-based architecture restructuring and comprehensive documentation updates  
+**Key Changes**: v0.0.74 → v0.0.75, callback organization, manager factory enhancement, path module elimination  
+**Phase**: 1.52 → 1.53
