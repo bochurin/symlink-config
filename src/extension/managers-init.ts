@@ -1,9 +1,8 @@
-import { init as initNextConfig } from '@managers/next-config-file'
-
 import { SETTINGS } from '@shared/constants'
 import {
   useCurrentSymlinkConfigManager,
   useSymlinkConfigManager,
+  useNextSymlinkConfigManager,
 } from '@/src/managers'
 import { log } from '@shared/log'
 import { useFilesExcludeManager } from '../managers/settings/files_exclude'
@@ -24,11 +23,12 @@ export async function managersInit(force?: boolean) {
   const filesExcludeManager = useFilesExcludeManager()
   const gitignoreMnager = use_gitignoreFileManager()
   const currentConfigManager = useCurrentSymlinkConfigManager()
+  const nextConfigManager = useNextSymlinkConfigManager()
   await Promise.all([
     filesExcludeManager.init(),
     ...(force || gitignoreServiceFiles ? [gitignoreMnager.init()] : []),
     ...(force || watchWorkspace
-      ? [initNextConfig(), currentConfigManager.init()]
+      ? [nextConfigManager.init(), currentConfigManager.init()]
       : []),
   ])
   log('Managers initialized')

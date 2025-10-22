@@ -1,5 +1,6 @@
 import { getWorkspaceRoot } from '@state'
 import { readDir, readSymlink, statFile, normalizePath } from '@shared/file-ops'
+import { Config, ConfigEntry } from '@managers'
 
 interface ExistingSymlink {
   target: string
@@ -10,20 +11,20 @@ interface ExistingSymlink {
 export function generateCallback(): string {
   const symlinks = scanWorkspaceSymlinks()
 
-  const directories = symlinks
+  const directories: ConfigEntry[] = symlinks
     .filter((s) => s.type === 'dir')
     .map((s) => ({
       target: s.target,
       source: s.source,
     }))
-  const files = symlinks
+  const files: ConfigEntry[] = symlinks
     .filter((s) => s.type === 'file')
     .map((s) => ({
       target: s.target,
       source: s.source,
     }))
 
-  const config = {
+  const config: Config = {
     ...(directories.length > 0 && { directories }),
     ...(files.length > 0 && { files }),
   }
@@ -56,7 +57,11 @@ function scanWorkspaceSymlinks(): ExistingSymlink[] {
               sourceTarget = linkTarget
             } else if (linkTarget.startsWith('..')) {
               // Relative path - convert to @ format
-              const absolutePath = normalizePath(relativePath ? `${relativePath}/../${linkTarget.substring(3)}` : linkTarget.substring(3))
+              const absolutePath = normalizePath(
+                relativePath
+                  ? `${relativePath}/../${linkTarget.substring(3)}`
+                  : linkTarget.substring(3),
+              )
               sourceTarget = `@${absolutePath}`
             } else {
               // Direct path - add @ prefix

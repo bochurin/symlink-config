@@ -1,5 +1,5 @@
 import { useFileWatcher, FileEventType } from '@shared/hooks/use-file-watcher'
-import { handleEvent as handleNextConfigEvent } from '@managers/next-config-file'
+import { useNextSymlinkConfigManager } from '@managers'
 import { FILE_NAMES, WATCHERS } from '@shared/constants'
 import { isRootFile } from '@shared/file-ops'
 import { getTreeProvider, getWorkspaceRoot, registerWatcher } from '@state'
@@ -7,6 +7,7 @@ import { log } from '@shared/log'
 import { queue } from '@queue'
 
 export function nextConfigWatcher() {
+  const nextConfigManager = useNextSymlinkConfigManager()
   log('Next config watcher registered')
   const treeProvider = getTreeProvider()
   const workspaceRoot = getWorkspaceRoot()
@@ -19,7 +20,7 @@ export function nextConfigWatcher() {
         log(
           `next.symlink-config.json: ${events[0].eventType} at ${events[0].uri.fsPath}`,
         )
-        queue(() => handleNextConfigEvent(events))
+        queue(() => nextConfigManager.handleEvent(events))
         treeProvider?.refresh()
       },
     },

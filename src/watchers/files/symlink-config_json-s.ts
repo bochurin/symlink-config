@@ -1,11 +1,12 @@
 import { useFileWatcher, FileEventType } from '@shared/hooks/use-file-watcher'
-import { handleEvent as handleNextConfigEvent } from '@managers/next-config-file'
+import { useNextSymlinkConfigManager } from '@managers'
 import { FILE_NAMES, WATCHERS } from '@shared/constants'
 import { getTreeProvider, registerWatcher } from '@state'
 import { log } from '@shared/log'
 import { queue } from '@queue'
 
 export function symlinkConfigsWatcher() {
+  const nextConfigManager = useNextSymlinkConfigManager()
   log('Symlink configs watcher registered')
   const treeProvider = getTreeProvider()
   const watcher = useFileWatcher({
@@ -22,7 +23,7 @@ export function symlinkConfigsWatcher() {
             .map((e) => `${e.eventType} ${e.uri.fsPath}`)
             .join(', ')
           log(`symlink-config.json: ${details}`)
-          return queue(() => handleNextConfigEvent(events))
+          return queue(() => nextConfigManager.handleEvent(events))
         },
         (events) => treeProvider?.refresh(),
       ],

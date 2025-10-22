@@ -1,13 +1,12 @@
 import * as path from 'path'
 import { SymlinkConfigEntry, TreeNode, treeBase } from '../types'
-import * as nextConfigManager from '@managers/next-config-file'
-
 import { parseConfig } from './parse-config'
 import { sortTree } from './sort-tree'
-import { useCurrentSymlinkConfigManager } from '@/src/managers'
+import { useCurrentSymlinkConfigManager, useNextSymlinkConfigManager } from '@/src/managers'
 
 export function generateTree(treeBase: treeBase): Record<string, TreeNode> {
   const currentConfigManager = useCurrentSymlinkConfigManager()
+  const nextConfigManager = useNextSymlinkConfigManager()
 
   // Read next and current configs and parse them to arrays of symlink configs
   const nextConfigs = parseConfig(nextConfigManager.read())
