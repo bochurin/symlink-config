@@ -1,11 +1,13 @@
 import * as path from 'path'
 import { FILE_NAMES } from '@shared/constants'
-import { read as readCurrentConfig } from '@managers/current-config'
 import { writeFile } from '@shared/file-ops'
+import { useCurrentSymlinkConfigManager } from '@/src/managers'
 
 export async function generateCleanWindowsScript(workspaceRoot: string) {
   const scriptPath = path.join(workspaceRoot, FILE_NAMES.CLEAR_SYMLINKS_BAT)
-  const currentConfig = readCurrentConfig()
+
+  const currentConfigManager = useCurrentSymlinkConfigManager()
+  const currentConfig = currentConfigManager.read()
 
   if (!currentConfig) {
     return

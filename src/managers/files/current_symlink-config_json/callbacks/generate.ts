@@ -49,10 +49,19 @@ function scanWorkspaceSymlinks(): ExistingSymlink[] {
             const linkTarget = readSymlink(workspaceRoot, relativeEntryPath)
             const stats = statFile(workspaceRoot, relativeEntryPath)
 
-            // Convert to workspace root relative (@-path)
-            const sourceTarget = linkTarget.startsWith('..')
-              ? linkTarget
-              : `@${normalizePath(linkTarget)}`
+            // Always convert to workspace root relative (@-path)
+            let sourceTarget: string
+            if (linkTarget.startsWith('@')) {
+              // Already @ format
+              sourceTarget = linkTarget
+            } else if (linkTarget.startsWith('..')) {
+              // Relative path - convert to @ format
+              const absolutePath = normalizePath(relativePath ? `${relativePath}/../${linkTarget.substring(3)}` : linkTarget.substring(3))
+              sourceTarget = `@${absolutePath}`
+            } else {
+              // Direct path - add @ prefix
+              sourceTarget = `@${normalizePath(linkTarget)}`
+            }
 
             symlinks.push({
               target: `@${relativeEntryPath}`,

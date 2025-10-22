@@ -2,6 +2,16 @@ import { info } from '@shared/vscode'
 import { log } from '@shared/log'
 import type { Manager, ManagerCallbacks } from './types'
 
+function isEqual(a: any, b: any): boolean {
+  if (a === b) return true
+  if (a == null || b == null) return false
+  try {
+    return JSON.stringify(a) === JSON.stringify(b)
+  } catch {
+    return false
+  }
+}
+
 export function createManager<CT>(
   callbacks: ManagerCallbacks<CT>,
 ): Manager<CT> {
@@ -59,8 +69,8 @@ export function createManager<CT>(
         })
       : generatedContent
 
-    // Write final content if it exists
-    if (finalContent) {
+    // Write final content if it exists and is different from initial
+    if (finalContent && !isEqual(finalContent, initialContent)) {
       await write({ content: finalContent, ...params })
       log(`${objectName()} updated`)
     }

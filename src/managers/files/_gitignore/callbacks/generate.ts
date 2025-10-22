@@ -1,5 +1,7 @@
-import { useSymlinkConfigManager } from '@/src/managers'
-import { read as readCurrentConfig } from '@managers/current-config'
+import {
+  useCurrentSymlinkConfigManager,
+  useSymlinkConfigManager,
+} from '@/src/managers'
 import { FILE_NAMES, SETTINGS } from '@shared/constants'
 import { GitignoringPart } from '../enums'
 
@@ -9,6 +11,7 @@ export function generateCallback(params?: {
   const mode = params?.mode ?? GitignoringPart.All
 
   const settingsManager = useSymlinkConfigManager()
+  const currentConfigManager = useCurrentSymlinkConfigManager()
 
   const generatedEntries: Record<string, { spacing: string; active: boolean }> =
     {}
@@ -54,7 +57,7 @@ export function generateCallback(params?: {
         SETTINGS.SYMLINK_CONFIG.GITIGNORE_SYMLINKS,
       ) as boolean
 
-      const currentConfigString = readCurrentConfig()
+      const currentConfigString = currentConfigManager.read()
       if (currentConfigString) {
         const currentConfig = JSON.parse(currentConfigString)
 
