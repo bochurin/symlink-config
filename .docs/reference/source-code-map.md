@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
 **Generated**: 21.10.2025  
-**Version**: 0.0.74  
+**Version**: 0.0.75  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -349,13 +349,14 @@
 **Files:**
 - `index.ts` (exports: types, enums, use-manager)
 - `enums.ts`
-- `generate.ts`
-- `make.ts`
-- `needs-regenerate.ts`
-- `read.ts`
 - `types.ts`
 - `use-manager.ts`
-- `write.ts`
+- `callbacks/` (subfolder with callback implementations)
+  - `generate.ts`
+  - `make.ts`
+  - `needs-regenerate.ts`
+  - `read.ts`
+  - `write.ts`
 
 **Functions:**
 - `generate(mode?: GitignoringPart): Record<string, { spacing: string; active: boolean }>` (synchronous)
@@ -376,10 +377,11 @@
 ### `src/managers/settings/symlink-config_props/`
 **Files:**
 - `index.ts` (exports: types, use-manager)
-- `make.ts`
-- `read.ts`
 - `types.ts`
 - `use-manager.ts`
+- `callbacks/` (subfolder with callback implementations)
+  - `make.ts`
+  - `read.ts`
 
 **Functions:**
 - `read(params?: { property?: SymlinkConfigSettingsProperty }): SymlinkConfigSettingsPropertyValue | Record<string, SymlinkConfigSettingsPropertyValue>`
@@ -445,13 +447,14 @@
 **Files:**
 - `index.ts` (exports: types, enums, use-manager)
 - `enums.ts`
-- `generate.ts`
-- `make.ts`
-- `needs-regenerate.ts`
-- `read.ts`
 - `types.ts`
 - `use-manager.ts`
-- `write.ts`
+- `callbacks/` (subfolder with callback implementations)
+  - `generate.ts`
+  - `make.ts`
+  - `needs-regenerate.ts`
+  - `read.ts`
+  - `write.ts`
 
 **Functions:**
 - `generate(mode: ExclusionPart): Record<string, boolean>` (synchronous)
@@ -961,5 +964,9 @@ resolve: {
 - **Manager Restructuring**: Moved gitignore-file to files/_gitignore/ with factory pattern adoption
 - **Manager Hook Integration**: Updated watchers to use manager hooks (useGitignoreManager, useFilesExcludeManager, useSymlinkConfigMananger)
 - **Manager Hook Typo Fix**: Fixed useSymlinkConfigManager function name typo
+- **Callback-Based Architecture**: Restructured managers to use callbacks/ subdirectories for cleaner separation of concerns
+- **Manager Factory Enhancement**: Improved make() function readability with clearer logic flow
+- **Path Module Elimination**: Replaced Node.js path module usage with shared/file-ops utilities in current_symlink-config_json manager
+- **Callback Organization**: Moved individual manager functions (generate, make, needs-regenerate, read, write) to callbacks/ folders
 - **File Watcher Enhancement**: File watchers now use manager hooks and proper event filtering
 - **Settings Watcher Specificity**: Settings watchers now watch specific properties instead of entire sections
