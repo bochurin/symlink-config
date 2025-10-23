@@ -11,6 +11,7 @@ import { FILE_NAMES, SETTINGS } from '@shared/constants'
 import { generateAdminScript } from './generate-admin-script'
 import { runScriptAsAdmin } from '@shared/script-runner'
 import { useSymlinkConfigManager } from '@managers'
+import { removeSymlinksDirectly } from './direct-symlink-remover'
 
 export async function cleanConfig(): Promise<void> {
   const workspaceRoot = getWorkspaceRoot()
@@ -25,19 +26,37 @@ export async function cleanConfig(): Promise<void> {
     SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION_MODE,
   )
 
-  // Confirmation dialog for script generation
-  const modeText = String(scriptGenerationMode)
-  const confirmed = await confirmWarning(
-    `Generate ${modeText} cleaning script to remove symlinks handled by the extension?`,
-    `Yes, Generate ${modeText.charAt(0).toUpperCase() + modeText.slice(1)} Cleaning Script`,
+  // Offer direct removal or script generation
+  const choice = await vscode.window.showWarningMessage(
+    'Remove symlinks handled by the extension?',
+    { modal: true },
+    'Remove Directly',
+    'Generate Script'
   )
-
-  if (!confirmed) {
+  
+  if (!choice) {
     log('Clean configuration cancelled by user')
     return
   }
+  
+  if (choice === 'Remove Directly') {
+    log('Removing symlinks directly...')
+    const result = await removeSymlinksDirectly(workspaceRoot)
+    
+    if (result.errors.length > 0) {
+      vscode.window.showWarningMessage(
+        `Symlinks removed with ${result.failed} errors. Check output for details.`
+      )
+    } else if (result.success > 0) {
+      vscode.window.showInformationMessage(`Successfully removed ${result.success} symlinks`)
+    } else {
+      vscode.window.showInformationMessage('No symlinks found to remove')
+    }
+    log(`Direct removal complete: ${result.success} success, ${result.failed} failed`)
+    return
+  }
 
-  log('Generating clean configuration scripts...')
+  log('Generating clean configuration scripts (user chose scripts over direct removal)...')
 
   const isWindows = os.platform() === 'win32'
 

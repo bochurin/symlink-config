@@ -13,29 +13,13 @@ import { SETTINGS, FILE_NAMES } from '@shared/constants'
 import { confirm } from '@shared/vscode'
 import { generateAdminScript } from './generate-admin-script'
 import { runScriptAsAdmin } from '@shared/script-runner'
+import { isRunningAsAdmin } from '@shared/admin-detection'
+import { createSymlinksDirectly } from './direct-symlink-creator'
 
 export async function applyConfig() {
   const workspaceRoot = getWorkspaceRoot()
 
-  const settingsManager = useSymlinkConfigManager()
-  const scriptGenerationMode = settingsManager.read(
-    SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION_MODE,
-  )
-
-  // Confirmation dialog
-  const modeText = String(scriptGenerationMode)
-  const confirmed = await confirm(
-    `Generate ${modeText} symlink scripts to apply configuration?`,
-    `Yes, Generate ${modeText.charAt(0).toUpperCase() + modeText.slice(1)} Applying Scripts`,
-  )
-
-  if (!confirmed) {
-    log('Apply configuration cancelled by user')
-    return
-  }
-
   try {
-    log('Generating apply configuration scripts...')
     // Generate tree to get symlink operations
     const tree = generateTree('targets')
     const operations = collectSymlinkOperations(tree)
@@ -47,9 +31,50 @@ export async function applyConfig() {
       return
     }
 
+    // Check admin status and show appropriate dialog
+    const isAdmin = await isRunningAsAdmin()
+    let choice: string | undefined
+    
+    if (isAdmin) {
+      choice = await vscode.window.showInformationMessage(
+        'Apply symlink configuration?',
+        { modal: true },
+        'Create Directly',
+        'Generate Scripts'
+      )
+    } else {
+      const confirmed = await confirm(
+        'Apply symlink configuration?',
+        'Generate Scripts'
+      )
+      choice = confirmed ? 'Generate Scripts' : undefined
+    }
+    
+    if (!choice) {
+      log('Apply configuration cancelled by user')
+      return
+    }
+    
+    if (choice === 'Create Directly') {
+      log('Creating symlinks directly...')
+      const result = await createSymlinksDirectly(operations, workspaceRoot)
+      
+      if (result.errors.length > 0) {
+        vscode.window.showWarningMessage(
+          `Symlinks created with ${result.failed} errors. Check output for details.`
+        )
+      } else {
+        info(`Successfully created ${result.success} symlinks`)
+      }
+      log(`Direct creation complete: ${result.success} success, ${result.failed} failed`)
+      return
+    }
+
+    const settingsManager = useSymlinkConfigManager()
     const scriptGeneration = settingsManager.read(
       SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION,
     )
+    log('Generating scripts...')
     const isWindows = os.platform() === 'win32'
 
     const shouldGenerateWindows =

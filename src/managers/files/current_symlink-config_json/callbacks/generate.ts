@@ -55,17 +55,33 @@ function scanWorkspaceSymlinks(): ExistingSymlink[] {
             if (linkTarget.startsWith('@')) {
               // Already @ format
               sourceTarget = linkTarget
-            } else if (linkTarget.startsWith('..')) {
-              // Relative path - convert to @ format
-              const absolutePath = normalizePath(
-                relativePath
-                  ? `${relativePath}/../${linkTarget.substring(3)}`
-                  : linkTarget.substring(3),
-              )
-              sourceTarget = `@${absolutePath}`
             } else {
-              // Direct path - add @ prefix
-              sourceTarget = `@${normalizePath(linkTarget)}`
+              // Resolve to absolute path first, then convert to @-relative
+              let absoluteTarget: string
+              if (linkTarget.startsWith('/') || linkTarget.match(/^[A-Za-z]:/)) {
+                // Already absolute path
+                absoluteTarget = linkTarget
+              } else {
+                // Relative path - resolve from symlink location
+                const symlinkDir = relativePath ? `${workspaceRoot}/${relativePath}` : workspaceRoot
+                absoluteTarget = normalizePath(`${symlinkDir}/${linkTarget}`)
+              }
+              
+              // Convert absolute path to @-relative if within workspace
+              const normalizedWorkspaceRoot = normalizePath(workspaceRoot).replace(/\\/g, '/')
+              const normalizedTarget = normalizePath(absoluteTarget).replace(/\\/g, '/')
+              
+              if (normalizedTarget.startsWith(normalizedWorkspaceRoot)) {
+                let relativeToRoot = normalizedTarget.substring(normalizedWorkspaceRoot.length)
+                // Remove leading slash if present
+                if (relativeToRoot.startsWith('/')) {
+                  relativeToRoot = relativeToRoot.substring(1)
+                }
+                sourceTarget = `@${relativeToRoot}`
+              } else {
+                // Outside workspace - keep as absolute but add @
+                sourceTarget = `@${normalizedTarget}`
+              }
             }
 
             symlinks.push({

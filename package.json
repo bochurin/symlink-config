@@ -2,7 +2,7 @@
   "name": "@bochurin/symlink-config",
   "displayName": "symlink-config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.81",
+  "version": "0.0.86",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -189,23 +189,23 @@
       "commandPalette": [
         {
           "command": "symlink-config.applyConfiguration",
-          "when": "workspaceFolderCount > 0"
+          "when": "workspaceFolderCount > 0 && symlink-config.initialized"
         },
         {
           "command": "symlink-config.cleanConfiguration",
-          "when": "workspaceFolderCount > 0"
+          "when": "workspaceFolderCount > 0 && symlink-config.initialized"
         },
         {
           "command": "symlink-config.refreshManagers",
-          "when": "workspaceFolderCount > 0 && !config.symlink-config.watchWorkspace"
+          "when": "workspaceFolderCount > 0 && symlink-config.initialized && !config.symlink-config.watchWorkspace"
         },
         {
           "command": "symlink-config.clearLogs",
-          "when": "workspaceFolderCount > 0"
+          "when": "workspaceFolderCount > 0 && symlink-config.initialized"
         },
         {
           "command": "symlink-config.showLogs",
-          "when": "workspaceFolderCount > 0"
+          "when": "workspaceFolderCount > 0 && symlink-config.initialized"
         },
         {
           "command": "symlink-config.toggleView",
@@ -243,19 +243,19 @@
       "view/title": [
         {
           "command": "symlink-config.applyConfiguration",
-          "when": "view == symlink-config",
+          "when": "view == symlink-config && symlink-config.initialized",
           "group": "navigation@1",
           "icon": "$(play)"
         },
         {
           "command": "symlink-config.cleanConfiguration",
-          "when": "view == symlink-config",
+          "when": "view == symlink-config && symlink-config.initialized",
           "group": "navigation@1",
           "icon": "$(trash)"
         },
         {
           "command": "symlink-config.refreshManagers",
-          "when": "view == symlink-config && !config.symlink-config.watchWorkspace",
+          "when": "view == symlink-config && symlink-config.initialized && !config.symlink-config.watchWorkspace",
           "group": "navigation@2",
           "icon": "$(refresh)"
         },
@@ -279,19 +279,19 @@
         },
         {
           "command": "symlink-config.applyConfiguration",
-          "when": "view == symlink-config",
+          "when": "view == symlink-config && symlink-config.initialized",
           "group": "1_apply",
           "icon": "$(play)"
         },
         {
           "command": "symlink-config.cleanConfiguration",
-          "when": "view == symlink-config",
+          "when": "view == symlink-config && symlink-config.initialized",
           "group": "1_apply",
           "icon": "$(play)"
         },
         {
           "command": "symlink-config.refreshManagers",
-          "when": "view == symlink-config && !config.symlink-config.watchWorkspace",
+          "when": "view == symlink-config && symlink-config.initialized && !config.symlink-config.watchWorkspace",
           "group": "2_actions",
           "icon": "$(refresh)"
         },

@@ -6,13 +6,13 @@
     "**/.hg": true,
     "**/.DS_Store": true,
     "**/Thumbs.db": true,
-    "next.symlink-config.json": true,
-    "current.symlink-config.json": true,
-    "apply.symlink-config.bat": true,
-    "apply.symlink-config.sh": true,
-    "clean.symlink-config.bat": true,
-    "clean.symlink-config.sh": true,
-    "admin.symlink-config.bat": true,
+    "next.symlink-config.json": false,
+    "current.symlink-config.json": false,
+    "apply.symlink-config.bat": false,
+    "apply.symlink-config.sh": false,
+    "clean.symlink-config.bat": false,
+    "clean.symlink-config.sh": false,
+    "admin.symlink-config.bat": false,
     "**/symlink-config.json": false
   },
   "symlink-config.silent": true,
@@ -23,6 +23,6 @@
   "symlink-config.gitignoreServiceFiles": true,
   "symlink-config.watchWorkspace": true,
   "symlink-config.symlinkPathMode": "relative",
-  "symlink-config.scriptGeneration": "auto",
+  "symlink-config.scriptGenerationOS": "auto",
   "symlink-config.scriptGenerationMode": "complete"
 }

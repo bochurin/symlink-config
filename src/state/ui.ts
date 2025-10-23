@@ -23,3 +23,12 @@ export function setOutputChannel(channel: vscode.OutputChannel) {
 export function getOutputChannel(): vscode.OutputChannel | undefined {
   return outputChannel
 }
+
+let isInitialized: boolean = false
+export function setInitialized(initialized: boolean) {
+  isInitialized = initialized
+  vscode.commands.executeCommand('setContext', 'symlink-config.initialized', initialized)
+}
+export function getInitialized(): boolean {
+  return isInitialized
+}

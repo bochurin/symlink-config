@@ -4,6 +4,7 @@ import { log } from '@shared/log'
 import { SymlinkTreeProvider, ScriptCodeLensProvider } from '@views'
 import { registerCommands } from './register-commands'
 import { init, reset } from './ini'
+import { isRunningAsAdmin } from '@shared/admin-detection'
 
 export async function activate(context: vscode.ExtensionContext) {
   const outputChannel = vscode.window.createOutputChannel('symlink-config', {
@@ -15,11 +16,18 @@ export async function activate(context: vscode.ExtensionContext) {
   log('Extension activated')
 
   const treeProvider = new SymlinkTreeProvider()
-  vscode.window.createTreeView('symlink-config', {
+  const treeView = vscode.window.createTreeView('symlink-config', {
     treeDataProvider: treeProvider,
   })
+  
+  // Update view name with admin status
+  const isAdmin = await isRunningAsAdmin()
+  if (isAdmin) {
+    treeView.title = '🔑 SYMLINK-CONFIG'
+  }
 
   setTreeProvider(treeProvider)
+  context.subscriptions.push(treeView)
   registerCommands(context, treeProvider)
 
   const codeLensProvider = new ScriptCodeLensProvider()

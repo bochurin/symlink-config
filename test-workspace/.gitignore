@@ -6,10 +6,10 @@ apply.symlink-config.sh
 clean.symlink-config.bat
 clean.symlink-config.sh
 admin.symlink-config.bat
-shared/vscode-sl
-utils-sl
 container1/symlinks/container2-sl2
 container2/shared-sl
+shared/vscode-sl
+utils-sl
 container1/.gitignore
 container1/symlinks/package-root.json
 container1/types.ts

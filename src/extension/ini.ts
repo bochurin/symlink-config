@@ -1,14 +1,14 @@
 import * as vscode from 'vscode'
-import { setWorkspaceRoot, setWorkspaceName, disposeWatchers } from '@state'
+import { setWorkspaceRoot, setWorkspaceName, disposeWatchers, setInitialized } from '@state'
 import { log } from '@shared/log'
 import { findCommonPath } from '@shared/file-ops'
 import { makeWatchers } from './make-watchers'
 import { managersInit } from './managers-init'
 
-let isInitialized = false
+
 
 export async function init(): Promise<(() => void) | undefined> {
-  if (isInitialized || !vscode.workspace.workspaceFolders) {
+  if (!vscode.workspace.workspaceFolders) {
     return
   }
 
@@ -24,14 +24,14 @@ export async function init(): Promise<(() => void) | undefined> {
   // Perform initialization functions of all managers
   await managersInit()
 
-  isInitialized = true
+  setInitialized(true)
 
   return disposeWatchers
 }
 
 export function reset() {
   disposeWatchers()
-  isInitialized = false
+  setInitialized(false)
 }
 
 async function calculateAndSetProjectRoot(): Promise<{
