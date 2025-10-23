@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 21.10.2025  
-**Version**: 0.0.75  
+**Generated**: 22.10.2025  
+**Version**: 0.0.79  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -421,27 +421,55 @@
 - `Config` interface with directories?, files?, exclude_paths? arrays
 - `ConfigEntry` interface with target, source, configPath? properties
 
-### `src/managers/current-config/`
+### `src/managers/files/current_symlink-config_json/`
 **Files:**
-- `index.ts` (exports: init, read, handle-event, make, needs-regenerate)
-- `generate.ts`
-- `handle-event.ts`
-- `init.ts`
-- `make.ts`
-- `needs-regenerate.ts`
-- `read.ts`
+- `index.ts` (exports: types, use-manager)
+- `types.ts`
+- `use-manager.ts`
+- `callbacks/` (subfolder with callback implementations)
+  - `generate.ts`
+  - `read.ts`
+  - `write.ts`
 
 **Functions:**
-- `generate(): string` (synchronous)
-- `scanWorkspaceSymlinks(): ExistingSymlink[]` (internal, synchronous)
-- `handleEvent(events: FileEvent[]): Promise<void>`
-- `init(): Promise<void>`
-- `make(): Promise<void>` (logs when current.symlink-config.json is updated)
-- `needsRegenerate(): boolean` (synchronous, logs result and errors)
-- `read(): string`
+- `useCurrentSymlinkConfigManager()` - Manager hook for current.symlink-config.json management
+- `generateCallback(): string` (synchronous, enforces @ path format for all sources, in callbacks/generate.ts)
+- `readCallback(): string` (in callbacks/read.ts)
+- `writeCallback(content: string): Promise<void>` (in callbacks/write.ts)
+- `scanWorkspaceSymlinks(): ExistingSymlink[]` (internal, converts all paths to @ format)
 
 **Types:**
-- `ExistingSymlink` interface with target, source, type properties
+- `CurrentSymlinkConfigManager` interface with objectName, handleEvent, make, read, init methods
+
+### `src/managers/files/next_symlink-config_json/`
+**Files:**
+- `index.ts` (exports: types, use-manager)
+- `types.ts`
+- `use-manager.ts`
+- `callbacks/` (subfolder with callback implementations)
+  - `generate.ts`
+  - `read.ts`
+  - `write.ts`
+
+**Functions:**
+- `useNextSymlinkConfigManager()` - Manager hook for next.symlink-config.json management
+- `generateCallback(): string` (synchronous, aggregates all symlink-config.json files, in callbacks/generate.ts)
+- `readCallback(): string` (in callbacks/read.ts)
+- `writeCallback(params?: { content?: string; [key: string]: any }): Promise<void>` (in callbacks/write.ts)
+- `findConfigFiles(): string[]` (internal, scans workspace for symlink-config.json files)
+- `createMasterConfig(configFiles: string[]): Config` (internal, aggregates configs)
+
+**Types:**
+- `NextSymlinkConfigManager` interface with objectName, handleEvent, make, read, init methods
+
+### `src/managers/files/symlink-config_json/`
+**Files:**
+- `index.ts` (exports: types)
+- `types.ts`
+
+**Types:**
+- `Config` interface with directories?, files? arrays (shared by current and next managers)
+- `ConfigEntry` interface with target, source, configPath? properties (shared type)
 
 ### `src/managers/settings/files_exclude/`
 **Files:**
@@ -548,6 +576,7 @@ resolve: {
 **Functions:**
 - `createManager<CT>(callbacks: ManagerCallbacks<CT>): Manager<CT>` (synchronous return)
 - `useManager<CT>(callbacks: ManagerCallbacks<CT>): ManagerSugar<CT>` (manager hook)
+- `isEqual(a: any, b: any): boolean` (internal deep equality comparison)
 
 **Internal Functions (in create-manager.ts):**
 - `read(params?: { [key: string]: any }): CT | undefined` (base level)
@@ -657,7 +686,7 @@ resolve: {
 - `gitignoreWatcher` (from `./files/_gitignore`)
 - `nextConfigWatcher` (from `./files/next_symlink-config_json`)
 - `currentConfigWatcher` (from `./files/current_symlink-config_json`)
-- `symlinkConfigsWatcher` (from `./files/symlink-config_json-s`)
+- `symlinkConfigsWatcher` (from `./files/symlink-config_json`)
 - `symlinksWatcher` (from `./files/symlinks`)
 
 #### `src/watchers/settings/symlink-config_props.ts`
@@ -696,7 +725,7 @@ resolve: {
 - Queues operations via `queue()` from state
 - Registers with name `WATCHERS.GITIGNORE`
 
-#### `src/watchers/files/symlink-config_json-s.ts`
+#### `src/watchers/files/symlink-config_json.ts`
 **Functions:**
 - `symlinkConfigsWatcher(): void`
 
@@ -968,5 +997,11 @@ resolve: {
 - **Manager Factory Enhancement**: Improved make() function readability with clearer logic flow
 - **Path Module Elimination**: Replaced Node.js path module usage with shared/file-ops utilities in current_symlink-config_json manager
 - **Callback Organization**: Moved individual manager functions (generate, make, needs-regenerate, read, write) to callbacks/ folders
+- **Current Config Manager Replacement**: Replaced current-config/ with files/current_symlink-config_json/ using factory-based architecture
+- **Manager Consolidation**: Converted current-config manager to callback-based pattern with use-manager hook
+- **@ Path Format Enforcement**: Enhanced current config generator to always use @ (root-relative) paths for consistency
+- **Deep Equality Comparison**: Added isEqual function to manager factory for proper content comparison of any types
 - **File Watcher Enhancement**: File watchers now use manager hooks and proper event filtering
 - **Settings Watcher Specificity**: Settings watchers now watch specific properties instead of entire sections
+- **Watcher File Rename**: Renamed symlink-config_json-s.ts to symlink-config_json.ts for cleaner naming
+- **Folder Naming Convention**: Confirmed "_" substitution for "." in folder names to avoid .gitignore conflicts
