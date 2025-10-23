@@ -1,0 +1,27 @@
+{
+  "symlink-config.projectRoot": "c:/Users/bochu/Projects/symlink-config/test-workspace/",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "next.symlink-config.json": true,
+    "current.symlink-config.json": true,
+    "apply.symlink-config.bat": true,
+    "apply.symlink-config.sh": true,
+    "clean.symlink-config.bat": true,
+    "clean.symlink-config.sh": true,
+    "admin.symlink-config.bat": true,
+    "**/symlink-config.json": false
+  },
+  "symlink-config.silent": false,
+  "symlink-config.maxLogEntries": 500,
+  "symlink-config.hideSymlinkConfigs": false,
+  "symlink-config.hideServiceFiles": false,
+  "symlink-config.gitignoreSymlinks": true,
+  "symlink-config.gitignoreServiceFiles": true,
+  "symlink-config.watchWorkspace": true,
+  "symlink-config.symlinkPathMode": "relative",
+  "symlink-config.scriptGeneration": "auto"
+}
