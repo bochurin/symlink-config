@@ -27,6 +27,6 @@
     // "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
     // "noUnusedParameters": true,  /* Report errors on unused parameters. */
   },
-  "include": ["src/**/*", "not-used/types"],
+  "include": ["src/**/*", "not-used/types", "src/managers/files/_gitignore"],
   "exclude": ["not-used/**/*", "node_modules", "out"]
 }
