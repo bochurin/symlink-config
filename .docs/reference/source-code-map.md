@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
 **Generated**: 23.10.2025  
-**Version**: 0.0.80  
+**Version**: 0.0.86  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -51,6 +51,7 @@
 - `symlink-config.clearLogs` - Clears output channel logs
 - `symlink-config.showLogs` - Opens output panel with extension logs
 - `symlink-config.runScript` - Runs script files with appropriate privileges
+- `symlink-config.pickProjectRoot` - Opens directory picker for project root setting
 
 #### `src/extension/ini.ts`
 **Functions:**
@@ -185,6 +186,18 @@
 
 ## Shared Modules
 
+### `src/shared/admin-detection.ts`
+**Functions:**
+- `isRunningAsAdmin(): Promise<boolean>`
+- `isWindowsAdmin(): boolean` (internal)
+- `isUnixAdmin(): boolean` (internal)
+
+**Implementation Details:**
+- **Windows**: Uses `net session` command (requires admin privileges)
+- **Unix**: Checks `process.getuid() === 0` (root user)
+- **Cross-platform**: Different detection methods for different OS requirements
+- **Reliable**: Uses OS-native privilege checking instead of file system tests
+
 ### `src/shared/script-runner.ts`
 **Functions:**
 - `runScriptAsAdmin(scriptPath: string, workspaceRoot: string): void`
@@ -251,6 +264,7 @@
     - `SCRIPT_GENERATION: 'scriptGenerationOS'` (renamed from 'scriptGeneration')
     - `SYMLINK_PATH_MODE: 'symlinkPathMode'`
     - `SCRIPT_GENERATION_MODE: 'scriptGenerationMode'` (new setting)
+    - `CONTINUOUS_MODE: 'continuousMode'` (new setting)
     - `PROJECT_ROOT: 'projectRoot'`
     - `MAX_LOG_ENTRIES: 'maxLogEntries'`
     - `DEFAULT` object (populated from package.json):
@@ -854,6 +868,8 @@ resolve: {
 - `generate-apply-unix-script.ts`
 - `generate-clean-windows-script.ts`
 - `generate-clean-unix-script.ts`
+- `direct-symlink-creator.ts`
+- `direct-symlink-remover.ts`
 - `types.ts`
 
 **Functions:**
@@ -891,6 +907,7 @@ resolve: {
 - `clear-logs.ts`
 - `show-logs.ts`
 - `run-script.ts`
+- `pick-project-root.ts`
 
 **Functions:**
 - `selectSymlinkSource(uri: vscode.Uri): Promise<void>` (validates not symlink)
@@ -909,6 +926,9 @@ resolve: {
 - `clearLogsCommand(): void`
 - `showLogsCommand(): void`
 - `runScript(scriptPath: string): Promise<void>` (wrapper for shared script runner with intelligent admin detection)
+- `pickProjectRoot(): Promise<void>` (opens directory picker for project root setting)
+- `createSymlinksDirectly(operations: SymlinkOperation[], workspaceRoot: string, silent?: boolean): Promise<{ success: number; failed: number; errors: string[] }>` (direct symlink creation with admin detection)
+- `removeSymlinksDirectly(workspaceRoot: string): Promise<{ success: number; failed: number; errors: string[] }>` (direct symlink removal)
 
 ## Summary
 
@@ -1054,3 +1074,12 @@ resolve: {
 - **Settings Watcher Specificity**: Settings watchers now watch specific properties instead of entire sections
 - **Watcher File Rename**: Renamed symlink-config_json-s.ts to symlink-config_json.ts for cleaner naming
 - **Folder Naming Convention**: Confirmed "_" substitution for "." in folder names to avoid .gitignore conflicts
+- **Continuous Mode Implementation**: Added continuousMode setting for automatic symlink management on configuration changes
+- **Direct Symlink Operations**: Implemented direct symlink creation/removal when running as admin, bypassing script generation
+- **Admin Privilege Detection**: Added cross-platform admin detection using `net session` (Windows) and `process.getuid()` (Unix)
+- **Project Root Directory Picker**: Added directory picker button for project root setting with path validation
+- **Silent Mode Operations**: Enhanced apply/clean commands with silent parameter for continuous mode automation
+- **Dangerous Symlinks Handling**: Improved dangerous symlinks detection to only show dialog when dangerous operations are present
+- **Settings Manager Enhancement**: Added project root path validation with automatic reversion to previous value on invalid paths
+- **Watcher Continuous Integration**: Next/current config watchers automatically trigger apply/clean operations when continuous mode is enabled
+- **Build Command Rename**: Renamed `compile` command to `build` for better semantic clarity
