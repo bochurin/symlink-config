@@ -1,3 +1,4 @@
+import * as vscode from 'vscode'
 import * as path from 'path'
 import { useSymlinkConfigManager } from '@/src/managers'
 import { FILE_NAMES, SETTINGS } from '@shared/constants'
@@ -8,15 +9,42 @@ export async function generateApplyWindowsScript(
   operations: SymlinkOperation[],
   workspaceRoot: string,
 ) {
+  // Check for dangerous VSCode/workspace files
+  const dangerousOps = operations.filter(op => {
+    if (op.type !== 'create' || !op.source) return false
+    const source = op.source.toLowerCase()
+    return source.includes('.vscode/') || source.includes('.vscode\\') || 
+           source.endsWith('.code-workspace') || source.includes('workspace')
+  })
+  
+  if (dangerousOps.length > 0) {
+    const dangerousList = dangerousOps.map(op => `${op.target} -> ${op.source}`).join('\n')
+    const confirmed = await vscode.window.showWarningMessage(
+      `WARNING: The following symlinks target VSCode configuration files that may cause workspace corruption:\n\n${dangerousList}\n\nInclude these dangerous symlinks in the script?`,
+      { modal: true },
+      'Skip Dangerous Symlinks',
+      'Include Anyway'
+    )
+    
+    if (confirmed === 'Skip Dangerous Symlinks') {
+      operations = operations.filter(op => !dangerousOps.includes(op))
+    }
+  }
+
   const settingsManager = useSymlinkConfigManager()
 
   const scriptPath = path.join(workspaceRoot, FILE_NAMES.APPLY_SYMLINKS_BAT)
 
-  const lines = ['@echo off', 'echo Applying symlink configuration...', '']
+  const lines = [
+    '@echo off',
+    `cd /d "${workspaceRoot.replace(/\//g, '\\')}"`,
+    'echo Applying symlink configuration...',
+    ''
+  ]
 
   for (const op of operations) {
-    const targetPath = path.join(workspaceRoot, op.target)
-    const targetDir = path.dirname(targetPath)
+    const targetPath = op.target.replace(/\//g, '\\')
+    const targetDir = path.dirname(op.target).replace(/\//g, '\\')
 
     if (op.type === 'delete') {
       lines.push(`if exist "${targetPath}" (`)
@@ -32,17 +60,18 @@ export async function generateApplyWindowsScript(
       let sourcePath: string
       let symlinkSource: string
 
+      // Always use relative paths from workspace root for source check
+      sourcePath = (op.source.startsWith('@') ? op.source.slice(1) : op.source).replace(/\//g, '\\')
+      
       if (pathMode === 'absolute') {
-        sourcePath = op.source.startsWith('@')
-          ? path.join(workspaceRoot, op.source.slice(1))
-          : path.join(workspaceRoot, op.source)
-        symlinkSource = sourcePath
+        // For absolute mode, use full path for mklink source
+        const fullSourcePath = path.join(workspaceRoot, op.source.startsWith('@') ? op.source.slice(1) : op.source)
+        symlinkSource = fullSourcePath.replace(/\//g, '\\')
       } else {
-        // Relative mode - calculate relative path from target to source
-        sourcePath = op.source.startsWith('@')
-          ? path.join(workspaceRoot, op.source.slice(1))
-          : path.join(workspaceRoot, op.source)
-        symlinkSource = path.relative(path.dirname(targetPath), sourcePath)
+        // For relative mode, calculate relative path from target to source
+        const fullTargetPath = path.join(workspaceRoot, op.target)
+        const fullSourcePath = path.join(workspaceRoot, op.source.startsWith('@') ? op.source.slice(1) : op.source)
+        symlinkSource = path.relative(path.dirname(fullTargetPath), fullSourcePath).replace(/\//g, '\\')
       }
 
       // Create target directory if it doesn't exist
@@ -64,6 +93,7 @@ export async function generateApplyWindowsScript(
 
   lines.push('')
   lines.push('echo Done!')
+  lines.push('')
 
   const content = lines.join('\r\n')
   const relativePath = path.relative(workspaceRoot, scriptPath)

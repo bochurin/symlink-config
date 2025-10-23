@@ -12,6 +12,7 @@ import { useSymlinkConfigManager } from '@managers'
 import { SETTINGS, FILE_NAMES } from '@shared/constants'
 import { confirm } from '@shared/vscode'
 import { generateAdminScript } from './generate-admin-script'
+import { runScriptAsAdmin } from '@shared/script-runner'
 
 export async function applyConfig() {
   const workspaceRoot = getWorkspaceRoot()
@@ -76,17 +77,7 @@ export async function applyConfig() {
         const document = await vscode.workspace.openTextDocument(scriptPath)
         await vscode.window.showTextDocument(document)
       } else if (choice === 'Run as Admin') {
-        const adminBatPath = path.join(workspaceRoot, FILE_NAMES.RUN_ADMIN_BAT)
-        const applyBatPath = path.join(
-          workspaceRoot,
-          FILE_NAMES.APPLY_SYMLINKS_BAT,
-        )
-        const terminal = vscode.window.createTerminal({
-          name: 'Run as Admin',
-          cwd: workspaceRoot,
-        })
-        terminal.sendText(`"${adminBatPath}" "${applyBatPath}"`)
-        terminal.show()
+        runScriptAsAdmin(scriptPath, workspaceRoot)
       }
     }
 
@@ -107,11 +98,7 @@ export async function applyConfig() {
         const document = await vscode.workspace.openTextDocument(scriptPath)
         await vscode.window.showTextDocument(document)
       } else if (choice === 'Run Now') {
-        const terminal = vscode.window.createTerminal('Apply Symlinks')
-        terminal.show()
-        terminal.sendText(
-          `cd "${workspaceRoot}" && chmod +x "${path.basename(scriptPath)}" && "./${path.basename(scriptPath)}"`,
-        )
+        runScriptAsAdmin(scriptPath, workspaceRoot)
       }
     }
   } catch (error) {

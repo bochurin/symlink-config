@@ -4,7 +4,7 @@ import { writeFile } from '@shared/file-ops'
 import { useCurrentSymlinkConfigManager } from '@/src/managers'
 
 export async function generateCleanUnixScript(workspaceRoot: string) {
-  const scriptPath = path.join(workspaceRoot, FILE_NAMES.CLEAR_SYMLINKS_SH)
+  const scriptPath = path.join(workspaceRoot, FILE_NAMES.CLEAN_SYMLINKS_SH)
 
   const currentConfigManager = useCurrentSymlinkConfigManager()
   const currentConfig = currentConfigManager.read()

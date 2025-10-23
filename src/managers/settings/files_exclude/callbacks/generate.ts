@@ -20,8 +20,8 @@ export function generateCallback(params?: {
       generatedExclusions[FILE_NAMES.CURRENT_SYMLINK_CONFIG] = hideServiceFiles
       generatedExclusions[FILE_NAMES.APPLY_SYMLINKS_BAT] = hideServiceFiles
       generatedExclusions[FILE_NAMES.APPLY_SYMLINKS_SH] = hideServiceFiles
-      generatedExclusions[FILE_NAMES.CLEAR_SYMLINKS_BAT] = hideServiceFiles
-      generatedExclusions[FILE_NAMES.CLEAR_SYMLINKS_SH] = hideServiceFiles
+      generatedExclusions[FILE_NAMES.CLEAN_SYMLINKS_BAT] = hideServiceFiles
+      generatedExclusions[FILE_NAMES.CLEAN_SYMLINKS_SH] = hideServiceFiles
       generatedExclusions[FILE_NAMES.RUN_ADMIN_BAT] = hideServiceFiles
     }
 

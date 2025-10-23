@@ -54,10 +54,15 @@ async function calculateAndSetProjectRoot(): Promise<{
   const folderPaths = folders.map((f) => f.uri.fsPath)
   const normalizedPath = findCommonPath(folderPaths)
 
-  await config.update(
-    'projectRoot',
-    normalizedPath,
-    vscode.ConfigurationTarget.Workspace,
-  )
+  try {
+    await config.update(
+      'projectRoot',
+      normalizedPath,
+      vscode.ConfigurationTarget.Workspace,
+    )
+  } catch (error) {
+    log(`Warning: Could not save project root to workspace settings: ${error}`)
+    // Continue without saving to workspace settings
+  }
   return { workspaceRoot: normalizedPath, workspaceName }
 }

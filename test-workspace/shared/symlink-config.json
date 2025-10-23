@@ -1,0 +1,8 @@
+{
+  "directories": [
+    {
+      "target": "vscode-sl",
+      "source": "@.vscode"
+    }
+  ]
+}

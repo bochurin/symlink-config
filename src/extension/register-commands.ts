@@ -7,6 +7,7 @@ import {
   collapseAll,
   openSymlinkConfig,
   refreshManagers,
+  runScript,
   selectSymlinkSource,
   selectSymlinkTarget,
 } from '@commands'
@@ -58,6 +59,7 @@ export function registerCommands(
       'symlink-config.clearLogs',
       clearLogsCommand,
     ),
+    vscode.commands.registerCommand('symlink-config.runScript', runScript),
   ]
 
   context.subscriptions.push(...commands)

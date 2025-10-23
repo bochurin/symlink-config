@@ -37,11 +37,11 @@ export function generateCallback(params?: {
         spacing: '',
         active: gitignoreServiceFiles,
       }
-      generatedEntries[FILE_NAMES.CLEAR_SYMLINKS_BAT] = {
+      generatedEntries[FILE_NAMES.CLEAN_SYMLINKS_BAT] = {
         spacing: '',
         active: gitignoreServiceFiles,
       }
-      generatedEntries[FILE_NAMES.CLEAR_SYMLINKS_SH] = {
+      generatedEntries[FILE_NAMES.CLEAN_SYMLINKS_SH] = {
         spacing: '',
         active: gitignoreServiceFiles,
       }

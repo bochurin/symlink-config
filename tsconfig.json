@@ -19,6 +19,7 @@
       "@managers": ["./src/managers"],
       "@managers/*": ["./src/managers/*"],
       "@commands/*": ["./src/commands/*"],
+      "@views": ["./src/views"],
       "@views/*": ["./src/views/*"],
       "@shared/*": ["./src/shared/*"]
     }

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import { setOutputChannel, setTreeProvider, disposeWatchers } from '@state'
 import { log } from '@shared/log'
-import { SymlinkTreeProvider } from '@views/symlink-tree'
+import { SymlinkTreeProvider, ScriptCodeLensProvider } from '@views'
 import { registerCommands } from './register-commands'
 import { init, reset } from './ini'
 
@@ -21,6 +21,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
   setTreeProvider(treeProvider)
   registerCommands(context, treeProvider)
+
+  const codeLensProvider = new ScriptCodeLensProvider()
+  context.subscriptions.push(
+    vscode.languages.registerCodeLensProvider(['bat', 'shellscript'], codeLensProvider)
+  )
 
   const dispose = await init()
   if (dispose) {

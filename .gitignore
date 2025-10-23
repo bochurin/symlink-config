@@ -7,15 +7,15 @@ node_modules
 # Local commit message drafts
 *commit-message.txt
 
-# Test workspace
-test-workspace/
+# Test workspace (keep for testing)
+# test-workspace/
 
 next.symlink-config.json
 current.symlink-config.json
 apply.symlink-config.bat
 apply.symlink-config.sh
-clear.symlink-config.bat
-clear.symlink-config.sh
+clean.symlink-config.bat
+clean.symlink-config.sh
 admin.symlink-config.bat
 
 selected/apply.symlink-config.bat
