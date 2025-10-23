@@ -7,9 +7,10 @@ import { generateCleanUnixScript } from './generate-clean-unix-script'
 import { getWorkspaceRoot } from '@state'
 import { log } from '@shared/log'
 import { confirmWarning } from '@shared/vscode'
-import { FILE_NAMES } from '@shared/constants'
+import { FILE_NAMES, SETTINGS } from '@shared/constants'
 import { generateAdminScript } from './generate-admin-script'
 import { runScriptAsAdmin } from '@shared/script-runner'
+import { useSymlinkConfigManager } from '@managers'
 
 export async function cleanConfig(): Promise<void> {
   const workspaceRoot = getWorkspaceRoot()
@@ -19,10 +20,16 @@ export async function cleanConfig(): Promise<void> {
     return
   }
 
+  const settingsManager = useSymlinkConfigManager()
+  const scriptGenerationMode = settingsManager.read(
+    SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION_MODE,
+  )
+
   // Confirmation dialog for script generation
+  const modeText = String(scriptGenerationMode)
   const confirmed = await confirmWarning(
-    'Generate cleaning script to remove all symlinks hadled by the extesion?',
-    'Yes, Generate Cleaning Script',
+    `Generate ${modeText} cleaning script to remove symlinks handled by the extension?`,
+    `Yes, Generate ${modeText.charAt(0).toUpperCase() + modeText.slice(1)} Cleaning Script`,
   )
 
   if (!confirmed) {

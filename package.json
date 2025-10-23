@@ -2,7 +2,7 @@
   "name": "@bochurin/symlink-config",
   "displayName": "symlink-config",
   "description": "Automated symlink management for package.json files across project containers and workspaces",
-  "version": "0.0.80",
+  "version": "0.0.81",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -29,7 +29,7 @@
       },
       {
         "command": "symlink-config.refreshManagers",
-        "title": "Refresh managers",
+        "title": "Refresh",
         "category": "symlink-config",
         "icon": "$(refresh)"
       },
@@ -82,8 +82,15 @@
     "configuration": {
       "title": "symlink-config",
       "properties": {
-        "symlink-config.scriptGeneration": {
+        "symlink-config.silent": {
           "order": 1,
+          "type": "boolean",
+          "scope": "resource",
+          "default": false,
+          "description": "Silent mode - no VS Studio information messages."
+        },
+        "symlink-config.scriptGenerationOS": {
+          "order": 2,
           "type": "string",
           "scope": "resource",
           "enum": [
@@ -96,7 +103,7 @@
           "description": "Which platforms to generate scripts for. Auto detects current platform."
         },
         "symlink-config.symlinkPathMode": {
-          "order": 2,
+          "order": 3,
           "type": "string",
           "scope": "resource",
           "enum": [
@@ -106,56 +113,60 @@
           "default": "relative",
           "description": "Generate symlinks with relative paths from workspace root or absolute paths."
         },
+        "symlink-config.scriptGenerationMode": {
+          "order": 4,
+          "type": "string",
+          "scope": "resource",
+          "enum": [
+            "complete",
+            "incremental"
+          ],
+          "default": "complete",
+          "description": "Generate complete scripts with all operations or incremental scripts with only changes."
+        },
         "symlink-config.watchWorkspace": {
-          "order": 3,
+          "order": 5,
           "type": "boolean",
           "scope": "resource",
           "default": true,
-          "description": "Enable automatic workspace watching and updating configuration."
+          "description": "Enable automatic workspace watching and updating configuration. When disabled, use Refresh command to manually update."
         },
         "symlink-config.gitignoreServiceFiles": {
-          "order": 4,
+          "order": 6,
           "type": "boolean",
           "scope": "resource",
           "default": true,
           "description": "Automatically .gitignore service files."
         },
         "symlink-config.gitignoreSymlinks": {
-          "order": 5,
+          "order": 7,
           "type": "boolean",
           "scope": "resource",
           "default": true,
           "description": "Automatically .gitignore handled symlinks."
         },
         "symlink-config.hideServiceFiles": {
-          "order": 6,
+          "order": 8,
           "type": "boolean",
           "scope": "resource",
           "default": false,
           "description": "Automatically hide service files from VSCode Explorer."
         },
         "symlink-config.hideSymlinkConfigs": {
-          "order": 7,
+          "order": 9,
           "type": "boolean",
           "scope": "resource",
           "default": false,
           "description": "Automatically hide symlink-config.json files from VSCode Explorer."
         },
-        "symlink-config.silent": {
-          "order": 8,
-          "type": "boolean",
-          "scope": "resource",
-          "default": false,
-          "description": "Silent mode - no VS Studio information messages."
-        },
         "symlink-config.projectRoot": {
-          "order": 9,
+          "order": 10,
           "type": "string",
           "scope": "resource",
           "description": "Project root path for symlink operations. Auto-calculated from workspace folders."
         },
         "symlink-config.maxLogEntries": {
-          "order": 10,
+          "order": 11,
           "type": "number",
           "scope": "resource",
           "default": 1000,
@@ -186,7 +197,7 @@
         },
         {
           "command": "symlink-config.refreshManagers",
-          "when": "workspaceFolderCount > 0"
+          "when": "workspaceFolderCount > 0 && !config.symlink-config.watchWorkspace"
         },
         {
           "command": "symlink-config.clearLogs",
@@ -244,7 +255,7 @@
         },
         {
           "command": "symlink-config.refreshManagers",
-          "when": "view == symlink-config",
+          "when": "view == symlink-config && !config.symlink-config.watchWorkspace",
           "group": "navigation@2",
           "icon": "$(refresh)"
         },
@@ -280,7 +291,7 @@
         },
         {
           "command": "symlink-config.refreshManagers",
-          "when": "view == symlink-config",
+          "when": "view == symlink-config && !config.symlink-config.watchWorkspace",
           "group": "2_actions",
           "icon": "$(refresh)"
         },

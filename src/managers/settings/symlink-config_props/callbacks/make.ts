@@ -46,7 +46,10 @@ export function makeCallback(params?: { event?: SettingsEvent }): undefined {
           break
 
         case SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE:
-          info(`Workspace watching ${event.value ? 'enabled' : 'disabled'}.`)
+          const watchMessage = event.value 
+            ? 'Workspace watching enabled.' 
+            : 'Workspace watching disabled. Use Refresh command to manually update.'
+          info(watchMessage)
           break
 
         default:

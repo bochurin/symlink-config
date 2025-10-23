@@ -1,13 +1,17 @@
 import * as path from 'path'
-import { FILE_NAMES } from '@shared/constants'
+import { FILE_NAMES, SETTINGS } from '@shared/constants'
 import { writeFile } from '@shared/file-ops'
-import { useCurrentSymlinkConfigManager } from '@/src/managers'
+import { useCurrentSymlinkConfigManager, useSymlinkConfigManager } from '@/src/managers'
 
 export async function generateCleanUnixScript(workspaceRoot: string) {
   const scriptPath = path.join(workspaceRoot, FILE_NAMES.CLEAN_SYMLINKS_SH)
 
   const currentConfigManager = useCurrentSymlinkConfigManager()
   const currentConfig = currentConfigManager.read()
+  const settingsManager = useSymlinkConfigManager()
+  const scriptGenerationMode = settingsManager.read(
+    SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION_MODE,
+  )
 
   if (!currentConfig) {
     return
@@ -21,10 +25,21 @@ export async function generateCleanUnixScript(workspaceRoot: string) {
 
   for (const entry of allEntries) {
     const targetPath = path.join(workspaceRoot, entry.target)
-    lines.push(`if [ -e "${targetPath}" ]; then`)
-    lines.push(`  echo "Removing ${entry.target}"`)
-    lines.push(`  rm -rf "${targetPath}"`)
-    lines.push('fi')
+    if (String(scriptGenerationMode) === 'complete') {
+      lines.push(`if [ -e "${targetPath}" ]; then`)
+      lines.push(`  if [ -L "${targetPath}" ]; then`)
+      lines.push(`    echo "Removing symlink ${entry.target}"`)
+      lines.push(`    rm -rf "${targetPath}"`)
+      lines.push(`  else`)
+      lines.push(`    echo "Skipping real file/directory ${entry.target}"`)
+      lines.push(`  fi`)
+      lines.push('fi')
+    } else {
+      lines.push(`if [ -L "${targetPath}" ]; then`)
+      lines.push(`  echo "Removing symlink ${entry.target}"`)
+      lines.push(`  rm -rf "${targetPath}"`)
+      lines.push('fi')
+    }
   }
 
   lines.push('')

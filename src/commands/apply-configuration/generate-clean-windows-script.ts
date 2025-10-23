@@ -1,13 +1,17 @@
 import * as path from 'path'
-import { FILE_NAMES } from '@shared/constants'
+import { FILE_NAMES, SETTINGS } from '@shared/constants'
 import { writeFile } from '@shared/file-ops'
-import { useCurrentSymlinkConfigManager } from '@/src/managers'
+import { useCurrentSymlinkConfigManager, useSymlinkConfigManager } from '@/src/managers'
 
 export async function generateCleanWindowsScript(workspaceRoot: string) {
   const scriptPath = path.join(workspaceRoot, FILE_NAMES.CLEAN_SYMLINKS_BAT)
 
   const currentConfigManager = useCurrentSymlinkConfigManager()
   const currentConfig = currentConfigManager.read()
+  const settingsManager = useSymlinkConfigManager()
+  const scriptGenerationMode = settingsManager.read(
+    SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION_MODE,
+  )
 
   if (!currentConfig) {
     return
@@ -25,15 +29,23 @@ export async function generateCleanWindowsScript(workspaceRoot: string) {
   if (config.directories) {
     for (const entry of config.directories) {
       const targetPath = (entry.target.startsWith('@') ? entry.target.slice(1) : entry.target).replace(/\//g, '\\')
-      lines.push(`if exist "${targetPath}" (`)
-      lines.push(`  fsutil reparsepoint query "${targetPath}" >nul 2>&1`)
-      lines.push(`  if not errorlevel 1 (`)
-      lines.push(`    echo Removing symlink directory ${targetPath}`)
-      lines.push(`    rmdir "${targetPath}"`)
-      lines.push(`  ) else (`)
-      lines.push(`    echo Skipping real directory ${targetPath}`)
-      lines.push(`  )`)
-      lines.push(')')
+      if (String(scriptGenerationMode) === 'complete') {
+        lines.push(`if exist "${targetPath}" (`)
+        lines.push(`  fsutil reparsepoint query "${targetPath}" >nul 2>&1`)
+        lines.push(`  if not errorlevel 1 (`)
+        lines.push(`    echo Removing symlink directory ${targetPath}`)
+        lines.push(`    rmdir "${targetPath}"`)
+        lines.push(`  ) else (`)
+        lines.push(`    echo Skipping real directory ${targetPath}`)
+        lines.push(`  )`)
+        lines.push(')')
+      } else {
+        lines.push(`fsutil reparsepoint query "${targetPath}" >nul 2>&1`)
+        lines.push(`if not errorlevel 1 (`)
+        lines.push(`  echo Removing symlink directory ${targetPath}`)
+        lines.push(`  rmdir "${targetPath}"`)
+        lines.push(')')
+      }
     }
   }
 
@@ -41,15 +53,23 @@ export async function generateCleanWindowsScript(workspaceRoot: string) {
   if (config.files) {
     for (const entry of config.files) {
       const targetPath = (entry.target.startsWith('@') ? entry.target.slice(1) : entry.target).replace(/\//g, '\\')
-      lines.push(`if exist "${targetPath}" (`)
-      lines.push(`  fsutil reparsepoint query "${targetPath}" >nul 2>&1`)
-      lines.push(`  if not errorlevel 1 (`)
-      lines.push(`    echo Removing symlink file ${targetPath}`)
-      lines.push(`    del "${targetPath}"`)
-      lines.push(`  ) else (`)
-      lines.push(`    echo Skipping real file ${targetPath}`)
-      lines.push(`  )`)
-      lines.push(')')
+      if (String(scriptGenerationMode) === 'complete') {
+        lines.push(`if exist "${targetPath}" (`)
+        lines.push(`  fsutil reparsepoint query "${targetPath}" >nul 2>&1`)
+        lines.push(`  if not errorlevel 1 (`)
+        lines.push(`    echo Removing symlink file ${targetPath}`)
+        lines.push(`    del "${targetPath}"`)
+        lines.push(`  ) else (`)
+        lines.push(`    echo Skipping real file ${targetPath}`)
+        lines.push(`  )`)
+        lines.push(')')
+      } else {
+        lines.push(`fsutil reparsepoint query "${targetPath}" >nul 2>&1`)
+        lines.push(`if not errorlevel 1 (`)
+        lines.push(`  echo Removing symlink file ${targetPath}`)
+        lines.push(`  del "${targetPath}"`)
+        lines.push(')')
+      }
     }
   }
 

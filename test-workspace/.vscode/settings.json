@@ -15,7 +15,7 @@
     "admin.symlink-config.bat": true,
     "**/symlink-config.json": false
   },
-  "symlink-config.silent": false,
+  "symlink-config.silent": true,
   "symlink-config.maxLogEntries": 500,
   "symlink-config.hideSymlinkConfigs": false,
   "symlink-config.hideServiceFiles": false,
@@ -23,5 +23,6 @@
   "symlink-config.gitignoreServiceFiles": true,
   "symlink-config.watchWorkspace": true,
   "symlink-config.symlinkPathMode": "relative",
-  "symlink-config.scriptGeneration": "auto"
+  "symlink-config.scriptGeneration": "auto",
+  "symlink-config.scriptGenerationMode": "complete"
 }

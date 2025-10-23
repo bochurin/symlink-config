@@ -9,8 +9,9 @@ const PROPERTIES = {
   GITIGNORE_SYMLINKS: 'gitignoreSymlinks',
   HIDE_SERVICE_FILES: 'hideServiceFiles',
   HIDE_SYMLINK_CONFIGS: 'hideSymlinkConfigs',
-  SCRIPT_GENERATION: 'scriptGeneration',
+  SCRIPT_GENERATION: 'scriptGenerationOS',
   SYMLINK_PATH_MODE: 'symlinkPathMode',
+  SCRIPT_GENERATION_MODE: 'scriptGenerationMode',
   PROJECT_ROOT: 'projectRoot',
   MAX_LOG_ENTRIES: 'maxLogEntries',
 } as const
@@ -34,6 +35,8 @@ export const SETTINGS = {
         props[`${SECTION}.${PROPERTIES.SCRIPT_GENERATION}`].default,
       SYMLINK_PATH_MODE:
         props[`${SECTION}.${PROPERTIES.SYMLINK_PATH_MODE}`].default,
+      SCRIPT_GENERATION_MODE:
+        props[`${SECTION}.${PROPERTIES.SCRIPT_GENERATION_MODE}`].default,
       MAX_LOG_ENTRIES:
         props[`${SECTION}.${PROPERTIES.MAX_LOG_ENTRIES}`].default,
     },

@@ -32,6 +32,9 @@ export async function generateApplyWindowsScript(
   }
 
   const settingsManager = useSymlinkConfigManager()
+  const scriptGenerationMode = settingsManager.read(
+    SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION_MODE,
+  )
 
   const scriptPath = path.join(workspaceRoot, FILE_NAMES.APPLY_SYMLINKS_BAT)
 
@@ -80,11 +83,19 @@ export async function generateApplyWindowsScript(
       lines.push(`  mkdir "${targetDir}"`)
       lines.push(')')
 
-      // Check if source exists before creating symlink
+      // Check if source exists and target doesn't exist (or complete mode)
       lines.push(`if exist "${sourcePath}" (`)
+      if (String(scriptGenerationMode) === 'incremental') {
+        lines.push(`  if not exist "${targetPath}" (`)
+      }
       const linkType = op.isDirectory ? '/D' : ''
-      lines.push(`  echo Creating ${op.target} -> ${op.source}`)
-      lines.push(`  mklink ${linkType} "${targetPath}" "${symlinkSource}"`)
+      lines.push(`    echo Creating ${op.target} -> ${op.source}`)
+      lines.push(`    mklink ${linkType} "${targetPath}" "${symlinkSource}"`)
+      if (String(scriptGenerationMode) === 'incremental') {
+        lines.push(`  ) else (`)
+        lines.push(`    echo Skipping existing ${op.target}`)
+        lines.push(`  )`)
+      }
       lines.push(') else (')
       lines.push(`  echo ERROR: Source not found: ${sourcePath}`)
       lines.push(')')

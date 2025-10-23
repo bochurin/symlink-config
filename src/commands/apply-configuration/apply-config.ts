@@ -18,11 +18,15 @@ export async function applyConfig() {
   const workspaceRoot = getWorkspaceRoot()
 
   const settingsManager = useSymlinkConfigManager()
+  const scriptGenerationMode = settingsManager.read(
+    SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION_MODE,
+  )
 
   // Confirmation dialog
+  const modeText = String(scriptGenerationMode)
   const confirmed = await confirm(
-    'Generate symlink scripts to apply configuration?',
-    'Yes, Generate Applying Scripts',
+    `Generate ${modeText} symlink scripts to apply configuration?`,
+    `Yes, Generate ${modeText.charAt(0).toUpperCase() + modeText.slice(1)} Applying Scripts`,
   )
 
   if (!confirmed) {

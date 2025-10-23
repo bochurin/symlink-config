@@ -9,6 +9,9 @@ export async function generateApplyUnixScript(
   workspaceRoot: string,
 ) {
   const settingsManager = useSymlinkConfigManager()
+  const scriptGenerationMode = settingsManager.read(
+    SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION_MODE,
+  )
 
   const scriptPath = path.join(workspaceRoot, FILE_NAMES.APPLY_SYMLINKS_SH)
 
@@ -51,10 +54,18 @@ export async function generateApplyUnixScript(
       lines.push(`  mkdir -p "${targetDir}"`)
       lines.push('fi')
 
-      // Check if source exists before creating symlink
+      // Check if source exists and target doesn't exist (or complete mode)
       lines.push(`if [ -e "${sourcePath}" ]; then`)
-      lines.push(`  echo "Creating ${op.target} -> ${op.source}"`)
-      lines.push(`  ln -sf "${symlinkSource}" "${targetPath}"`)
+      if (String(scriptGenerationMode) === 'incremental') {
+        lines.push(`  if [ ! -e "${targetPath}" ]; then`)
+      }
+      lines.push(`    echo "Creating ${op.target} -> ${op.source}"`)
+      lines.push(`    ln -sf "${symlinkSource}" "${targetPath}"`)
+      if (String(scriptGenerationMode) === 'incremental') {
+        lines.push(`  else`)
+        lines.push(`    echo "Skipping existing ${op.target}"`)
+        lines.push(`  fi`)
+      }
       lines.push('else')
       lines.push(`  echo "ERROR: Source not found: ${sourcePath}"`)
       lines.push('fi')
