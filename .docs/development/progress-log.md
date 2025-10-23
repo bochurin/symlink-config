@@ -1291,6 +1291,22 @@ export function readFile(workspaceRoot: string, file: string): string {
   - **Manager Factory Completion**: All managers now use factory-based architecture with consistent patterns
   - **Documentation Updates**: Updated source-code-map.md to reflect final manager structure
 
+### ✅ Phase 1.54: Script Code Lens and Runner Improvements (Completed - 23.10.2025)
+
+- **Date**: 23.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Script Code Lens Provider**: Added CodeLensProvider for script files with run buttons at beginning and end of documents
+  - **Intelligent Admin Detection**: Script runner determines admin privilege requirement based on script type (apply vs clean)
+  - **Visual Consistency**: Code lens buttons use same icons as extension panel ($(play) for apply, $(trash) for clean)
+  - **Auto-Closing Terminals**: Added `&& exit` to terminal commands for automatic terminal closure after execution
+  - **Proper Button Positioning**: Fixed code lens positioning with empty line addition to generated scripts
+  - **Windows Symlink Detection**: Improved clean scripts to use `fsutil reparsepoint query` for accurate symlink detection
+  - **Safety Improvements**: Made "Skip Dangerous Symlinks" the default option in VSCode file warning dialogs
+  - **Command Integration**: Added `symlink-config.runScript` command and registered CodeLensProvider for .bat and shellscript files
+  - **Refresh Manager Enhancement**: Added tree provider refresh after manager reinitialization
+  - **File Naming Consistency**: Updated constants from "clear" to "clean" throughout codebase
+
 #### Technical Implementation Details
 
 **Enum Files Created**:
@@ -1371,11 +1387,11 @@ getWatchers(...names: string[]): Watcher[]
 
 ## Current Status
 
-**Phase**: Phase 1.53 Complete - Watcher File Rename and Folder Naming Convention  
+**Phase**: Phase 1.54 Complete - Script Code Lens and Runner Improvements  
 **Branch**: `main`  
 **Version**: 0.0.79  
-**Latest**: Completed manager factory refactoring with shared types and cleaner naming conventions  
-**Extension Status**: Core development complete with clean architecture, ready for comprehensive testing  
+**Latest**: Added script code lens with intelligent admin detection and improved user experience  
+**Extension Status**: Core development complete with enhanced script execution and visual consistency  
 **Next**: Cross-platform testing and validation (Phase 2)
 
 ## Development Workflow
@@ -1395,9 +1411,9 @@ I'm continuing development on the Symlink Config VSCode extension. Please review
 
 Key context:
 - Current version: 0.0.79
-- Phase: 1.53 Complete (Watcher File Rename and Folder Naming Convention)
+- Phase: 1.54 Complete (Script Code Lens and Runner Improvements)
 - Architecture: Modular state at src/ level, shared module isolation enforced
-- Recent changes: Path aliases implementation, import cleanup, webpack synchronization
+- Recent changes: Script code lens provider, intelligent admin detection, visual consistency improvements
 
 Please confirm you've reviewed the documentation and are ready to continue development.
 ```

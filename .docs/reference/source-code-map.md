@@ -1,6 +1,6 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 22.10.2025  
+**Generated**: 23.10.2025  
 **Version**: 0.0.79  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
@@ -29,14 +29,13 @@
 
 **Implementation Details:**
 - `deactivate()` calls `disposeWatchers()` to clean up all watchers
-
-**Implementation Details:**
 - Creates output channel with `{ log: true }` option during activation
 - Creates tree view and stores in state
-- Registers all commands
+- Registers all commands and CodeLensProvider
 - Calls initialize() and subscribes dispose function
 - Watches workspace folder changes and re-initializes
 - Logs activation, deactivation, and workspace changes
+- Registers ScriptCodeLensProvider for .bat and shellscript files
 
 **Registered Commands:**
 - `symlink-config.openSettings` - Opens extension settings
@@ -51,6 +50,7 @@
 - `symlink-config.refreshManagers` - Manually refreshes all managers
 - `symlink-config.clearLogs` - Clears output channel logs
 - `symlink-config.showLogs` - Opens output panel with extension logs
+- `symlink-config.runScript` - Runs script files with appropriate privileges
 
 #### `src/extension/ini.ts`
 **Functions:**
@@ -185,6 +185,19 @@
 
 ## Shared Modules
 
+### `src/shared/script-runner.ts`
+**Functions:**
+- `runScriptAsAdmin(scriptPath: string, workspaceRoot: string): void`
+
+**Implementation Details:**
+- Determines admin privilege requirement based on script type
+- Apply scripts (apply.symlink-config.bat/sh) run with admin privileges
+- Clean scripts (clean.symlink-config.bat/sh) run normally
+- Windows: Uses admin.symlink-config.bat for admin scripts, direct execution for normal scripts
+- Unix: Uses sudo prefix for admin scripts, direct execution for normal scripts
+- Auto-closes terminals with `&& exit` command
+- Creates named terminals for better user experience
+
 ### `src/shared/log.ts`
 **Functions:**
 - `log(message: string): void`
@@ -215,8 +228,8 @@
   - `CURRENT_SYMLINK_CONFIG: 'current.symlink-config.json'`
   - `APPLY_SYMLINKS_BAT: 'apply.symlink-config.bat'`
   - `APPLY_SYMLINKS_SH: 'apply.symlink-config.sh'`
-  - `CLEAR_SYMLINKS_BAT: 'clear.symlink-config.bat'`
-  - `CLEAR_SYMLINKS_SH: 'clear.symlink-config.sh'`
+  - `CLEAN_SYMLINKS_BAT: 'clean.symlink-config.bat'`
+  - `CLEAN_SYMLINKS_SH: 'clean.symlink-config.sh'`
   - `RUN_ADMIN_BAT: 'admin.symlink-config.bat'`
   - `GITIGNORE: '.gitignore'`
 
@@ -766,6 +779,26 @@ resolve: {
 
 ## View Modules
 
+### `src/views/index.ts`
+**Exports:**
+- `ScriptCodeLensProvider` (from `./script-code-lens`)
+- `SymlinkTreeProvider` (from `./symlink-tree`)
+
+### `src/views/script-code-lens.ts`
+**Classes:**
+- `ScriptCodeLensProvider` implements `vscode.CodeLensProvider`
+
+**Functions:**
+- `provideCodeLenses(document: vscode.TextDocument): vscode.CodeLens[]`
+
+**Implementation Details:**
+- Provides run buttons for script files at beginning and end of documents
+- Apply scripts show "$(play) RUN AS ADMIN" buttons
+- Clean scripts show "$(trash) RUN" buttons (no admin required)
+- Uses `symlink-config.runScript` command with script path argument
+- Buttons positioned at line 0 and last line (lineCount - 1)
+- Adds empty line to generated scripts for proper button positioning
+
 ### `src/views/symlink-tree/`
 **Files:**
 - `index.ts` (exports: SymlinkTreeProvider)
@@ -828,7 +861,7 @@ resolve: {
 - `generateAdminScript(workspaceRoot: string): Promise<void>` (shared utility)
 - `generateApplyWindowsScript(operations: SymlinkOperation[], workspaceRoot: string): Promise<void>` (script generation only)
 - `generateApplyUnixScript(operations: SymlinkOperation[], workspaceRoot: string): Promise<void>` (script generation only)
-- `generateCleanWindowsScript(workspaceRoot: string): Promise<void>` (renamed from generateClearWindowsScript)
+- `generateCleanWindowsScript(workspaceRoot: string): Promise<void>` (renamed from generateClearWindowsScript, uses fsutil for symlink detection)
 - `generateCleanUnixScript(workspaceRoot: string): Promise<void>` (renamed from generateClearUnixScript)
 
 **Types:**
@@ -838,6 +871,10 @@ resolve: {
 - Generate functions only create scripts (no user interaction)
 - Main command functions handle dialogs, clipboard, terminal execution
 - Shared admin script generation utility for both apply and clear
+- Apply scripts require admin privileges, clean scripts run normally
+- Dangerous VSCode file symlinks dialog defaults to "Skip Dangerous Symlinks"
+- Windows clean scripts use `fsutil reparsepoint query` for accurate symlink detection
+- Generated scripts include empty line at end for proper code lens button positioning
 
 ### `src/commands/`
 **Files:**
@@ -849,6 +886,7 @@ resolve: {
 - `refresh-managers.ts`
 - `clear-logs.ts`
 - `show-logs.ts`
+- `run-script.ts`
 
 **Functions:**
 - `selectSymlinkSource(uri: vscode.Uri): Promise<void>` (validates not symlink)
@@ -863,9 +901,10 @@ resolve: {
 - Prevents circular symlink references and invalid configurations
 - `openSymlinkConfig(treeItem: any): Promise<void>`
 - `collapseAll(): void`
-- `refreshManagers(): Promise<void>`
+- `refreshManagers(): Promise<void>` (includes tree provider refresh)
 - `clearLogsCommand(): void`
 - `showLogsCommand(): void`
+- `runScript(scriptPath: string): Promise<void>` (wrapper for shared script runner)
 
 ## Summary
 
