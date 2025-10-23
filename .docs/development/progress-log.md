@@ -1307,6 +1307,20 @@ export function readFile(workspaceRoot: string, file: string): string {
   - **Refresh Manager Enhancement**: Added tree provider refresh after manager reinitialization
   - **File Naming Consistency**: Updated constants from "clear" to "clean" throughout codebase
 
+### ✅ Phase 1.55: Script Generation Mode and Settings Organization (Completed - 23.10.2025)
+
+- **Date**: 23.10.2025
+- **Status**: Complete
+- **Details**:
+  - **Script Generation Mode Setting**: Added `scriptGenerationMode` setting with complete/incremental options to control script behavior
+  - **Settings Naming Clarity**: Renamed `scriptGeneration` to `scriptGenerationOS` for better distinction from new mode setting
+  - **Complete vs Incremental Logic**: Complete mode creates/removes all symlinks with safety checks, incremental mode only handles missing/existing symlinks
+  - **Settings Organization**: Grouped related settings together with proper order values for custom display sequence
+  - **Conditional UI Elements**: Made refresh command only appear when `watchWorkspace` is disabled using `!config.symlink-config.watchWorkspace`
+  - **User Guidance Enhancement**: Added informative messages when watchWorkspace setting is toggled to guide users about manual refresh
+  - **Command Title Simplification**: Updated command titles to be more concise ("Apply configuration", "Clean handled symlinks")
+  - **Constants Updates**: Added `SCRIPT_GENERATION_MODE` constant and updated property names throughout codebase
+
 #### Technical Implementation Details
 
 **Enum Files Created**:
@@ -1387,11 +1401,11 @@ getWatchers(...names: string[]): Watcher[]
 
 ## Current Status
 
-**Phase**: Phase 1.54 Complete - Script Code Lens and Runner Improvements  
+**Phase**: Phase 1.55 Complete - Script Generation Mode and Settings Organization  
 **Branch**: `main`  
-**Version**: 0.0.79  
-**Latest**: Added script code lens with intelligent admin detection and improved user experience  
-**Extension Status**: Core development complete with enhanced script execution and visual consistency  
+**Version**: 0.0.80  
+**Latest**: Added script generation mode setting and improved settings organization with user guidance  
+**Extension Status**: Core development complete with comprehensive script generation options and enhanced UX  
 **Next**: Cross-platform testing and validation (Phase 2)
 
 ## Development Workflow

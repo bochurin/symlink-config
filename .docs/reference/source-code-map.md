@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
 **Generated**: 23.10.2025  
-**Version**: 0.0.79  
+**Version**: 0.0.80  
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Root Files
@@ -190,13 +190,13 @@
 - `runScriptAsAdmin(scriptPath: string, workspaceRoot: string): void`
 
 **Implementation Details:**
-- Determines admin privilege requirement based on script type
-- Apply scripts (apply.symlink-config.bat/sh) run with admin privileges
-- Clean scripts (clean.symlink-config.bat/sh) run normally
+- **Intelligent admin detection**: Determines admin privilege requirement based on script filename
+- Apply scripts (apply.symlink-config.bat/sh) run with admin privileges for symlink creation
+- Clean scripts (clean.symlink-config.bat/sh) run normally (no admin needed for removal)
 - Windows: Uses admin.symlink-config.bat for admin scripts, direct execution for normal scripts
 - Unix: Uses sudo prefix for admin scripts, direct execution for normal scripts
 - Auto-closes terminals with `&& exit` command
-- Creates named terminals for better user experience
+- Creates named terminals for better user experience ('Run as Admin' vs 'Run Script')
 
 ### `src/shared/log.ts`
 **Functions:**
@@ -248,8 +248,9 @@
     - `GITIGNORE_SYMLINKS: 'gitignoreSymlinks'`
     - `HIDE_SERVICE_FILES: 'hideServiceFiles'`
     - `HIDE_SYMLINK_CONFIGS: 'hideSymlinkConfigs'`
-    - `SCRIPT_GENERATION: 'scriptGeneration'`
+    - `SCRIPT_GENERATION: 'scriptGenerationOS'` (renamed from 'scriptGeneration')
     - `SYMLINK_PATH_MODE: 'symlinkPathMode'`
+    - `SCRIPT_GENERATION_MODE: 'scriptGenerationMode'` (new setting)
     - `PROJECT_ROOT: 'projectRoot'`
     - `MAX_LOG_ENTRIES: 'maxLogEntries'`
     - `DEFAULT` object (populated from package.json):
@@ -792,11 +793,12 @@ resolve: {
 - `provideCodeLenses(document: vscode.TextDocument): vscode.CodeLens[]`
 
 **Implementation Details:**
-- Provides run buttons for script files at beginning and end of documents
-- Apply scripts show "$(play) RUN AS ADMIN" buttons
+- **Script file detection**: Provides run buttons for script files using FILE_NAMES constants
+- Apply scripts show "$(play) RUN AS ADMIN" buttons (admin privileges required)
 - Clean scripts show "$(trash) RUN" buttons (no admin required)
 - Uses `symlink-config.runScript` command with script path argument
-- Buttons positioned at line 0 and last line (lineCount - 1)
+- Buttons positioned at line 0 and last line (lineCount - 1) for easy access
+- **Extension panel icons**: Uses VSCode built-in icons ($(play), $(trash)) for consistency
 - Adds empty line to generated scripts for proper button positioning
 
 ### `src/views/symlink-tree/`
@@ -875,6 +877,8 @@ resolve: {
 - Dangerous VSCode file symlinks dialog defaults to "Skip Dangerous Symlinks"
 - Windows clean scripts use `fsutil reparsepoint query` for accurate symlink detection
 - Generated scripts include empty line at end for proper code lens button positioning
+- **Script generation modes**: Complete mode (all operations with safety checks) vs incremental mode (only missing/existing symlinks)
+- **Settings integration**: All script generators respect scriptGenerationMode setting for complete/incremental behavior
 
 ### `src/commands/`
 **Files:**
@@ -904,7 +908,7 @@ resolve: {
 - `refreshManagers(): Promise<void>` (includes tree provider refresh)
 - `clearLogsCommand(): void`
 - `showLogsCommand(): void`
-- `runScript(scriptPath: string): Promise<void>` (wrapper for shared script runner)
+- `runScript(scriptPath: string): Promise<void>` (wrapper for shared script runner with intelligent admin detection)
 
 ## Summary
 
@@ -965,6 +969,12 @@ resolve: {
 - **Factory Simplification**: Removed over-engineered decomposition, consolidated to clean single-file implementation with flexible named parameters
 - **Manager Hook Pattern**: Added useManager hook for simplified manager usage without global state
 - **Settings Watcher Enhancement**: Modified useSettingsWatcher to watch all properties when properties array is omitted
+- **Script Code Lens Provider**: Added CodeLensProvider for script files with run buttons using extension panel icons
+- **Intelligent Script Runner**: Implemented admin privilege detection - apply scripts need admin, clean scripts run normally
+- **Script Generation Mode Setting**: Added scriptGenerationMode setting (complete/incremental) to control script behavior
+- **Settings Naming Clarity**: Renamed scriptGeneration to scriptGenerationOS for better distinction
+- **Conditional UI Elements**: Made refresh command only appear when watchWorkspace is disabled
+- **User Guidance Enhancement**: Added informative messages when watchWorkspace setting is toggled
 - **Extension Decomposition**: Separated extension.ts into extension/ folder with activate.ts, ini.ts, managers-init.ts, register-commands.ts, make-watchers.ts
 - **Entry Point**: main.ts serves as webpack entry point, re-exports from extension module
 - **State Module**: Moved from src/state.ts to src/shared/state.ts (Phase 1.35), then to src/extension/state.ts (Phase 1.41), then decomposed to src/state/ (Phase 1.43)
