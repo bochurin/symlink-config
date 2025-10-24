@@ -15,7 +15,7 @@ commit_docs() {
     local suggested_message="$1"
 
     git reset HEAD . >/dev/null 2>&1 || true
-    git add .docs/ README.md
+    git add .docs/ README.md */README.md */*/README.md
 
     if git diff --cached --quiet; then
         echo "No documentation changes to commit."

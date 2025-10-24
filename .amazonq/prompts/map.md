@@ -20,3 +20,4 @@ Update affected documentation in `.docs/reference/source-code-map/`
 ## Output
 
 - Updated source-code-map/ files
+- Commit using bash scripts/utils/commit/docs-commit.sh --auto
