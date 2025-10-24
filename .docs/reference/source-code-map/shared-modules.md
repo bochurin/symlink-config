@@ -28,8 +28,9 @@
 
 ### SETTINGS
 - Section: `SYMLINK_CONFIG.SECTION = 'symlink-config'`
-- Properties: `WATCH_WORKSPACE`, `GITIGNORE_SERVICE_FILES`, `HIDE_SERVICE_FILES`, etc.
+- Properties: `WATCH_WORKSPACE`, `GITIGNORE_SERVICE_FILES`, `HIDE_SERVICE_FILES`, `RESET_TO_DEFAULTS`, etc.
 - Defaults: Build-time imported from package.json
+- **RESET_TO_DEFAULTS**: Boolean setting that triggers reset of all settings to defaults (auto-turns off after reset)
 
 ### WATCHERS
 - File watchers: `GITIGNORE`, `NEXT_CONFIG`, `CURRENT_CONFIG`, `SYMLINK_CONFIGS`, `SYMLINKS`
@@ -56,7 +57,8 @@
 ### Manager Factory
 - `createManager<CT>(callbacks: ManagerCallbacks<CT>): Manager<CT>`
 - `useManager<CT>(callbacks: ManagerCallbacks<CT>): ManagerSugar<CT>`
-- Encapsulates common manager pattern: read → generate → make → write → log
+- Encapsulates common manager pattern: read → generate → make → write → log → afterParty
+- **afterPartyCallback**: Optional callback executed after write completes (e.g., reset settings, trigger watchers)
 
 ## Utilities
 

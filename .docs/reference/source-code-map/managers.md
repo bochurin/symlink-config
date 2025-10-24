@@ -32,8 +32,10 @@ All managers follow factory-based architecture with callbacks pattern.
 
 ### symlink-config_props
 - Manages all `symlink-config.*` settings
-- **Callbacks**: read, make, write
+- **Callbacks**: read, make, write, afterparty
 - **Properties**: All extension settings with validation
+- **Reset Feature**: `RESET_TO_DEFAULTS` triggers reset of all settings to defaults
+- **Afterparty**: Calls `makeWatchers()` after write completes
 
 ## Manager Pattern
 

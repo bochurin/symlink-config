@@ -33,6 +33,8 @@
 
 ### Configuration
 - `openSymlinkConfig(uri: vscode.Uri): Promise<void>` - Open config file for tree item
+- `openSettings(): void` - Open workspace settings filtered to symlink-config (uses `workbench.action.openWorkspaceSettings`)
+- `resetSettings(): Promise<void>` - Reset all settings to defaults by setting each to undefined
 - `pickProjectRoot(): Promise<void>` - Pick project root directory
 
 ### Utility
@@ -49,6 +51,8 @@ All commands registered in `extension/register-commands.ts`:
 - `symlink-config.selectSymlinkTarget`
 - `symlink-config.cancelSymlinkSelection`
 - `symlink-config.openSymlinkConfig`
+- `symlink-config.openSettings`
+- `symlink-config.resetSettings`
 - `symlink-config.pickProjectRoot`
 - `symlink-config.refreshManagers`
 - `symlink-config.clearLogs`
