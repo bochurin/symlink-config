@@ -2,7 +2,7 @@ import { useFileWatcher, FileEventType } from '@shared/hooks/use-file-watcher'
 import { useNextSymlinkConfigManager } from '@managers'
 import { FILE_NAMES, WATCHERS } from '@shared/constants'
 import { getTreeProvider, registerWatcher } from '@state'
-import { log } from '@shared/log'
+import { log } from '@log'
 import { queue } from '@queue'
 
 export function symlinkConfigsWatcher() {

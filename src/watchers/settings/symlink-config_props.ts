@@ -4,7 +4,7 @@ import {
 } from '@shared/hooks/use-settings-watcher'
 import { SETTINGS, WATCHERS } from '@shared/constants'
 import { registerWatcher } from '@state'
-import { log } from '@shared/log'
+import { log } from '@log'
 import { queue } from '@queue'
 import { useSymlinkConfigManager } from '@managers'
 
@@ -23,6 +23,7 @@ export function symlinkConfigSettingsWatcher() {
           SETTINGS.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS,
           SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE,
           SETTINGS.SYMLINK_CONFIG.PROJECT_ROOT,
+          SETTINGS.SYMLINK_CONFIG.RESET_TO_DEFAULTS,
         ],
         onChange: (event: SettingsEvent) => {
           log(

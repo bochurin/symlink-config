@@ -1,11 +1,11 @@
 
-next.symlink-config.json
-current.symlink-config.json
-apply.symlink-config.bat
-apply.symlink-config.sh
-clean.symlink-config.bat
-clean.symlink-config.sh
-admin.symlink-config.bat
+#next.symlink-config.json
+#current.symlink-config.json
+#apply.symlink-config.bat
+#apply.symlink-config.sh
+#clean.symlink-config.bat
+#clean.symlink-config.sh
+#admin.symlink-config.bat
 container1/symlinks/container2-sl2
 container2/shared-sl
 shared/vscode-sl

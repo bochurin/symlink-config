@@ -5,7 +5,7 @@ import { isRootFile } from '@shared/file-ops'
 import { getTreeProvider, getWorkspaceRoot, registerWatcher } from '@state'
 import { readSettings } from '@shared/settings-ops'
 import { applyConfig } from '@commands'
-import { log } from '@shared/log'
+import { log } from '@log'
 import { queue } from '@queue'
 
 export function nextConfigWatcher() {

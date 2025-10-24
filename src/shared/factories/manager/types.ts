@@ -5,6 +5,7 @@ export interface ManagerCallbacks<CT> {
   generateCallback?: (params?: { [key: string]: any }) => CT
   readCallback?: (params?: { [key: string]: any }) => CT
   writeCallback?: (params?: { [key: string]: any }) => Promise<void>
+  afterpartyCallback?: (params?: { [key: string]: any }) => void
 }
 
 export interface Manager<CT> {

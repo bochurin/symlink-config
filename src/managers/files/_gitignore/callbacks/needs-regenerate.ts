@@ -1,6 +1,6 @@
 import { SETTINGS } from '@shared/constants'
 import { FileEvent } from '@shared/hooks/use-file-watcher'
-import { log } from '@shared/log'
+import { log } from '@log'
 import { useSymlinkConfigManager } from '@managers'
 
 export function needsRegenerateCallback(params?: {

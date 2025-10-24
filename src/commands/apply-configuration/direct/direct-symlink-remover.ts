@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { log } from '@shared/log'
+import { log } from '@log'
 import { useCurrentSymlinkConfigManager } from '@managers'
 
 export async function removeSymlinksDirectly(

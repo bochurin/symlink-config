@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import { writeSettings } from '@shared/settings-ops'
 import { SETTINGS } from '@shared/constants'
-import { log } from '@shared/log'
+import { log } from '@log'
 
 export async function pickProjectRoot(): Promise<void> {
   const options: vscode.OpenDialogOptions = {

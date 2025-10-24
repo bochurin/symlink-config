@@ -1,5 +1,5 @@
 import { info } from '@shared/vscode'
-import { log } from '@shared/log'
+import { log } from '@log'
 import type { Manager, ManagerCallbacks } from './types'
 
 function isEqual(a: any, b: any): boolean {
@@ -73,6 +73,11 @@ export function createManager<CT>(
     if (finalContent && !isEqual(finalContent, initialContent)) {
       await write({ content: finalContent, ...params })
       log(`${objectName()} updated`)
+    }
+
+    // Call afterPartyCallback if provided
+    if (callbacks.afterpartyCallback) {
+      callbacks.afterpartyCallback({ finalContent, initialContent, ...params })
     }
   }
 

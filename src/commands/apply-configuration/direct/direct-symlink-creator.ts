@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as os from 'os'
 import * as vscode from 'vscode'
-import { log } from '@shared/log'
+import { log } from '@log'
 import { SymlinkOperation } from '../utils'
 
 export async function createSymlinksDirectly(

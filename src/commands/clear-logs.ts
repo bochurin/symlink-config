@@ -1,4 +1,4 @@
-import { clearLogs } from '@shared/log'
+import { clearLogs } from '@log'
 
 export function clearLogsCommand() {
   clearLogs()

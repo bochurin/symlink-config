@@ -15,6 +15,7 @@ const PROPERTIES = {
   CONTINUOUS_MODE: 'continuousMode',
   PROJECT_ROOT: 'projectRoot',
   MAX_LOG_ENTRIES: 'maxLogEntries',
+  RESET_TO_DEFAULTS: 'resetToDefaults',
 } as const
 
 export const SETTINGS = {

@@ -5,6 +5,7 @@ import {
   cleanConfig,
   clearLogsCommand,
   collapseAll,
+  openSettings,
   openSymlinkConfig,
   pickProjectRoot,
   refreshManagers,
@@ -18,12 +19,7 @@ export function registerCommands(
   treeProvider: any,
 ) {
   const commands = [
-    vscode.commands.registerCommand('symlink-config.openSettings', () => {
-      vscode.commands.executeCommand(
-        'workbench.action.openSettings',
-        'symlink-config',
-      )
-    }),
+    vscode.commands.registerCommand('symlink-config.openSettings', openSettings),
     vscode.commands.registerCommand('symlink-config.toggleView', () => {
       treeProvider.toggleViewMode()
     }),

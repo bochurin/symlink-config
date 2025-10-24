@@ -1,7 +1,7 @@
 import { useFileWatcher, FileEventType } from '@shared/hooks/use-file-watcher'
 import { isSymlink } from '@shared/file-ops'
 import { registerWatcher } from '@state'
-import { log } from '@shared/log'
+import { log } from '@log'
 import { queue } from '@queue'
 import { WATCHERS } from '@shared/constants'
 import { useCurrentSymlinkConfigManager } from '@/src/managers'

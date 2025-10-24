@@ -36,7 +36,8 @@ const extensionConfig = {
       '@watchers': path.resolve(__dirname, 'src/watchers'),
       '@managers': path.resolve(__dirname, 'src/managers'),
       '@views': path.resolve(__dirname, 'src/views'),
-      '@shared': path.resolve(__dirname, 'src/shared')
+      '@shared': path.resolve(__dirname, 'src/shared'),
+      '@log': path.resolve(__dirname, 'src/log')
     }
   },
   module: {

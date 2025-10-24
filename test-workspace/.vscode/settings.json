@@ -20,10 +20,11 @@
   "symlink-config.hideSymlinkConfigs": false,
   "symlink-config.hideServiceFiles": false,
   "symlink-config.gitignoreSymlinks": true,
-  "symlink-config.gitignoreServiceFiles": true,
+  "symlink-config.gitignoreServiceFiles": false,
   "symlink-config.watchWorkspace": true,
   "symlink-config.symlinkPathMode": "relative",
   "symlink-config.scriptGenerationOS": "auto",
   "symlink-config.scriptGenerationMode": "complete",
-  "symlink-config.continuousMode": true
+  "symlink-config.continuousMode": true,
+  "symlink-config.resetToDefaults": true
 }

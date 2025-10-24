@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import { setOutputChannel, setTreeProvider, disposeWatchers } from '@state'
-import { log } from '@shared/log'
+import { log } from '@log'
 import { SymlinkTreeProvider, ScriptCodeLensProvider } from '@views'
 import { registerCommands } from './register-commands'
 import { init, reset } from './ini'

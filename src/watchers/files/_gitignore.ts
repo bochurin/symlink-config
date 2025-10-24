@@ -2,7 +2,7 @@ import { useFileWatcher, FileEventType } from '@shared/hooks/use-file-watcher'
 import { FILE_NAMES, WATCHERS } from '@shared/constants'
 import { isRootFile } from '@shared/file-ops'
 import { getWorkspaceRoot, registerWatcher } from '@state'
-import { log } from '@shared/log'
+import { log } from '@log'
 import { queue } from '@queue'
 import { useGitignoreManager } from '@/src/managers/files/_gitignore'
 

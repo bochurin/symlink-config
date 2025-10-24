@@ -4,7 +4,15 @@
 
 VSCode extension for automated symlink management across project containers and workspaces. Built on proven CVHere symlink system with complete TypeScript translation.
 
-**Complete Documentation**: `.docs/` folder contains comprehensive project documentation including architecture, decisions, and development progress.
+**Complete Documentation**: See pinned README.md for documentation structure.
+
+## User Interaction Rules (CRITICAL)
+
+- **NEVER proceed with code changes without explicit user approval**
+- **NEVER make assumptions about what user wants**
+- **ALWAYS ask for confirmation before modifying code**
+- **ONLY modify documentation when using @doc or @map prompts**
+- **ONLY explain problems when using @discover prompt, do not fix**
 
 ## Critical Patterns (Always Enforce)
 
@@ -67,33 +75,14 @@ hook/
 
 ## Key References
 
-### Architecture & Decisions
-- **Manager Architecture**: `.docs/development/decisions/manager-architecture-refactoring.md`
-- **Hook System**: `.docs/development/decisions/hook-interface-improvements.md`
-- **File Watchers**: `.docs/development/decisions/file-watcher-filter-system.md`
-- **All Decisions**: `.docs/development/decisions/decisions.md`
-
-### System Documentation
-- **CVHere System**: `.docs/reference/cvhere-symlink-system.md` - Original proven system
-- **Migration Context**: `.docs/project/migration-from-cvhere.md`
-- **Source Code Map**: `.docs/reference/source-code-map.md` - Complete function inventory
-
-### Development Process
-- **Progress Log**: `.docs/development/progress-log.md` - Current status and phases
-- **Chat History**: `.docs/reference/chat-backup/chat-history.md` - Development conversations
+See pinned README.md for complete documentation references.
 
 ## Before Making Changes
 
-1. **Check source map**: `.docs/reference/source-code-map.md` for existing functions/types
-2. **Review decisions**: Check relevant decision docs for architectural patterns
+1. **Check source map** for existing functions/types
+2. **Review decisions** for architectural patterns
 3. **Follow manager pattern**: Use established generate/read/make/handle-event structure
 4. **Test cross-platform**: Verify Windows and Unix compatibility
-
-## After Significant Changes
-
-1. **Update progress log**: Add entry to `.docs/development/progress-log.md`
-2. **Document decisions**: Create decision doc in `.docs/development/decisions/` if architectural
-3. **Update source map**: Reflect new functions/types in source-code-map.md
 
 ## Common Patterns
 

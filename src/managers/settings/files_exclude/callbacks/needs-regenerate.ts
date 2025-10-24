@@ -1,5 +1,5 @@
 import { SettingsEvent } from '@shared/hooks/use-settings-watcher'
-import { log } from '@shared/log'
+import { log } from '@log'
 import { SETTINGS } from '@shared/constants'
 import { useSymlinkConfigManager } from '@/src/managers'
 

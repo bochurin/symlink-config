@@ -1,6 +1,7 @@
 export * from './apply-configuration'
 export * from './clear-logs'
 export * from './create-symlink'
+export * from './open-settings'
 export * from './open-symlink-config'
 export * from './pick-project-root'
 export * from './refresh-managers'

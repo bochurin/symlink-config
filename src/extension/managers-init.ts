@@ -4,7 +4,7 @@ import {
   useSymlinkConfigManager,
   useNextSymlinkConfigManager,
 } from '@/src/managers'
-import { log } from '@shared/log'
+import { log } from '@log'
 import { useFilesExcludeManager } from '../managers/settings/files_exclude'
 import { useGitignoreManager as use_gitignoreFileManager } from '../managers/files/_gitignore'
 

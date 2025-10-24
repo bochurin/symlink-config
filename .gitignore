@@ -18,10 +18,10 @@ clean.symlink-config.bat
 clean.symlink-config.sh
 admin.symlink-config.bat
 
-selected/apply.symlink-config.bat
-selected/.gitignore
-selected/main.ts
-selected/package.json
-selected/README.md
-selected/symlink-config.code-workspace
-selected/tsconfig.json
+selected/root/apply.symlink-config.bat
+selected/root/.gitignore
+selected/root/package.json
+selected/root/README.md
+selected/root/symlink-config.code-workspace
+selected/root/tsconfig.json
+selected/src/main.ts

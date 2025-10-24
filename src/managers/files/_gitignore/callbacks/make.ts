@@ -1,4 +1,4 @@
-import { log } from '@shared/log'
+import { log } from '@log'
 
 export function makeCallback(params?: {
   initialContent?: Record<string, { spacing: string; active: boolean }>

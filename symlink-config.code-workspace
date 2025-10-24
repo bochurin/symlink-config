@@ -20,6 +20,7 @@
       "name": "🚦 @queue",
       "path": "src/queue",
     },
+
     {
       "name": "⚙️ @managers",
       "path": "src/managers",
@@ -28,7 +29,6 @@
       "name": "👀 @watchers",
       "path": "src/watchers",
     },
-
     {
       "name": "🖼️ @views",
       "path": "src/views",
@@ -36,6 +36,10 @@
     {
       "name": "⚡ @commands",
       "path": "src/commands",
+    },
+    {
+      "name": "📝 @log",
+      "path": "src/log",
     },
     {
       "name": "🧰 @shared",

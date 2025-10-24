@@ -5,9 +5,11 @@ import {
   SymlinkConfigSettingsPropertyValue,
   SymlinkConfigSettingsManager,
 } from './types'
+import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
 import { readCallback } from './callbacks/read'
 import { makeCallback } from './callbacks/make'
-import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
+import { writeCallback } from './callbacks/write'
+import { afterpartyCallback } from './callbacks/afterparty'
 
 export function useSymlinkConfigManager(): SymlinkConfigSettingsManager {
   const manager = createManager<
@@ -15,8 +17,10 @@ export function useSymlinkConfigManager(): SymlinkConfigSettingsManager {
     | Record<string, SymlinkConfigSettingsPropertyValue>
   >({
     objectNameCallback: () => SETTINGS.SYMLINK_CONFIG.SECTION,
-    readCallback: readCallback,
-    makeCallback: makeCallback,
+    readCallback,
+    makeCallback,
+    writeCallback,
+    afterpartyCallback,
   })
 
   return {
