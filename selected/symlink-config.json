@@ -6,7 +6,7 @@
       "source": "@apply.symlink-config.bat"
     },
     {
-      "target": "root/.gitignore",
+      "target": "root/_gitignore",
       "source": "@.gitignore"
     },
     {

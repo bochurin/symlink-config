@@ -19,7 +19,7 @@ clean.symlink-config.sh
 admin.symlink-config.bat
 
 selected/root/apply.symlink-config.bat
-selected/root/.gitignore
+selected/root/_gitignore
 selected/root/package.json
 selected/root/README.md
 selected/root/symlink-config.code-workspace

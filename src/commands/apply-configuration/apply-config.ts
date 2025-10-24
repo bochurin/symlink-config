@@ -96,7 +96,7 @@ export async function applyConfig(silent = false) {
     if (shouldGenerateWindows || shouldGenerateUnix) {
       log('Generating apply script...')
       const targetOS = isWindows ? 'windows' : 'unix'
-      await applyScript(operations, workspaceRoot, targetOS)
+      await applyScript(operations, workspaceRoot, targetOS, silent)
       if (isWindows) {
         await generateAdminScript(workspaceRoot)
       }
