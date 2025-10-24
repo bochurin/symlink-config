@@ -72,6 +72,24 @@ Complete project documentation in **[.docs/](.docs/)**:
 - **[CVHere Symlink System](.docs/reference/cvhere-symlink-system.md)** - Original system documentation
 - **[Technical Decisions](.docs/development/decisions/decisions.md)** - Architecture and implementation decisions
 
+## Module Documentation
+
+Each module has its own README with purpose and rules:
+
+- **[.docs/](.docs/README.md)** - Documentation structure
+- **[selected/](selected/README.md)** - Frequently accessed files
+- **[src/](src/README.md)** - Source code overview
+- **[src/extension/](src/extension/README.md)** - Extension lifecycle
+- **[src/state/](src/state/README.md)** - Application state
+- **[src/queue/](src/queue/README.md)** - Operation serialization
+- **[src/log/](src/log/README.md)** - Logging utilities
+- **[src/managers/](src/managers/README.md)** - File and settings managers
+- **[src/watchers/](src/watchers/README.md)** - File and settings watchers
+- **[src/views/](src/views/README.md)** - UI components
+- **[src/commands/](src/commands/README.md)** - Command implementations
+- **[src/shared/](src/shared/README.md)** - Reusable utilities
+- **[test-workspace/](test-workspace/README.md)** - Testing environment
+
 ## Implementation Status
 
 ✅ **Phase 1 Complete** - TypeScript Implementation
