@@ -5,24 +5,21 @@ import { getWorkspaceRoot } from '@state'
 import { log } from '@shared/log'
 import { info } from '@shared/vscode/info'
 import { generateTree } from '@views/symlink-tree/generate'
-import { collectSymlinkOperations } from './collect-operations'
-import { generateApplyWindowsScript } from './generate-apply-windows-script'
-import { generateApplyUnixScript } from './generate-apply-unix-script'
+import { collectOperations, SymlinkOperation } from './utils'
+import { applyScript, generateAdminScript } from './scripts'
+import { createSymlinksDirectly } from './direct'
 import { useSymlinkConfigManager } from '@managers'
 import { SETTINGS, FILE_NAMES } from '@shared/constants'
 import { confirm } from '@shared/vscode'
-import { generateAdminScript } from './generate-admin-script'
 import { runScriptAsAdmin } from '@shared/script-runner'
 import { isRunningAsAdmin } from '@shared/admin-detection'
-import { createSymlinksDirectly } from './direct-symlink-creator'
 
 export async function applyConfig(silent = false) {
   const workspaceRoot = getWorkspaceRoot()
 
   try {
-    // Generate tree to get symlink operations
-    const tree = generateTree('targets')
-    const operations = collectSymlinkOperations(tree)
+    // Collect symlink operations based on mode
+    const operations = collectOperations()
     log(`Found ${operations.length} symlink operations`)
 
     if (operations.length === 0) {
@@ -34,7 +31,7 @@ export async function applyConfig(silent = false) {
     // Check admin status and show appropriate dialog
     const isAdmin = await isRunningAsAdmin()
     let choice: string | undefined
-    
+
     if (silent) {
       choice = isAdmin ? 'Create Directly' : 'Generate Scripts'
     } else {
@@ -43,34 +40,40 @@ export async function applyConfig(silent = false) {
           'Apply symlink configuration?',
           { modal: true },
           'Create Directly',
-          'Generate Scripts'
+          'Generate Scripts',
         )
       } else {
         const confirmed = await confirm(
           'Apply symlink configuration?',
-          'Generate Scripts'
+          'Generate Scripts',
         )
         choice = confirmed ? 'Generate Scripts' : undefined
       }
-      
+
       if (!choice) {
         log('Apply configuration cancelled by user')
         return
       }
     }
-    
+
     if (choice === 'Create Directly') {
       log('Creating symlinks directly...')
-      const result = await createSymlinksDirectly(operations, workspaceRoot, silent)
-      
+      const result = await createSymlinksDirectly(
+        operations,
+        workspaceRoot,
+        silent,
+      )
+
       if (result.errors.length > 0) {
         vscode.window.showWarningMessage(
-          `Symlinks created with ${result.failed} errors. Check output for details.`
+          `Symlinks created with ${result.failed} errors. Check output for details.`,
         )
       } else {
         info(`Successfully created ${result.success} symlinks`)
       }
-      log(`Direct creation complete: ${result.success} success, ${result.failed} failed`)
+      log(
+        `Direct creation complete: ${result.success} success, ${result.failed} failed`,
+      )
       return
     }
 
@@ -90,46 +93,32 @@ export async function applyConfig(silent = false) {
       scriptGeneration === 'both' ||
       (scriptGeneration === 'auto' && !isWindows)
 
-    if (shouldGenerateWindows) {
-      log('Generating Windows apply script...')
-      await generateApplyWindowsScript(operations, workspaceRoot)
-      await generateAdminScript(workspaceRoot)
-      log('Windows apply script generated')
-      const scriptPath = path.join(workspaceRoot, FILE_NAMES.APPLY_SYMLINKS_BAT)
-
-      if (silent) {
-        const document = await vscode.workspace.openTextDocument(scriptPath)
-        await vscode.window.showTextDocument(document)
-      } else {
-        await vscode.env.clipboard.writeText(path.basename(scriptPath))
-
-        const options = ['Open in Code', 'Run as Admin']
-        const choice = await vscode.window.showInformationMessage(
-          `Applying script generated: ${path.basename(scriptPath)}`,
-          { modal: true },
-          ...options,
-        )
-
-        if (choice === 'Open in Code') {
-          const document = await vscode.workspace.openTextDocument(scriptPath)
-          await vscode.window.showTextDocument(document)
-        } else if (choice === 'Run as Admin') {
-          runScriptAsAdmin(scriptPath, workspaceRoot)
-        }
+    if (shouldGenerateWindows || shouldGenerateUnix) {
+      log('Generating apply script...')
+      const targetOS = isWindows ? 'windows' : 'unix'
+      await applyScript(operations, workspaceRoot, targetOS)
+      if (isWindows) {
+        await generateAdminScript(workspaceRoot)
       }
-    }
-
-    if (shouldGenerateUnix) {
-      log('Generating Unix apply script...')
-      await generateApplyUnixScript(operations, workspaceRoot)
-      log('Unix apply script generated')
-      const scriptPath = path.join(workspaceRoot, FILE_NAMES.APPLY_SYMLINKS_SH)
+      log('Apply script generated')
+      const scriptPath = path.join(
+        workspaceRoot,
+        isWindows
+          ? FILE_NAMES.APPLY_SYMLINKS_BAT
+          : FILE_NAMES.APPLY_SYMLINKS_SH,
+      )
 
       if (silent) {
         const document = await vscode.workspace.openTextDocument(scriptPath)
         await vscode.window.showTextDocument(document)
       } else {
-        const options = ['Open in Code', 'Run Now']
+        if (isWindows) {
+          await vscode.env.clipboard.writeText(path.basename(scriptPath))
+        }
+
+        const options = isWindows
+          ? ['Open in Code', 'Run as Admin']
+          : ['Open in Code', 'Run Now']
         const choice = await vscode.window.showInformationMessage(
           `Applying script generated: ${path.basename(scriptPath)}`,
           { modal: true },
@@ -139,7 +128,7 @@ export async function applyConfig(silent = false) {
         if (choice === 'Open in Code') {
           const document = await vscode.workspace.openTextDocument(scriptPath)
           await vscode.window.showTextDocument(document)
-        } else if (choice === 'Run Now') {
+        } else if (choice === 'Run as Admin' || choice === 'Run Now') {
           runScriptAsAdmin(scriptPath, workspaceRoot)
         }
       }

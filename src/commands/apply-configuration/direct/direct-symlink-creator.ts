@@ -3,7 +3,7 @@ import * as path from 'path'
 import * as os from 'os'
 import * as vscode from 'vscode'
 import { log } from '@shared/log'
-import { SymlinkOperation } from '@commands/apply-configuration/types'
+import { SymlinkOperation } from '../utils'
 
 export async function createSymlinksDirectly(
   operations: SymlinkOperation[],
