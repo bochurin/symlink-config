@@ -24,6 +24,8 @@
 - **[Constants Decomposition and Build-time Integration](constants-decomposition-build-time-integration.md)** - Modular constants with build-time package.json integration
 - **[Path Aliases Implementation](path-aliases-implementation.md)** - Clean import paths with TypeScript and webpack aliases
 - **[Manager Factory Consolidation and Named Parameters](manager-factory-consolidation-named-parameters.md)** - Factory consolidation with flexible named parameter system
+- **[Modes Rule](modes-rule.md)** - Critical distinction between complete/incremental modes: SCOPE vs SAFETY
+- **[OS Module Encapsulation](../architecture-refactoring-os-encapsulation.md)** - Proper OS abstraction and target OS parameter pattern for script generation
 
 ## Development Process
 
