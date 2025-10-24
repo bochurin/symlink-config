@@ -77,6 +77,10 @@
       {
         "command": "symlink-config.runScript",
         "title": "Run script"
+      },
+      {
+        "command": "symlink-config.pickProjectRoot",
+        "title": "Pick project root directory"
       }
     ],
     "configuration": {
@@ -163,10 +167,18 @@
           "order": 10,
           "type": "string",
           "scope": "resource",
-          "description": "Project root path for symlink operations. Auto-calculated from workspace folders."
+          "description": "Project root path for symlink operations. Auto-calculated from workspace folders.",
+          "markdownDescription": "Project root path for symlink operations. Auto-calculated from workspace folders. [⋯ Pick Directory](command:symlink-config.pickProjectRoot)"
+        },
+        "symlink-config.continuousMode": {
+          "order": 11,
+          "type": "boolean",
+          "scope": "resource",
+          "default": false,
+          "description": "Enable continuous symlink management - automatically apply/clean symlinks on configuration changes."
         },
         "symlink-config.maxLogEntries": {
-          "order": 11,
+          "order": 12,
           "type": "number",
           "scope": "resource",
           "default": 1000,
@@ -342,12 +354,12 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
-    "compile": "webpack",
+    "build": "webpack",
     "watch": "webpack --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "pretest": "npm run compile-tests && npm run build && npm run lint",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "format": "prettier --write .",

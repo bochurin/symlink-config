@@ -12,6 +12,7 @@ const PROPERTIES = {
   SCRIPT_GENERATION: 'scriptGenerationOS',
   SYMLINK_PATH_MODE: 'symlinkPathMode',
   SCRIPT_GENERATION_MODE: 'scriptGenerationMode',
+  CONTINUOUS_MODE: 'continuousMode',
   PROJECT_ROOT: 'projectRoot',
   MAX_LOG_ENTRIES: 'maxLogEntries',
 } as const
@@ -37,6 +38,8 @@ export const SETTINGS = {
         props[`${SECTION}.${PROPERTIES.SYMLINK_PATH_MODE}`].default,
       SCRIPT_GENERATION_MODE:
         props[`${SECTION}.${PROPERTIES.SCRIPT_GENERATION_MODE}`].default,
+      CONTINUOUS_MODE:
+        props[`${SECTION}.${PROPERTIES.CONTINUOUS_MODE}`].default,
       MAX_LOG_ENTRIES:
         props[`${SECTION}.${PROPERTIES.MAX_LOG_ENTRIES}`].default,
     },

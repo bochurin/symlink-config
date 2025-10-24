@@ -1,5 +1,5 @@
 {
-  "symlink-config.projectRoot": "c:/Users/bochu/Projects/symlink-config/test-workspace/",
+  "symlink-config.projectRoot": "c:\\Users\\bochu\\Projects\\symlink-config\\test-workspace",
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
@@ -24,5 +24,6 @@
   "symlink-config.watchWorkspace": true,
   "symlink-config.symlinkPathMode": "relative",
   "symlink-config.scriptGenerationOS": "auto",
-  "symlink-config.scriptGenerationMode": "complete"
+  "symlink-config.scriptGenerationMode": "complete",
+  "symlink-config.continuousMode": true
 }

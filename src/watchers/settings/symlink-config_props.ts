@@ -22,6 +22,7 @@ export function symlinkConfigSettingsWatcher() {
           SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES,
           SETTINGS.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS,
           SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE,
+          SETTINGS.SYMLINK_CONFIG.PROJECT_ROOT,
         ],
         onChange: (event: SettingsEvent) => {
           log(

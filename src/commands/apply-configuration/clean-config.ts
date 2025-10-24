@@ -13,7 +13,7 @@ import { runScriptAsAdmin } from '@shared/script-runner'
 import { useSymlinkConfigManager } from '@managers'
 import { removeSymlinksDirectly } from './direct-symlink-remover'
 
-export async function cleanConfig(): Promise<void> {
+export async function cleanConfig(silent = false): Promise<void> {
   const workspaceRoot = getWorkspaceRoot()
   if (!workspaceRoot) {
     log('ERROR: No workspace folder found')
@@ -27,16 +27,22 @@ export async function cleanConfig(): Promise<void> {
   )
 
   // Offer direct removal or script generation
-  const choice = await vscode.window.showWarningMessage(
-    'Remove symlinks handled by the extension?',
-    { modal: true },
-    'Remove Directly',
-    'Generate Script'
-  )
+  let choice: string | undefined
   
-  if (!choice) {
-    log('Clean configuration cancelled by user')
-    return
+  if (silent) {
+    choice = 'Remove Directly'
+  } else {
+    choice = await vscode.window.showWarningMessage(
+      'Remove symlinks handled by the extension?',
+      { modal: true },
+      'Remove Directly',
+      'Generate Script'
+    )
+    
+    if (!choice) {
+      log('Clean configuration cancelled by user')
+      return
+    }
   }
   
   if (choice === 'Remove Directly') {
@@ -68,22 +74,27 @@ export async function cleanConfig(): Promise<void> {
       log('Windows clean script generated')
       const scriptPath = path.join(workspaceRoot, FILE_NAMES.CLEAN_SYMLINKS_BAT)
 
-      // Copy script name to clipboard
-      await vscode.env.clipboard.writeText(path.basename(scriptPath))
-
-      // Show options to user
-      const options = ['Open in Code', 'Run Now']
-      const choice = await vscode.window.showWarningMessage(
-        `Cleaning script generated: ${path.basename(scriptPath)}`,
-        { modal: true },
-        ...options,
-      )
-
-      if (choice === 'Open in Code') {
+      if (silent) {
         const document = await vscode.workspace.openTextDocument(scriptPath)
         await vscode.window.showTextDocument(document)
-      } else if (choice === 'Run Now') {
-        runScriptAsAdmin(scriptPath, workspaceRoot)
+      } else {
+        // Copy script name to clipboard
+        await vscode.env.clipboard.writeText(path.basename(scriptPath))
+
+        // Show options to user
+        const options = ['Open in Code', 'Run Now']
+        const choice = await vscode.window.showWarningMessage(
+          `Cleaning script generated: ${path.basename(scriptPath)}`,
+          { modal: true },
+          ...options,
+        )
+
+        if (choice === 'Open in Code') {
+          const document = await vscode.workspace.openTextDocument(scriptPath)
+          await vscode.window.showTextDocument(document)
+        } else if (choice === 'Run Now') {
+          runScriptAsAdmin(scriptPath, workspaceRoot)
+        }
       }
     } else {
       log('Generating Unix clean script...')
@@ -91,19 +102,24 @@ export async function cleanConfig(): Promise<void> {
       log('Unix clean script generated')
       const scriptPath = path.join(workspaceRoot, FILE_NAMES.CLEAN_SYMLINKS_SH)
 
-      // Show options to user
-      const options = ['Open in Code', 'Run Now']
-      const choice = await vscode.window.showWarningMessage(
-        `Cleaning script generated: ${path.basename(scriptPath)}`,
-        { modal: true },
-        ...options,
-      )
-
-      if (choice === 'Open in Code') {
+      if (silent) {
         const document = await vscode.workspace.openTextDocument(scriptPath)
         await vscode.window.showTextDocument(document)
-      } else if (choice === 'Run Now') {
-        runScriptAsAdmin(scriptPath, workspaceRoot)
+      } else {
+        // Show options to user
+        const options = ['Open in Code', 'Run Now']
+        const choice = await vscode.window.showWarningMessage(
+          `Cleaning script generated: ${path.basename(scriptPath)}`,
+          { modal: true },
+          ...options,
+        )
+
+        if (choice === 'Open in Code') {
+          const document = await vscode.workspace.openTextDocument(scriptPath)
+          await vscode.window.showTextDocument(document)
+        } else if (choice === 'Run Now') {
+          runScriptAsAdmin(scriptPath, workspaceRoot)
+        }
       }
     }
   } catch (error) {

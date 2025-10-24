@@ -1,7 +1,9 @@
 import { useFileWatcher, FileEventType } from '@shared/hooks/use-file-watcher'
-import { FILE_NAMES, WATCHERS } from '@shared/constants'
+import { FILE_NAMES, WATCHERS, SETTINGS } from '@shared/constants'
 import { isRootFile } from '@shared/file-ops'
 import { getTreeProvider, getWorkspaceRoot, registerWatcher } from '@state'
+import { readSettings } from '@shared/settings-ops'
+import { cleanConfig } from '@commands'
 import { log } from '@shared/log'
 import { queue } from '@queue'
 import { useGitignoreManager } from '@/src/managers/files/_gitignore'
@@ -22,13 +24,19 @@ export function currentConfigWatcher() {
         FileEventType.Modified,
         FileEventType.Deleted,
       ],
-      handlers: (events) => {
+      handlers: async (events) => {
         log(
           `current.symlink-config.json: ${events[0].eventType} at ${events[0].uri.fsPath}`,
         )
-        queue(() => currentConfigManager.handleEvent(events))
-        queue(() => _gitignoreFileManager.handleEvent(events))
+        await queue(() => currentConfigManager.handleEvent(events))
+        await queue(() => _gitignoreFileManager.handleEvent(events))
         treeProvider?.refresh()
+        
+        const continuousMode = readSettings(SETTINGS.SYMLINK_CONFIG.CONTINUOUS_MODE, false)
+        if (continuousMode) {
+          log('Continuous mode: auto-cleaning configuration...')
+          await queue(() => cleanConfig(true))
+        }
       },
     },
   })

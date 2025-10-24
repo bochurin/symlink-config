@@ -6,6 +6,7 @@ import {
   clearLogsCommand,
   collapseAll,
   openSymlinkConfig,
+  pickProjectRoot,
   refreshManagers,
   runScript,
   selectSymlinkSource,
@@ -60,6 +61,10 @@ export function registerCommands(
       clearLogsCommand,
     ),
     vscode.commands.registerCommand('symlink-config.runScript', runScript),
+    vscode.commands.registerCommand(
+      'symlink-config.pickProjectRoot',
+      pickProjectRoot,
+    ),
   ]
 
   context.subscriptions.push(...commands)
