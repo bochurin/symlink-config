@@ -797,7 +797,7 @@ const dispose = disposeWatchers  // From state
   - **Factory Pattern**: use-file-watcher uses createExecuteHandlers factory to maintain debounce state in closure
   - **Simple Utility**: use-settings-watcher uses executeHandlers utility to normalize and execute handlers
   - **ESLint Updates**: Updated module boundary rules to enforce index.ts imports for hook subfolders
-  - **Documentation**: Updated source-code-map.md and rules to reflect new hook structure
+  - **Documentation**: Updated source-code-map/ and rules to reflect new hook structure
 
 #### Technical Implementation Details
 
@@ -858,7 +858,7 @@ export function executeHandlers(
   - **Factory to Shared**: Moved managers/manager/ factory to shared/factories/manager/ for better organization
   - **Init Managers Rename**: Renamed init-managers.ts to managers-init.ts for consistency
   - **Import Updates**: Updated all imports throughout codebase to reflect new locations
-  - **Documentation**: Updated source-code-map.md and progress-log.md
+  - **Documentation**: Updated source-code-map/ and progress-log.md
 
 #### Technical Implementation Details
 

@@ -119,12 +119,27 @@ This index provides an overview of all development sessions. Each session is doc
 **Key Changes**: v0.0.74 → v0.0.75, callback organization, manager factory enhancement, path module elimination  
 **Phase**: 1.52 → 1.53
 
-### [Session 24 - October 23, 2025](session-2025-10-23.md)
+### [Session 24 - October 23, 2025](session-2025-10-23-a.md)
 **Topics**: Manager factory completion and naming convention finalization  
 **Key Changes**: v0.0.77 → v0.0.79, factory refactoring completion, shared types, deep equality, @ path enforcement  
 **Phase**: 1.53 (completion)
 
-### [Session 25 - October 24, 2025](session-2025-10-24.md)
+### [Session 24b - October 23, 2025](session-2025-10-23-b.md)
+**Topics**: Continuous mode implementation  
+**Key Changes**: Admin detection, direct symlink operations, project root picker, silent mode  
+**Phase**: Feature development
+
+### [Session 25 - October 24, 2025](session-2025-10-24-a.md)
 **Topics**: Context management, chat history maintenance  
 **Key Changes**: Context overflow handling, conversation history cleanup  
 **Phase**: 1.53 (maintenance)
+
+### [Session 26 - October 24, 2025](session-2025-10-24-b.md)
+**Topics**: OS module encapsulation, target OS parameter pattern  
+**Key Changes**: v0.0.86, isWindows utility, targetOS parameters, osSpecificPath relocation, source required  
+**Phase**: Architecture cleanup
+
+### [Session 27 - October 24, 2025](session-2025-10-24-c.md)
+**Topics**: Source code map decomposition, documentation cleanup  
+**Key Changes**: Decomposed source-code-map.md into folder structure, deleted redundant file  
+**Phase**: Documentation maintenance
