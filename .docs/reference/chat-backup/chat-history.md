@@ -143,3 +143,8 @@ This index provides an overview of all development sessions. Each session is doc
 **Topics**: Source code map decomposition, documentation cleanup  
 **Key Changes**: Decomposed source-code-map.md into folder structure, deleted redundant file  
 **Phase**: Documentation maintenance
+
+### [Session 28 - October 24, 2025](session-2025-10-24-d.md)
+**Topics**: Map prompt enhancement, documentation updates  
+**Key Changes**: Timestamp-based map process, afterparty callback documentation, resetSettings command  
+**Phase**: Documentation maintenance
