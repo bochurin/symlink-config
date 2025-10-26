@@ -44,7 +44,7 @@
 ### FILE_NAMES
 - Service files: `GITIGNORE`, `NEXT_SYMLINK_CONFIG`, `CURRENT_SYMLINK_CONFIG`
 - Scripts: `APPLY_SYMLINKS_BAT`, `APPLY_SYMLINKS_SH`, `CLEAN_SYMLINKS_BAT`, `CLEAN_SYMLINKS_SH`
-- Admin: `ADMIN_SYMLINKS_BAT`
+- Admin: `RUN_ADMIN_BAT`, `RUN_ADMIN_SH` (cross-platform admin script support)
 
 ### SETTINGS
 - Section: `SYMLINK_CONFIG.SECTION = 'symlink-config'`
@@ -97,14 +97,21 @@
 
 ### VSCode Abstractions (`shared/vscode/`)
 
-#### User Interface
-- `info(message: string): void` - Show info message (respects silent mode)
-- `warning(message: string): void` - Show warning message
-- `showError(message: string): void` - Show error message
-- `choice(message: string, ...choices: string[]): Promise<string | undefined>` - Information dialog with choices
-- `warningChoice(message: string, ...choices: string[]): Promise<string | undefined>` - Warning dialog with choices
-- `confirm(message: string): Promise<boolean>` - Show confirmation dialog
-- `confirmWarning(message: string): Promise<boolean>` - Show warning confirmation
+#### User Interface (Pure VSCode Wrappers)
+- **Note**: Dialog functions moved to `@dialogs` module for application-specific behavior
+- `info(message: string): void` - Pure VSCode info message (no silent mode)
+- `warning(message: string): void` - Pure VSCode warning message
+- `showError(message: string): void` - Pure VSCode error message
+- `choice(message: string, ...choices: string[]): Promise<string | undefined>` - Pure VSCode choice dialog
+- `warningChoice(message: string, ...choices: string[]): Promise<string | undefined>` - Pure VSCode warning choice
+- `confirm(message: string, confirmText?: string): Promise<boolean>` - Pure VSCode confirmation
+
+#### Dialog Organization (`shared/vscode/dialogs/`)
+- `open.ts` - File open dialogs (`showOpenDialog`)
+- `info.ts` - Information messages
+- `warning.ts` - Warning messages
+- `choice.ts` - Choice dialogs
+- **Application logic**: Use `@dialogs` module instead for silent mode and logging support
 
 #### Document Operations
 - `openTextDocument(filePath: string): Promise<vscode.TextDocument>` - Open text document

@@ -1,6 +1,6 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 2025-10-26T12:00:00.0000000+00:00
+**Generated**: 2025-10-26T16:45:00.0000000+00:00
 **Version**: 0.0.87
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
@@ -11,6 +11,7 @@ This documentation is organized into separate files for better maintainability:
 - **[shared-modules.md](shared-modules.md)** - Shared utilities (file-ops, constants, hooks, factories)
 - **[managers.md](managers.md)** - Manager modules (gitignore, configs, settings)
 - **[commands.md](commands.md)** - Command modules (apply, clean, create symlink)
+- **[dialogs.md](dialogs.md)** - Dialog abstractions with silent mode and logging
 - **[scripts.md](scripts.md)** - Script generation modules (apply, clean, operations, path formatting)
 - **[watchers.md](watchers.md)** - File and settings watchers
 - **[views.md](views.md)** - Tree view and code lens providers
@@ -27,27 +28,54 @@ This documentation is organized into separate files for better maintainability:
 
 ## Recent Changes (v0.0.87)
 
-### Shared Abstractions Architecture (Latest)
+### Dialog System & Continuous Mode (Latest - 26.10.2025)
+
+- **New @dialogs module** - Complete dialog abstraction system with silent mode support
+  - `info()`, `warning()`, `showError()`, `choice()`, `confirm()`, `warningChoice()` functions
+  - Automatic logging with `withLog = true` parameter (configurable)
+  - Silent mode integration using settings manager
+  - Auto-selection/confirmation in silent mode
+  - Errors always shown (never silent)
+
+- **Continuous mode support** - Full automation for file watcher scenarios
+  - Automatic dangerous source filtering without user dialogs
+  - Auto-script generation instead of direct creation
+  - Auto-open generated scripts in Code editor
+  - Used by current/next config watchers for seamless operation
+
+- **Unix admin script support** - Cross-platform elevated privilege execution
+  - Added `RUN_ADMIN_SH` constant for Unix admin scripts
+  - `admin.symlink-config.sh` generation using `sudo`
+  - Both Windows (.bat) and Unix (.sh) admin scripts generated
+
+- **Silent parameter removal** - Eliminated silent parameter dependency
+  - Removed from `applyConfig()` and `cleanConfig()` functions
+  - All dialog behavior now controlled by settings manager
+  - Consistent user interaction patterns
+
+- **Log function simplification** - Removed LogLevel parameter
+  - Pure logging function: `log(message: string)`
+  - Replaced `log(message, LogLevel.Info)` with `info(message)` from @dialogs
+  - Settings manager integration for maxLogEntries
+
+- **ESLint enforcement** - Dialog import restrictions
+  - Prevents importing dialog functions from `@shared/vscode` outside dialogs module
+  - Forces use of `@dialogs` for consistent silent mode behavior
+  - 302 lint warnings fixed (import order, equality operators, curly braces)
+
+- **Shared/vscode/dialogs organization** - Proper module structure
+  - Moved dialog functions to `src/shared/vscode/dialogs/` subfolder
+  - Renamed `dialogs.ts` to `open.ts` for clarity
+  - Maintained export compatibility through index files
+
+### Previous Changes
+
+#### Shared Abstractions Architecture
 
 - **Complete shared abstraction system** - Created comprehensive `@shared/vscode` and `@shared/file-ops` modules
 - **Architectural boundary enforcement** - ESLint rules prevent direct API imports outside designated modules
 - **Manager logging callbacks** - All managers now use `logCallback` parameter for pure factory pattern
 - **Path and fs abstraction** - Added `pathExists`, `isDirectory`, `ConfigurationTarget`, `Uri` type exports
-- **ESLint configuration** - Fixed rules to properly exclude `@shared/vscode` from vscode restrictions
-
-### Factory Pattern Enhancement
-
-- **Pure factory functions** - Removed external dependencies from `createManager()` factory
-- **Optional logging callback** - Added `logCallback?: (message: string) => void` to `ManagerCallbacks`
-- **Logging integration** - All managers pass `log` function as callback for consistent logging
-- **Architectural purity** - Factories remain pure utilities with no external module dependencies
-
-### Import Restrictions Fixed
-
-- **Direct API elimination** - Replaced all direct `vscode`, `fs`, `path`, `os` imports with shared abstractions
-- **Script generation fixes** - Temporarily disabled broken path functions with TODO comments
-- **TypeScript compilation** - Fixed all build errors and type issues
-- **ESLint compliance** - Zero linting errors with proper architectural enforcement
 
 ### Previous Changes
 

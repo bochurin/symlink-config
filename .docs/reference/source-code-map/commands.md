@@ -3,10 +3,13 @@
 ## Apply Configuration (`commands/apply-configuration/`)
 
 ### Main Commands
-- `applyConfig(silent?: boolean): Promise<void>` - Apply symlink configuration
-  - **Refactored**: Now uses shared abstractions (`@shared/vscode`, `@shared/file-ops`) instead of direct API imports
-  - Uses `join`, `basename` from file-ops and `choice`, `showError`, `openTextDocument` from vscode abstractions
-- `cleanConfig(silent?: boolean): Promise<void>` - Clean symlinks from current config
+- `applyConfig(): Promise<void>` - Apply symlink configuration
+  - **Updated**: Removed silent parameter, uses @dialogs for consistent user interaction
+  - **Continuous mode**: Auto-generates scripts and opens in Code when continuousMode is true
+  - **Unix admin support**: Generates both Windows and Unix admin scripts
+  - Uses shared abstractions (`@shared/vscode`, `@shared/file-ops`) and `@dialogs` for user interaction
+- `cleanConfig(): Promise<void>` - Clean symlinks from current config
+  - **Updated**: Same improvements as applyConfig - no silent parameter, continuous mode support
 
 ### Direct Operations (`direct/`)
 - `createSymlinksDirectly(operations: SymlinkOperation[], workspaceRoot: string): Promise<{success: number, failed: number, errors: string[]}>`

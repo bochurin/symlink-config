@@ -163,6 +163,9 @@ import { applyConfig } from '@commands'
 ### Module Boundaries (ESLint Enforced)
 - Import through index.ts only for: managers/*, commands/*, hooks/*, shared/*, views/*, watchers/*, extension/*
 - No direct file imports bypassing index.ts
+- **Dialog import restrictions**: Modules outside `src/shared/` and `src/dialogs/` cannot import dialog functions from `@shared/vscode`
+- **API abstraction enforcement**: Only designated modules can import core APIs directly (`vscode`, `fs`, `path`, `os`)
+- **Shared module isolation**: Shared modules cannot import from application modules (`@log`, `@state`, `@queue`, `@extension`, `@managers`, `@watchers`, `@views`, `@commands`, `@dialogs`)
 
 ### Export Patterns
 ```typescript

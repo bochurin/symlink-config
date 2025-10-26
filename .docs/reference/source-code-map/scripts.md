@@ -27,7 +27,7 @@ Script generation modules create platform-specific batch/shell scripts for symli
 
 ## Script Structure
 
-### `src/commands/apply-configuration/scripts/shared/script-structure/`
+### `src/commands/apply-configuration/scripts/utils/script-structure/`
 
 #### `header.ts`
 **Functions:**
@@ -63,7 +63,7 @@ Script generation modules create platform-specific batch/shell scripts for symli
 
 ## Operations
 
-### `src/commands/apply-configuration/scripts/shared/operations/`
+### `src/commands/apply-configuration/scripts/utils/operations/`
 
 #### `create-symlink.ts`
 **Functions:**
@@ -95,7 +95,7 @@ Script generation modules create platform-specific batch/shell scripts for symli
 
 ## Path Formatting
 
-### `src/commands/apply-configuration/scripts/shared/path/`
+### `src/commands/apply-configuration/scripts/utils/path/`
 
 #### `os-specific-path.ts`
 **Functions:**
@@ -133,7 +133,7 @@ Script generation modules create platform-specific batch/shell scripts for symli
 
 ## Conditional Logic
 
-### `src/commands/apply-configuration/scripts/shared/if-blocks.ts`
+### `src/commands/apply-configuration/scripts/utils/if-blocks.ts`
 
 **Functions:**
 - `ifExists(path: string, actions: string[], targetOS: 'windows' | 'unix'): string[]`
@@ -147,7 +147,7 @@ Script generation modules create platform-specific batch/shell scripts for symli
 - Indents actions with 2 spaces
 - Supports optional else blocks
 
-### `src/commands/apply-configuration/scripts/shared/remove-file.ts`
+### `src/commands/apply-configuration/scripts/utils/remove-file.ts`
 
 **Functions:**
 - `removeFile(targetPath: string, target: string, targetOS: 'windows' | 'unix'): string[]`
