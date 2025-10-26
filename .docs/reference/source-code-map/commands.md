@@ -7,17 +7,31 @@
 - `cleanConfig(silent?: boolean): Promise<void>` - Clean symlinks from current config
 
 ### Direct Operations (`direct/`)
-- `createSymlinksDirectly(operations: SymlinkOperation[]): Promise<void>`
+- `createSymlinksDirectly(operations: SymlinkOperation[], workspaceRoot: string): Promise<{success: number, failed: number, errors: string[]}>`
 - `removeSymlinksDirectly(): Promise<void>`
 - Used when running as admin or for clean operations
+- No longer handles dangerous source filtering (done upstream)
 
 ### Script Generation (`scripts/`)
 - `applyScript(operations: SymlinkOperation[], workspaceRoot: string, targetOS: 'windows' | 'unix'): Promise<void>`
 - `cleanScript(workspaceRoot: string, targetOS: 'windows' | 'unix'): Promise<void>`
+- No longer handles dangerous source filtering (done upstream)
 
 ### Utilities (`utils/`)
-- `collectOperations(workspaceRoot: string): SymlinkOperation[]`
+- `collectOperations(): SymlinkOperation[]` - Collects operations based on scriptGenerationMode
+- `filterDangerousSources(operations: SymlinkOperation[]): Promise<SymlinkOperation[]>` - Validates and filters dangerous symlinks
 - `types.ts` - SymlinkOperation interface
+
+#### Operation Collection Logic
+- **Complete mode**: Delete all current symlinks, create all next symlinks
+- **Incremental mode**: Compare current vs next configs, only delete/create changed entries
+- Uses Map-based comparison for efficient target/source matching
+
+#### Dangerous Source Filtering
+- Filters same-path operations (source === target) automatically
+- Validates against `DANGEROUS_SOURCES.PATTERNS` (`.vscode/`, `.code-workspace`, `.gitignore`)
+- Checks if source and target basenames match (dangerous only if same name)
+- User confirmation dialog with "Include Anyway" or "Skip Dangerous Symlinks"
 
 ## Other Commands
 

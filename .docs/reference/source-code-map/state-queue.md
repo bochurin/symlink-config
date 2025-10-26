@@ -18,10 +18,10 @@ Centralized application state management at `src/` level.
 - `setOutputChannel(channel: vscode.OutputChannel): void`
 - `getOutputChannel(): vscode.OutputChannel | undefined`
 
-### Manager Registry (`managers.ts`)
-- `registerManager(name: string, manager: Manager<any>): void`
-- `getManagers(...names: string[]): Manager<any>[]`
-- `disposeManagers(...names: string[]): void`
+### Manager Registry (removed)
+- **Note**: Manager registry removed in recent refactor
+- Managers are now stateless and created on-demand via `useManager()` hook
+- No longer need centralized manager state
 
 ### Watcher Registry (`watchers.ts`)
 - `registerWatcher(name: string, watcher: Watcher): void`
@@ -51,10 +51,13 @@ Operation serialization at `src/` level.
 - **Watchers**: Watcher registry with name-based disposal
 
 ### Queue Usage
-All file/settings event handlers use queue:
+Only watcher event handlers use queue for serialization:
 ```typescript
+// In watcher event handlers
 queue(() => handleEvent())
 ```
+
+**Note**: File operations and managers do NOT use queue directly - only watchers use it to serialize concurrent events.
 
 ### Module Location
 Both state and queue at `src/` level (application-level modules), not in `shared/` (reusable utilities).

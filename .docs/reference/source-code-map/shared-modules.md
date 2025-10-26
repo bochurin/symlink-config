@@ -32,6 +32,11 @@
 - Defaults: Build-time imported from package.json
 - **RESET_TO_DEFAULTS**: Boolean setting that triggers reset of all settings to defaults (auto-turns off after reset)
 
+### DANGEROUS_SOURCES
+- `PATTERNS: string[]` - Glob patterns for dangerous symlink sources
+- Includes: `**/.vscode/**`, `**/*.code-workspace`, `**/.gitignore`
+- Used by `filterDangerousSources()` to validate operations
+
 ### WATCHERS
 - File watchers: `GITIGNORE`, `NEXT_CONFIG`, `CURRENT_CONFIG`, `SYMLINK_CONFIGS`, `SYMLINKS`
 - Settings watchers: `SYMLINK_SETTINGS`, `FILES_SETTINGS`
@@ -71,15 +76,19 @@
 - `writeSettings<T>(parameter: string, value: T): Promise<void>`
 
 ### VSCode Utilities (`shared/vscode/`)
-- `info(message: string): void` - Show info message
+- `info(message: string): void` - Show info message (respects silent mode)
 - `warning(message: string): void` - Show warning message
+- `choice(message: string, ...choices: string[]): Promise<string | undefined>` - Information dialog with choices
+- `warningChoice(message: string, ...choices: string[]): Promise<string | undefined>` - Warning dialog with choices
 - `confirm(message: string): Promise<boolean>` - Show confirmation dialog
 - `confirmWarning(message: string): Promise<boolean>` - Show warning confirmation
 
-### Logging (`shared/log/`)
+### Logging (moved to `src/log/`)
+- **Note**: Log module moved from shared/ to src/ (application-specific, not reusable)
 - `log(message: string): void` - Log with timestamp
 - `clearLogs(): void` - Clear output channel
 - `showLogs(): void` - Show output channel
+- Uses @log path alias instead of @shared/log
 
 ### Other
 - `adminDetection(): Promise<boolean>` - Detect admin/root privileges
