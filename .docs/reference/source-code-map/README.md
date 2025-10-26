@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 2024-12-19T21:15:00.0000000+00:00
-**Version**: 0.0.89
+**Generated**: 2024-12-19T22:30:00.0000000+00:00
+**Version**: 0.0.87
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Structure
@@ -17,29 +17,44 @@ This documentation is organized into separate files for better maintainability:
 - **[views.md](views.md)** - Tree view and code lens providers
 - **[extension.md](extension.md)** - Extension lifecycle and initialization
 - **[state-queue.md](state-queue.md)** - State management and operation queue
+- **[test-suite.md](test-suite.md)** - Jest test suite with comprehensive coverage
 - **[architecture.md](architecture.md)** - Key patterns and architecture rules
 
 ## Quick Reference
 
-**Total Files**: ~75+ TypeScript files
-**Total Functions**: ~85+ exported functions
-**Total Types**: ~25+ interfaces, enums, and type aliases
-**Total Constants**: 3 major constant objects (FILE_NAMES, WATCHERS, SETTINGS)
+**Total Files**: ~85+ TypeScript files (including test files)
+**Total Functions**: ~90+ exported functions
+**Total Types**: ~30+ interfaces, enums, and type aliases
+**Total Constants**: 6 major constant objects (FILE_NAMES, WATCHERS, SETTINGS, MANAGERS, DANGEROUS_SOURCES)
+**Test Files**: 6+ test suites with 81 passing tests
 
-## Recent Changes (v0.0.89)
+## Recent Changes (v0.0.87)
 
-### Build System & Code Quality (Latest - 19.12.2024)
+### Jest Test Suite Implementation (Latest - 19.12.2024)
 
-- **Successful build completion** - Fixed all TypeScript compilation errors from file-ops reorganization
-  - Updated cross-subfolder imports to use correct relative paths
-  - Maintained backward compatibility with existing function signatures
-  - Reverted premature URI type changes to prevent breaking changes
-  - All 172 modules compile successfully with webpack
+- **Complete Jest testing framework** - Replaced Mocha with Jest for comprehensive testing
+  - Installed Jest with TypeScript support (`jest`, `ts-jest`, `@types/jest`)
+  - Created `jest.config.js` with proper VSCode API mocking via `moduleNameMapper`
+  - Configured path aliases for clean test imports (`@shared`, `@dialogs`, `@extension`, etc.)
+  - Added coverage collection with text, lcov, and html reporters
 
-- **ESLint compliance** - Zero linting errors after reorganization
-  - All import paths follow established patterns
-  - Code style consistent across reorganized modules
-  - Architectural boundaries maintained
+- **Comprehensive test infrastructure** - Organized test suite with multiple categories
+  - `src/test/unit/` - Unit tests for individual modules (file-ops, gitignore-ops, managers, shared)
+  - `src/test/integration/` - Integration tests for workflows (commands, watchers, workflows)
+  - `src/test/helpers/` - Test utilities (mock-vscode.ts, test-workspace.ts, assertions.ts)
+  - `src/test/fixtures/` - Test data (configs, workspaces, expected outputs)
+
+- **Test suite conversion and alignment** - Converted all tests from Mocha to Jest syntax
+  - Changed `suite`/`test` to `describe`/`it` throughout test files
+  - Fixed VSCode mocking through moduleNameMapper configuration
+  - Aligned test expectations with actual implementation behavior
+  - Achieved 81 passing tests across 6 test suites with 100% pass rate
+
+- **Test scripts and coverage** - Added comprehensive npm scripts for testing
+  - `test:jest` - Run all Jest tests
+  - `test:jest:watch` - Continuous testing during development
+  - `test:jest:coverage` - Generate coverage reports
+  - Coverage directory configured with multiple reporter formats
 
 ### Previous Changes (v0.0.88)
 
