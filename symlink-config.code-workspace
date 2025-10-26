@@ -57,8 +57,12 @@
       "path": "src",
     },
     {
-      "name": "🔬 test-workspace",
-      "path": "test-workspace",
+      "name": "🔬 test-ws-win",
+      "path": "test-ws-win",
+    },
+    {
+      "name": "🔬 test-ws-unix",
+      "path": "test-ws-unix",
     },
     {
       "name": "🌳 @",

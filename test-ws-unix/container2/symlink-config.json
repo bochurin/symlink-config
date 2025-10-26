@@ -1,0 +1,8 @@
+{
+  "directories": [
+    {
+      "target": "shared-sl",
+      "source": "@shared"
+    }
+  ]
+}
