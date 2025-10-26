@@ -20,8 +20,10 @@ Development and build utility scripts in the root `scripts/` directory.
 - **`prompts-menu.sh`** - Amazon Q prompts management menu
 
 ### `scripts/build-package.sh`
-- **Purpose**: Build script for package.json generation (currently unused)
-- **Status**: Placeholder for future build automation
+- **Purpose**: Package.json build system with import tag processing
+- **Status**: Active - integrated with npm scripts (build, watch, package, test)
+- **Architecture**: Bash wrapper with embedded Node.js for JSON processing
+- **Features**: Recursive import tag replacement, maintains JSON structure
 
 ## Usage
 

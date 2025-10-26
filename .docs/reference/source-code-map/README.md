@@ -1,6 +1,6 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 2024-12-19T22:30:00.0000000+00:00
+**Generated**: 2024-12-26T15:45:00.0000000+00:00
 **Version**: 0.0.87
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
@@ -19,6 +19,7 @@ This documentation is organized into separate files for better maintainability:
 - **[state-queue.md](state-queue.md)** - State management and operation queue
 - **[test-suite.md](test-suite.md)** - Jest test suite with comprehensive coverage
 - **[architecture.md](architecture.md)** - Key patterns and architecture rules
+- **[package-json-build-system.md](package-json-build-system.md)** - Import-based package.json build system
 
 ## Quick Reference
 
@@ -30,7 +31,37 @@ This documentation is organized into separate files for better maintainability:
 
 ## Recent Changes (v0.0.87)
 
-### Package.json Builder Rewrite (Latest - 19.12.2024)
+### Package.json Build System with Import Tags (Latest - 26.12.2024)
+
+- **Elegant import-based architecture** - Complete package.json decomposition using import tag system
+  - Created `package_json/` directory with decomposed structure
+  - Implemented `"import:filename.json"` tag replacement system
+  - Base template in `base.json` with import tags for sections
+  - Recursive import processing with nested object/array support
+
+- **Decomposed package.json structure** - Organized sections into maintainable files
+  - `base.json` - Core package properties with import tags
+  - `scripts.json` - NPM scripts with build system integration
+  - `devDependencies.json` - Development dependencies
+  - `contributes-configuration.json` - VSCode configuration schema
+  - `contributes-commands.json` - Command definitions
+  - `contributes-menus-*.json` - Menu contributions by context (commandPalette, explorerContext, viewTitle, viewItemContext)
+  - `contributes-views.json` - Tree view definitions
+
+- **Build system integration** - Automatic package.json generation before all operations
+  - `build-package.sh` script with Node.js-based import processing
+  - Integrated with npm scripts using `&&` chaining (build, watch, package, test)
+  - F5 debugging support through watch script integration
+  - Standalone `build-package` command for manual execution
+  - Removed redundant pre-hooks in favor of explicit chaining
+
+- **Cross-platform script generation** - Enhanced script architecture
+  - Bash script wrapper with embedded Node.js processing
+  - Recursive import tag replacement at any nesting level
+  - Maintains JSON structure and formatting
+  - Supports arrays, objects, and primitive value imports
+
+### Package.json Builder Rewrite (Previous - 19.12.2024)
 
 - **Simplified builder logic** - Rewritten `scripts/build-package.js` with minimal deep merge approach
   - Removed complex key ordering and sorting mechanisms
