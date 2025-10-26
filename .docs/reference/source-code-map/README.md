@@ -1,7 +1,7 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 2025-10-26T16:45:00.0000000+00:00
-**Version**: 0.0.87
+**Generated**: 2024-12-19T20:30:00.0000000+00:00
+**Version**: 0.0.88
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
 ## Structure
@@ -26,9 +26,32 @@ This documentation is organized into separate files for better maintainability:
 **Total Types**: ~25+ interfaces, enums, and type aliases
 **Total Constants**: 3 major constant objects (FILE_NAMES, WATCHERS, SETTINGS)
 
-## Recent Changes (v0.0.87)
+## Recent Changes (v0.0.88)
 
-### Dialog System & Continuous Mode (Latest - 26.10.2025)
+### File-ops Organization & Dialog Consolidation (Latest - 19.12.2024)
+
+- **File-ops subfolder organization** - Reorganized shared/file-ops into logical subfolders
+  - `path/` - basename, full-path, normalize-path, path-basics, to-fs-path, find-common-path
+  - `file/` - read-file, write-file, stat-file, path-exists, is-root-file
+  - `directory/` - directory, read-dir, is-directory
+  - `symlink/` - symlink, is-symlink, read-symlink
+  - `system/` - os operations
+  - Each subfolder has index.ts, main index exports from subfolders
+
+- **Dialog consolidation** - Removed confirm.ts in favor of choice.ts
+  - Eliminated duplicate confirm() function
+  - Updated apply-config.ts to use choice() with 'Generate Scripts'/'Cancel' options
+  - Moved error.ts to shared/vscode/dialogs/ with proper abstraction in src/dialogs/
+  - Consistent dialog architecture: shared/vscode/dialogs (pure API) + src/dialogs (abstractions)
+
+- **URI type abstraction** - Added Uri type alias for vscode.Uri
+  - Created shared/file-ops/types.ts with `export type Uri = vscode.Uri`
+  - Preparation for standardizing all file-ops to use Uri instead of string|Uri
+  - Shorter import name and abstraction over VSCode API
+
+### Previous Changes (v0.0.87)
+
+### Dialog System & Continuous Mode (26.10.2025)
 
 - **New @dialogs module** - Complete dialog abstraction system with silent mode support
   - `info()`, `warning()`, `showError()`, `choice()`, `confirm()`, `warningChoice()` functions

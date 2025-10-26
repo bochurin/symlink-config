@@ -10,8 +10,7 @@ src/dialogs/
 ├── info.ts               # Information messages
 ├── warning.ts            # Warning messages  
 ├── error.ts              # Error messages (never silent)
-├── choice.ts             # Multiple choice dialogs
-├── confirm.ts            # Confirmation dialogs
+├── choice.ts             # Multiple choice dialogs (includes confirmation logic)
 └── warning-choice.ts     # Warning choice dialogs
 ```
 
@@ -25,7 +24,7 @@ src/dialogs/
 ### User Choices
 - **`choice(message: string, ...options: string[])`** - Multiple choice dialogs
 - **`choice(message: string, withLog: boolean, ...options: string[])`** - With explicit logging control
-- **`confirm(message: string, confirmText?: string, withLog = true)`** - Confirmation dialogs
+- **Note**: Confirmation dialogs consolidated into `choice()` function
 - **`warningChoice(message: string, ...options: string[])`** - Warning choice dialogs
 
 ## Silent Mode Behavior
@@ -34,7 +33,7 @@ src/dialogs/
 - **Info/Warning**: Suppressed when `symlink-config.silent` is true
 - **Errors**: Always shown regardless of silent mode
 - **Choices**: Auto-select first option in silent mode
-- **Confirmations**: Auto-confirm (return true) in silent mode
+- **Binary choices**: Auto-select first option in silent mode
 
 ### Logging Integration
 - **Default logging**: All functions log by default (`withLog = true`)
@@ -75,8 +74,9 @@ info('Operation completed successfully')
 // Choice with auto-selection in silent mode
 const result = await choice('Select action:', 'Apply', 'Cancel')
 
-// Confirmation with auto-confirm in silent mode  
-const confirmed = await confirm('Continue?', 'Yes')
+// Binary choice (replaces confirm)
+const result = await choice('Continue?', 'Yes', 'Cancel')
+const confirmed = result === 'Yes'
 ```
 
 ### Advanced Usage

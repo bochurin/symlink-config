@@ -2,6 +2,17 @@
 
 ## File Operations (`shared/file-ops/`)
 
+**Organization**: Reorganized into logical subfolders with index.ts exports:
+- `path/` - Path manipulation functions
+- `file/` - File read/write operations  
+- `directory/` - Directory operations
+- `symlink/` - Symlink operations
+- `system/` - OS detection
+- `types.ts` - Type definitions
+
+### Types
+- `Uri` - Type alias for `vscode.Uri` (shorter name, abstraction over VSCode API)
+
 ### Core Functions
 - `fullPath(workspaceRoot: string, endPath: string): string` - Resolve workspace-relative path
 - `readFile(workspaceRoot: string, file: string): string` - Read file with empty fallback
@@ -10,7 +21,7 @@
 - `statFile(workspaceRoot: string, file: string): fs.Stats` - Get file stats
 - `readSymlink(workspaceRoot: string, file: string): string` - Read symlink target
 
-### Path Operations (`path-basics.ts`)
+### Path Operations (`path/`)
 - `join(...paths: string[]): string` - Join path segments
 - `dirname(filePath: string): string` - Get directory name
 - `basename(pathOrUri: string | vscode.Uri): string` - Extract filename (Uri-aware)
@@ -18,17 +29,17 @@
 - `resolve(...paths: string[]): string` - Resolve absolute path
 - `extname(filePath: string): string` - Get file extension
 
-### Platform Detection (`os.ts`)
+### Platform Detection (`system/`)
 - `Platform` enum: `Windows = 'windows'`, `Unix = 'unix'`
 - `platform(): Platform` - Get current platform (Windows or Unix)
 - **Note**: Mac/Linux both return `Platform.Unix` (use Unix commands)
 
-### Directory Operations (`directory.ts`)
+### Directory Operations (`directory/`)
 - `directoryExists(workspaceRoot: string, relativePath: string): boolean` - Check if directory exists (sync)
 - `createDirectory(workspaceRoot: string, relativePath: string, options?: { recursive?: boolean }): Promise<void>` - Create directory (async)
 - `removeDirectory(workspaceRoot: string, relativePath: string): Promise<void>` - Remove directory (async)
 
-### Symlink Operations (`symlink.ts`)
+### Symlink Operations (`symlink/`)
 - `createSymlink(target: string, linkPath: string): Promise<void>` - Create symlink (async)
 - `removeSymlink(linkPath: string): Promise<void>` - Remove symlink (async)
 
