@@ -1,0 +1,8 @@
+node_modules
+*.log
+
+# Symlink Config Service Files
+current.symlink-config.json
+next.symlink-config.json
+*.symlink-config.bat
+*.symlink-config.sh

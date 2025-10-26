@@ -372,6 +372,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vscode-test",
+    "test:jest": "jest",
+    "test:jest:watch": "jest --watch",
+    "test:jest:coverage": "jest --coverage",
     "git:docs:commit": "bash scripts/utils/commit/docs-commit.sh",
     "git:docs:commit:auto": "bash scripts/utils/commit/docs-commit.sh --auto",
     "git:code:commit": "bash scripts/utils/commit/code-commit.sh",
@@ -380,6 +383,7 @@
     "q:prompts": "start %USERPROFILE%\\.aws\\amazonq\\prompts"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
     "@types/vscode": "^1.104.0",
@@ -389,7 +393,9 @@
     "@vscode/test-electron": "^2.5.2",
     "eslint": "^9.34.0",
     "eslint-plugin-import": "^2.32.0",
+    "jest": "^30.2.0",
     "prettier": "^3.6.2",
+    "ts-jest": "^29.4.5",
     "ts-loader": "^9.5.4",
     "typescript": "^5.9.2",
     "webpack": "^5.101.3",

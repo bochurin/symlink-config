@@ -1,0 +1,23 @@
+{
+  "files": [
+    {
+      "source": "shared/package.json",
+      "target": "container1/package.json"
+    },
+    {
+      "source": "@shared/tsconfig.json",
+      "target": "container2/tsconfig.json"
+    }
+  ],
+  "directories": [
+    {
+      "source": "shared/utils",
+      "target": "container1/utils"
+    }
+  ],
+  "exclude_paths": [
+    "node_modules",
+    ".git",
+    "dist"
+  ]
+}

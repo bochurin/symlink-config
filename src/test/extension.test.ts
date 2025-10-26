@@ -1,16 +1,23 @@
-//TODO: develop
 import * as assert from 'assert'
 
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
-import { info } from '@dialogs'
-// import * as myExtension from '@extension';
+// Import test suites
+import './unit/file-ops/path-operations.test'
+import './unit/gitignore-ops/parse-assemble.test'
+import './unit/managers/manager-factory.test'
+import './unit/shared/settings-ops.test'
+import './integration/workflows/apply-config.test'
 
-suite('Extension Test Suite', () => {
-  info('Start all tests.')
-
-  test('Sample test', () => {
-    assert.strictEqual(-1, [1, 2, 3].indexOf(5))
-    assert.strictEqual(-1, [1, 2, 3].indexOf(0))
+describe('Symlink Config Extension Test Suite', () => {
+  beforeAll(() => {
+    console.log('Starting symlink-config extension tests...')
+  })
+  
+  afterAll(() => {
+    console.log('Completed symlink-config extension tests.')
+  })
+  
+  it('should run all test suites', () => {
+    // This test ensures all test suites are imported and run
+    assert.ok(true)
   })
 })

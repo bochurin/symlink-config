@@ -23,7 +23,8 @@
       "@views/*": ["./src/views/*"],
       "@dialogs": ["./src/dialogs"],
       "@log": ["./src/log"],
-      "@shared/*": ["./src/shared/*"]
+      "@shared/*": ["./src/shared/*"],
+      "@test/*": ["./src/test/*"]
     }
     /* Additional Checks */
     // "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */

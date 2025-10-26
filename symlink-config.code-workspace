@@ -20,7 +20,6 @@
       "name": "🚦 @queue",
       "path": "src/queue",
     },
-
     {
       "name": "⚙️ @managers",
       "path": "src/managers",
@@ -50,12 +49,16 @@
       "path": "src/shared",
     },
     {
-      "name": "🔬 test-workspace",
-      "path": "test-workspace",
+      "name": "🧪 @test",
+      "path": "src/test",
     },
     {
       "name": "📦 @src",
       "path": "src",
+    },
+    {
+      "name": "🔬 test-workspace",
+      "path": "test-workspace",
     },
     {
       "name": "🌳 @",
