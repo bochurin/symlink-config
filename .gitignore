@@ -12,8 +12,6 @@ node_modules
 
 next.symlink-config.json
 current.symlink-config.json
-apply.symlink-config.bat
-apply.symlink-config.sh
 clean.symlink-config.bat
 clean.symlink-config.sh
 admin.symlink-config.bat
