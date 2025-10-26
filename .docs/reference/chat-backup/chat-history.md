@@ -153,3 +153,8 @@ This index provides an overview of all development sessions. Each session is doc
 **Topics**: Shared abstractions architecture, logging callbacks, architectural boundary enforcement  
 **Key Changes**: v0.0.87, complete @shared/vscode and @shared/file-ops modules, manager factory logging callbacks, zero violations  
 **Phase**: 1.56 Complete - Shared Abstractions Architecture
+
+### [Session 30 - October 26, 2025](session-2025-10-26.md)
+**Topics**: Package.json builder rewrite with numeric file ordering  
+**Key Changes**: v0.0.87, simplified builder logic, file-based section ordering, natural order preservation, all tests pass  
+**Phase**: 1.58 Complete - Package.json Builder Rewrite
