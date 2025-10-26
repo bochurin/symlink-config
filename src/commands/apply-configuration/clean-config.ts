@@ -1,19 +1,19 @@
-import * as vscode from 'vscode'
-import * as path from 'path'
-
 import { cleanScript, generateAdminScript } from './scripts'
 import { removeSymlinksDirectly } from './direct'
 import { getWorkspaceRoot } from '@state'
 import { log } from '@log'
-import { FILE_NAMES } from '@shared/constants'
 import { runScriptAsAdmin } from '@shared/script-runner'
+
+import { FILE_NAMES } from '@shared/constants'
+import { join, basename } from '@shared/file-ops'
 import { platform, Platform } from '@shared/file-ops'
+import { showError, warning, info, warningChoice, openTextDocument, showTextDocument, writeToClipboard } from '@shared/vscode'
 
 export async function cleanConfig(silent = false): Promise<void> {
   const workspaceRoot = getWorkspaceRoot()
   if (!workspaceRoot) {
     log('ERROR: No workspace folder found')
-    vscode.window.showErrorMessage('No workspace folder found')
+    showError('No workspace folder found')
     return
   }
 
@@ -23,9 +23,8 @@ export async function cleanConfig(silent = false): Promise<void> {
   if (silent) {
     choice = 'Remove Directly'
   } else {
-    choice = await vscode.window.showWarningMessage(
+    choice = await warningChoice(
       'Remove symlinks handled by the extension?',
-      { modal: true },
       'Remove Directly',
       'Generate Script',
     )
@@ -41,15 +40,15 @@ export async function cleanConfig(silent = false): Promise<void> {
     const result = await removeSymlinksDirectly(workspaceRoot)
 
     if (result.errors.length > 0) {
-      vscode.window.showWarningMessage(
+      warning(
         `Symlinks removed with ${result.failed} errors. Check output for details.`,
       )
     } else if (result.success > 0) {
-      vscode.window.showInformationMessage(
+      info(
         `Successfully removed ${result.success} symlinks`,
       )
     } else {
-      vscode.window.showInformationMessage('No symlinks found to remove')
+      info('No symlinks found to remove')
     }
     log(
       `Direct removal complete: ${result.success} success, ${result.failed} failed`,
@@ -71,36 +70,35 @@ export async function cleanConfig(silent = false): Promise<void> {
       await generateAdminScript(workspaceRoot)
     }
     log('Clean script generated')
-    const scriptPath = path.join(
+    const scriptPath = join(
       workspaceRoot,
       currentPlatform === Platform.Windows ? FILE_NAMES.CLEAN_SYMLINKS_BAT : FILE_NAMES.CLEAN_SYMLINKS_SH,
     )
 
     if (silent) {
-      const document = await vscode.workspace.openTextDocument(scriptPath)
-      await vscode.window.showTextDocument(document)
+      const document = await openTextDocument(scriptPath)
+      await showTextDocument(document)
     } else {
       if (currentPlatform === Platform.Windows) {
-        await vscode.env.clipboard.writeText(path.basename(scriptPath))
+        await writeToClipboard(basename(scriptPath))
       }
 
       const options = ['Open in Code', 'Run Now']
-      const choice = await vscode.window.showWarningMessage(
-        `Cleaning script generated: ${path.basename(scriptPath)}`,
-        { modal: true },
+      const choice = await warningChoice(
+        `Cleaning script generated: ${basename(scriptPath)}`,
         ...options,
       )
 
       if (choice === 'Open in Code') {
-        const document = await vscode.workspace.openTextDocument(scriptPath)
-        await vscode.window.showTextDocument(document)
+        const document = await openTextDocument(scriptPath)
+        await showTextDocument(document)
       } else if (choice === 'Run Now') {
         runScriptAsAdmin(scriptPath, workspaceRoot)
       }
     }
   } catch (error) {
     log(`ERROR: Failed to generate cleaning script: ${error}`)
-    vscode.window.showErrorMessage(
+    showError(
       `Failed to generate cleaning script: ${error}`,
     )
   }

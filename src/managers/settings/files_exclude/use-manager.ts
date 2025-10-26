@@ -1,5 +1,6 @@
 import { SETTINGS } from '@shared/constants'
 import { createManager } from '@shared/factories/manager'
+import { log } from '@log'
 import { makeCallback } from './callbacks/make'
 import { readCallback } from './callbacks/read'
 import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
@@ -17,6 +18,7 @@ export function useFilesExcludeManager(): FilesExcludeManager {
     makeCallback: makeCallback,
     needsRegenerateCallback: needsRegenerateCallback,
     generateCallback: generateCallback,
+    logCallback: log,
   })
 
   return {

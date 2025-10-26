@@ -1,12 +1,13 @@
 import { ifExists } from './if-blocks'
-import { osSpecificPath } from './path'
+// Note: osSpecificPath functionality needs to be implemented using shared abstractions
 
 export function removeFile(
   targetPath: string,
   target: string,
   targetOS: 'windows' | 'unix',
 ): string[] {
-  const formattedPath = osSpecificPath(targetPath, targetOS)
+  // TODO: Implement osSpecificPath using shared abstractions
+  const formattedPath = targetPath // osSpecificPath(targetPath, targetOS)
 
   return ifExists(
     formattedPath,

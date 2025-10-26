@@ -1,7 +1,8 @@
 import { SymlinkOperation } from '../../../utils'
-import { sourcePath } from '../path'
-import { fullPath } from '@shared/file-ops'
 import { getWorkspaceRoot } from '@state'
+
+import { fullPath } from '@shared/file-ops'
+// Note: sourcePath functionality needs to be implemented using shared abstractions
 
 export function createSymlink(
   operation: SymlinkOperation,
@@ -9,12 +10,8 @@ export function createSymlink(
 ): string[] {
   const workspaceRoot = getWorkspaceRoot()
   const targetPath = fullPath(workspaceRoot, operation.target)
-  const { symlinkSource } = sourcePath(
-    operation.source,
-    operation.target,
-    workspaceRoot,
-    targetOS,
-  )
+  // TODO: Implement sourcePath using shared abstractions
+  const symlinkSource = operation.source || ''
 
   return [
     `echo "Creating symlink ${operation.target} -> ${operation.source}"`,

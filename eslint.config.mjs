@@ -8,11 +8,48 @@ export default [
     ignores: [
       'src/shared/vscode/**/*.ts',
       'src/shared/file-ops/**/*.ts',
+      'src/shared/hooks/**/*.ts',
       'src/extension/**/*.ts',
       'src/state/**/*.ts',
       'src/log/**/*.ts',
       'src/views/**/*.ts'
     ]
+  },
+  // Specific rules for shared modules
+  {
+    files: ['src/shared/**/*.ts'],
+    ignores: [
+      'src/shared/vscode/**/*.ts',
+      'src/shared/file-ops/**/*.ts',
+      'src/shared/hooks/**/*.ts',
+      'src/shared/settings-ops/**/*.ts',
+      'src/shared/script-runner.ts',
+      'src/shared/admin-detection.ts',
+      'src/shared/gitignore-ops/**/*.ts',
+      'src/shared/factories/**/*.ts'
+    ],
+    plugins: {
+      '@typescript-eslint': typescriptEslint,
+      import: importPlugin
+    },
+    languageOptions: {
+      parser: tsParser,
+      ecmaVersion: 2022,
+      sourceType: 'module'
+    },
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@log', '@state', '@queue', '@extension', '@managers', '@watchers', '@views', '@commands'],
+              message: 'Shared modules can only import from other shared modules (@shared/*) - no external dependencies allowed'
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     plugins: {
@@ -90,7 +127,7 @@ export default [
               message: 'Import from queue/index.ts only, not internal files'
             },
             {
-              group: ['vscode'],
+              group: ['vscode', '!@shared/vscode'],
               message: 'Import vscode API through @shared/vscode abstractions only'
             },
             {

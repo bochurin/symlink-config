@@ -1,6 +1,7 @@
 import { FILE_NAMES } from '@shared/constants'
 import { createManager } from '@shared/factories/manager'
 import { FileEvent } from '@/src/shared/hooks/use-file-watcher'
+import { log } from '@log'
 import { readCallback } from './callbacks/read'
 import { generateCallback } from './callbacks/generate'
 import { writeCallback } from './callbacks/write'
@@ -8,10 +9,11 @@ import { CurrentSymlinkConfigManager } from './types'
 
 export function useCurrentSymlinkConfigManager(): CurrentSymlinkConfigManager {
   const manager = createManager({
-    objectNameCallback: () => FILE_NAMES.GITIGNORE,
+    objectNameCallback: () => FILE_NAMES.CURRENT_SYMLINK_CONFIG,
     readCallback,
     writeCallback,
     generateCallback,
+    logCallback: log,
   })
 
   return {

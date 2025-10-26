@@ -1,15 +1,15 @@
-import * as vscode from 'vscode'
-import * as path from 'path'
-import * as fs from 'fs/promises'
 import { getWorkspaceRoot } from '@state'
 import { log, LogLevel } from '@log'
-import { isSymlink } from '@shared/file-ops'
 
-let selectedSource: vscode.Uri | undefined
-let statusBarItem: vscode.StatusBarItem | undefined
+import { basename, relative, join } from '@shared/file-ops'
+import { isSymlink, readFile, writeFile, statFile } from '@shared/file-ops'
+import { warning, showError, executeCommand, StatusBarAlignment, openTextDocument, showTextDocument, createStatusBarItem, Uri } from '@shared/vscode'
+
+let selectedSource: Uri | undefined
+let statusBarItem: any | undefined
 
 function updateContext() {
-  vscode.commands.executeCommand(
+  executeCommand(
     'setContext',
     'symlink-config.sourceSelected',
     !!selectedSource,
@@ -17,23 +17,23 @@ function updateContext() {
 
   if (selectedSource) {
     if (!statusBarItem) {
-      statusBarItem = vscode.window.createStatusBarItem(
-        vscode.StatusBarAlignment.Left,
+      statusBarItem = createStatusBarItem(
+        StatusBarAlignment.Left,
         100,
       )
       statusBarItem.command = 'symlink-config.cancelSymlinkCreation'
     }
-    statusBarItem.text = `$(link) Source: ${path.basename(selectedSource.fsPath)} (click to cancel)`
+    statusBarItem.text = `$(link) Source: ${basename(selectedSource.fsPath)} (click to cancel)`
     statusBarItem.show()
   } else {
     statusBarItem?.hide()
   }
 }
 
-export async function selectSymlinkSource(uri: vscode.Uri) {
+export async function selectSymlinkSource(uri: Uri) {
   // Check if selected item is a symlink
   if (await isSymlink(uri)) {
-    vscode.window.showWarningMessage('Cannot select a symlink as source.')
+    warning('Cannot select a symlink as source.')
     return
   }
 
@@ -42,7 +42,7 @@ export async function selectSymlinkSource(uri: vscode.Uri) {
     selectedSource = uri
     updateContext()
     log(
-      `Source selected: ${path.basename(uri.fsPath)}. Now right-click target folder and select "Select symlink target folder".`,
+      `Source selected: ${basename(uri.fsPath)}. Now right-click target folder and select "Select symlink target folder".`,
       LogLevel.Info,
     )
     return
@@ -56,21 +56,21 @@ export async function selectSymlinkSource(uri: vscode.Uri) {
   try {
     await createSymlinkConfig(source, targetFolder)
   } catch (error) {
-    vscode.window.showErrorMessage(`Failed to create symlink config: ${error}`)
+    showError(`Failed to create symlink config: ${error}`)
   }
 }
 
-export async function selectSymlinkTarget(uri: vscode.Uri) {
+export async function selectSymlinkTarget(uri: Uri) {
   // Check if selected item is a symlink
   if (await isSymlink(uri)) {
-    vscode.window.showWarningMessage(
+    warning(
       'Cannot select a symlink as target folder.',
     )
     return
   }
 
   if (!selectedSource) {
-    vscode.window.showWarningMessage(
+    warning(
       'No source selected. First use "Select as symlink source" on a file or folder.',
     )
     return
@@ -83,7 +83,7 @@ export async function selectSymlinkTarget(uri: vscode.Uri) {
   updateContext()
 
   createSymlinkConfig(source, targetFolder).catch((error) => {
-    vscode.window.showErrorMessage(`Failed to create symlink config: ${error}`)
+    showError(`Failed to create symlink config: ${error}`)
   })
 }
 
@@ -98,19 +98,17 @@ export function cancelSymlinkCreation() {
 }
 
 async function createSymlinkConfig(
-  source: vscode.Uri,
-  targetFolder: vscode.Uri,
+  source: Uri,
+  targetFolder: Uri,
 ) {
   const workspaceRoot = getWorkspaceRoot()
-  const sourcePath = path
-    .relative(workspaceRoot, source.fsPath)
+  const sourcePath = relative(workspaceRoot, source.fsPath)
     .replace(/\\/g, '/')
-  const targetFolderPath = path
-    .relative(workspaceRoot, targetFolder.fsPath)
+  const targetFolderPath = relative(workspaceRoot, targetFolder.fsPath)
     .replace(/\\/g, '/')
-  const sourceName = path.basename(source.fsPath)
+  const sourceName = basename(source.fsPath)
 
-  const configPath = path.join(targetFolder.fsPath, 'symlink-config.json')
+  const configPath = join(targetFolder.fsPath, 'symlink-config.json')
 
   // Read existing config or create new
   let config: any = {
@@ -119,14 +117,14 @@ async function createSymlinkConfig(
   }
 
   try {
-    const existing = await fs.readFile(configPath, 'utf8')
+    const existing = readFile(workspaceRoot, relative(workspaceRoot, configPath))
     config = JSON.parse(existing)
   } catch {
     // File doesn't exist, use default
   }
 
   // Determine if source is directory or file
-  const stats = await fs.stat(source.fsPath)
+  const stats = statFile(workspaceRoot, relative(workspaceRoot, source.fsPath))
   const isDirectory = stats.isDirectory()
 
   const entry = {
@@ -145,10 +143,10 @@ async function createSymlinkConfig(
 
   // Write config to file then open it
   const configContent = JSON.stringify(config, null, 2)
-  await fs.writeFile(configPath, configContent, 'utf8')
+  await writeFile(workspaceRoot, relative(workspaceRoot, configPath), configContent)
 
-  const document = await vscode.workspace.openTextDocument(configPath)
-  await vscode.window.showTextDocument(document)
+  const document = await openTextDocument(configPath)
+  await showTextDocument(document)
 
   log(`Symlink config created: ${sourceName} → @${sourcePath}`, LogLevel.Info)
 }

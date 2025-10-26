@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import type { SettingsWatcherConfig } from './types'
 import { executeHandlers } from './execute-handlers'
+import { getConfiguration } from '@shared/vscode'
 
 export type SettingsWatcher = vscode.Disposable
 
@@ -14,7 +15,7 @@ export function useSettingsWatcher(
 
   // Store initial values for all sections
   sections.forEach((sectionConfig) => {
-    const initialSettings = vscode.workspace.getConfiguration(
+    const initialSettings = getConfiguration(
       sectionConfig.section,
     )
     previousValues[sectionConfig.section] = {}
@@ -47,7 +48,7 @@ export function useSettingsWatcher(
       const section = sectionConfig.section
 
       if (event.affectsConfiguration(section)) {
-        const newConfig = vscode.workspace.getConfiguration(
+        const newConfig = getConfiguration(
           sectionConfig.section,
         )
         const handlers = Array.isArray(sectionConfig.handlers)

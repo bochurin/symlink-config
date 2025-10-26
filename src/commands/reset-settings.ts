@@ -1,9 +1,8 @@
-import * as vscode from 'vscode'
 import { SETTINGS } from '@shared/constants'
+import { writeSettings } from '@shared/settings-ops'
+import { info } from '@shared/vscode'
 
 export async function resetSettings(): Promise<void> {
-  const config = vscode.workspace.getConfiguration(SETTINGS.SYMLINK_CONFIG.SECTION)
-  
   const properties = [
     SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE,
     SETTINGS.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES,
@@ -19,8 +18,8 @@ export async function resetSettings(): Promise<void> {
   ]
 
   for (const property of properties) {
-    await config.update(property, undefined, vscode.ConfigurationTarget.Workspace)
+    await writeSettings(property, undefined)
   }
 
-  vscode.window.showInformationMessage('All symlink-config settings reset to defaults')
+  info('All symlink-config settings reset to defaults')
 }

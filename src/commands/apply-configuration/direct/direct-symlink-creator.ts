@@ -1,7 +1,9 @@
-import * as fs from 'fs'
-import * as path from 'path'
 import { log } from '@log'
 import { SymlinkOperation } from '../utils'
+
+import { join, dirname } from '@shared/file-ops'
+import { statFile, directoryExists, createDirectory } from '@shared/file-ops'
+import { createSymlink, removeSymlink } from '@shared/file-ops'
 
 export async function createSymlinksDirectly(
   operations: SymlinkOperation[],
@@ -14,29 +16,33 @@ export async function createSymlinksDirectly(
   for (const op of operations) {
     try {
       if (op.type === 'delete') {
-        const targetPath = path.join(workspaceRoot, op.target)
-        if (fs.existsSync(targetPath)) {
-          const stats = fs.lstatSync(targetPath)
+        try {
+          const stats = statFile(workspaceRoot, op.target)
           if (stats.isSymbolicLink()) {
-            fs.unlinkSync(targetPath)
+            await removeSymlink(join(workspaceRoot, op.target))
             log(`Removed symlink: ${op.target}`)
             success++
           } else {
             log(`Skipped non-symlink: ${op.target}`)
           }
+        } catch {
+          // File doesn't exist, nothing to remove
         }
       } else if (op.type === 'create' && op.source) {
-        const targetPath = path.join(workspaceRoot, op.target)
-        const sourcePath = path.join(workspaceRoot, op.source.startsWith('@') ? op.source.slice(1) : op.source)
+        const targetPath = join(workspaceRoot, op.target)
+        const sourcePath = join(workspaceRoot, op.source.startsWith('@') ? op.source.slice(1) : op.source)
         
         // Create target directory if needed
-        const targetDir = path.dirname(targetPath)
-        if (!fs.existsSync(targetDir)) {
-          fs.mkdirSync(targetDir, { recursive: true })
+        const targetDir = dirname(targetPath)
+        const targetDirRelative = targetDir.replace(workspaceRoot, '').replace(/^[\\/]/, '')
+        if (targetDirRelative && !directoryExists(workspaceRoot, targetDirRelative)) {
+          await createDirectory(workspaceRoot, targetDirRelative, { recursive: true })
         }
 
         // Check if source exists
-        if (!fs.existsSync(sourcePath)) {
+        try {
+          statFile(workspaceRoot, op.source.startsWith('@') ? op.source.slice(1) : op.source)
+        } catch {
           const error = `Source not found: ${sourcePath}`
           errors.push(error)
           log(`ERROR: ${error}`)
@@ -45,10 +51,10 @@ export async function createSymlinksDirectly(
         }
 
         // Remove existing target if it exists
-        if (fs.existsSync(targetPath)) {
-          const stats = fs.lstatSync(targetPath)
+        try {
+          const stats = statFile(workspaceRoot, op.target)
           if (stats.isSymbolicLink()) {
-            fs.unlinkSync(targetPath)
+            await removeSymlink(targetPath)
             log(`Removed existing symlink: ${op.target}`)
           } else {
             const error = `Target exists and is not a symlink: ${targetPath}`
@@ -57,11 +63,12 @@ export async function createSymlinksDirectly(
             failed++
             continue
           }
+        } catch {
+          // Target doesn't exist, which is fine
         }
 
-        // Create real symbolic link
-        const linkType = op.isDirectory ? 'dir' : 'file'
-        fs.symlinkSync(sourcePath, targetPath, linkType)
+        // Create symbolic link
+        await createSymlink(sourcePath, targetPath)
         log(`Created symlink: ${op.target} -> ${op.source}`)
         success++
       }

@@ -1,5 +1,5 @@
-import * as vscode from 'vscode'
+import { executeCommand } from '@shared/vscode'
 
 export function openSettings(): void {
-  vscode.commands.executeCommand('workbench.action.openWorkspaceSettings', 'symlink-config')
+  executeCommand('workbench.action.openWorkspaceSettings', 'symlink-config')
 }

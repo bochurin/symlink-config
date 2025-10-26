@@ -1,9 +1,9 @@
-import * as path from 'path'
+import { dirname } from '@shared/file-ops'
 import { osSpecificPath } from './os-specific-path'
 
 export function directoryPath(
   targetPath: string,
   targetOS: 'windows' | 'unix',
 ): string {
-  return osSpecificPath(path.dirname(targetPath), targetOS)
+  return osSpecificPath(dirname(targetPath), targetOS)
 }

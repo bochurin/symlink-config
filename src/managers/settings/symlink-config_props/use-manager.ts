@@ -1,5 +1,6 @@
 import { SETTINGS } from '@shared/constants'
 import { createManager } from '@shared/factories/manager'
+import { log } from '@log'
 import {
   SymlinkConfigSettingsProperty,
   SymlinkConfigSettingsPropertyValue,
@@ -21,6 +22,7 @@ export function useSymlinkConfigManager(): SymlinkConfigSettingsManager {
     makeCallback,
     writeCallback,
     afterpartyCallback,
+    logCallback: log,
   })
 
   return {

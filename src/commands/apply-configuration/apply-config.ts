@@ -1,18 +1,16 @@
-import * as vscode from 'vscode'
-import * as path from 'path'
 import { getWorkspaceRoot } from '@state'
-import { log } from '@log'
-import { choice, warning } from '@shared/vscode'
-import { LogLevel } from '@log'
+import { log, LogLevel } from '@log'
 import { collectOperations, filterDangerousSources } from './utils'
 import { applyScript, generateAdminScript } from './scripts'
 import { createSymlinksDirectly } from './direct'
 import { useSymlinkConfigManager } from '@managers'
-import { SETTINGS, FILE_NAMES } from '@shared/constants'
-import { confirm } from '@shared/vscode'
 import { runScriptAsAdmin } from '@shared/script-runner'
 import { isRunningAsAdmin } from '@shared/admin-detection'
+
+import { SETTINGS, FILE_NAMES } from '@shared/constants'
+import { join, basename } from '@shared/file-ops'
 import { platform, Platform } from '@shared/file-ops'
+import { choice, warning, confirm, openTextDocument, showTextDocument, writeToClipboard, showError } from '@shared/vscode'
 
 export async function applyConfig(silent = false) {
   const workspaceRoot = getWorkspaceRoot()
@@ -103,7 +101,7 @@ export async function applyConfig(silent = false) {
         await generateAdminScript(workspaceRoot)
       }
       log('Apply script generated')
-      const scriptPath = path.join(
+      const scriptPath = join(
         workspaceRoot,
         currentPlatform === Platform.Windows
           ? FILE_NAMES.APPLY_SYMLINKS_BAT
@@ -111,24 +109,24 @@ export async function applyConfig(silent = false) {
       )
 
       if (silent) {
-        const document = await vscode.workspace.openTextDocument(scriptPath)
-        await vscode.window.showTextDocument(document)
+        const document = await openTextDocument(scriptPath)
+        await showTextDocument(document)
       } else {
         if (currentPlatform === Platform.Windows) {
-          await vscode.env.clipboard.writeText(path.basename(scriptPath))
+          await writeToClipboard(basename(scriptPath))
         }
 
         const options = currentPlatform === Platform.Windows
           ? ['Open in Code', 'Run as Admin']
           : ['Open in Code', 'Run Now']
         const scriptChoice = await choice(
-          `Applying script generated: ${path.basename(scriptPath)}`,
+          `Applying script generated: ${basename(scriptPath)}`,
           ...options,
         )
 
         if (scriptChoice === 'Open in Code') {
-          const document = await vscode.workspace.openTextDocument(scriptPath)
-          await vscode.window.showTextDocument(document)
+          const document = await openTextDocument(scriptPath)
+          await showTextDocument(document)
         } else if (scriptChoice === 'Run as Admin' || scriptChoice === 'Run Now') {
           runScriptAsAdmin(scriptPath, workspaceRoot)
         }
@@ -136,6 +134,6 @@ export async function applyConfig(silent = false) {
     }
   } catch (error) {
     log(`ERROR: Failed to apply configuration: ${error}`)
-    vscode.window.showErrorMessage(`Failed to apply configuration: ${error}`)
+    showError(`Failed to apply configuration: ${error}`)
   }
 }

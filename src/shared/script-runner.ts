@@ -1,24 +1,24 @@
-import * as vscode from 'vscode'
-import * as path from 'path'
 import { FILE_NAMES } from '@shared/constants'
+import { basename, join } from '@shared/file-ops'
 import { platform, Platform } from '@shared/file-ops'
+import { createTerminal } from '@shared/vscode'
 
 export function runScriptAsAdmin(scriptPath: string, workspaceRoot: string) {
   const currentPlatform = platform()
-  const scriptName = path.basename(scriptPath)
+  const scriptName = basename(scriptPath)
   const needsAdmin = scriptName === FILE_NAMES.APPLY_SYMLINKS_BAT || scriptName === FILE_NAMES.APPLY_SYMLINKS_SH
   
   if (currentPlatform === Platform.Windows) {
     if (needsAdmin) {
-      const adminBatPath = path.join(workspaceRoot, FILE_NAMES.RUN_ADMIN_BAT)
-      const terminal = vscode.window.createTerminal({
+      const adminBatPath = join(workspaceRoot, FILE_NAMES.RUN_ADMIN_BAT)
+      const terminal = createTerminal({
         name: 'Run as Admin',
         cwd: workspaceRoot,
       })
       terminal.sendText(`"${adminBatPath}" "${scriptPath}" && exit`)
       terminal.show()
     } else {
-      const terminal = vscode.window.createTerminal({
+      const terminal = createTerminal({
         name: 'Run Script',
         cwd: workspaceRoot,
       })
@@ -26,7 +26,7 @@ export function runScriptAsAdmin(scriptPath: string, workspaceRoot: string) {
       terminal.show()
     }
   } else {
-    const terminal = vscode.window.createTerminal('Run Script')
+    const terminal = createTerminal('Run Script')
     terminal.show()
     const sudoPrefix = needsAdmin ? 'sudo ' : ''
     terminal.sendText(

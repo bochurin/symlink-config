@@ -1,7 +1,9 @@
-import * as fs from 'fs'
-import * as path from 'path'
 import { log } from '@log'
 import { useCurrentSymlinkConfigManager } from '@managers'
+
+import { join } from '@shared/file-ops'
+import { statFile } from '@shared/file-ops'
+import { removeSymlink } from '@shared/file-ops'
 
 export async function removeSymlinksDirectly(
   workspaceRoot: string,
@@ -23,16 +25,18 @@ export async function removeSymlinksDirectly(
   if (config.directories) {
     for (const entry of config.directories) {
       try {
-        const targetPath = path.join(workspaceRoot, entry.target.startsWith('@') ? entry.target.slice(1) : entry.target)
-        if (fs.existsSync(targetPath)) {
-          const stats = fs.lstatSync(targetPath)
+        const targetPath = join(workspaceRoot, entry.target.startsWith('@') ? entry.target.slice(1) : entry.target)
+        try {
+          const stats = statFile(workspaceRoot, entry.target.startsWith('@') ? entry.target.slice(1) : entry.target)
           if (stats.isSymbolicLink()) {
-            fs.unlinkSync(targetPath)
+            await removeSymlink(targetPath)
             log(`Removed symlink directory: ${entry.target}`)
             success++
           } else {
             log(`Skipped real directory: ${entry.target}`)
           }
+        } catch {
+          // File doesn't exist, nothing to remove
         }
       } catch (error) {
         const errorMsg = `Failed to remove directory ${entry.target}: ${error}`
@@ -47,16 +51,18 @@ export async function removeSymlinksDirectly(
   if (config.files) {
     for (const entry of config.files) {
       try {
-        const targetPath = path.join(workspaceRoot, entry.target.startsWith('@') ? entry.target.slice(1) : entry.target)
-        if (fs.existsSync(targetPath)) {
-          const stats = fs.lstatSync(targetPath)
+        const targetPath = join(workspaceRoot, entry.target.startsWith('@') ? entry.target.slice(1) : entry.target)
+        try {
+          const stats = statFile(workspaceRoot, entry.target.startsWith('@') ? entry.target.slice(1) : entry.target)
           if (stats.isSymbolicLink()) {
-            fs.unlinkSync(targetPath)
+            await removeSymlink(targetPath)
             log(`Removed symlink file: ${entry.target}`)
             success++
           } else {
             log(`Skipped real file: ${entry.target}`)
           }
+        } catch {
+          // File doesn't exist, nothing to remove
         }
       } catch (error) {
         const errorMsg = `Failed to remove file ${entry.target}: ${error}`

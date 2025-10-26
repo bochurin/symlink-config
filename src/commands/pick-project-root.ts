@@ -1,10 +1,11 @@
-import * as vscode from 'vscode'
 import { writeSettings } from '@shared/settings-ops'
 import { SETTINGS } from '@shared/constants'
 import { log } from '@log'
 
+import { showOpenDialog, info } from '@shared/vscode'
+
 export async function pickProjectRoot(): Promise<void> {
-  const options: vscode.OpenDialogOptions = {
+  const options = {
     canSelectMany: false,
     canSelectFiles: false,
     canSelectFolders: true,
@@ -12,15 +13,14 @@ export async function pickProjectRoot(): Promise<void> {
     title: 'Select Project Root Directory'
   }
 
-  const folderUri = await vscode.window.showOpenDialog(options)
+  const folderUri = await showOpenDialog(options)
   
   if (folderUri && folderUri[0]) {
     const selectedPath = folderUri[0].fsPath
     log(`Setting project root to: ${selectedPath}`)
     
-    const config = vscode.workspace.getConfiguration('symlink-config')
-    await config.update('projectRoot', selectedPath, vscode.ConfigurationTarget.Workspace)
+    await writeSettings('projectRoot', selectedPath)
     
-    vscode.window.showInformationMessage(`Project root set to: ${selectedPath}`)
+    info(`Project root set to: ${selectedPath}`)
   }
 }

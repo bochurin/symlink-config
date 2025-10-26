@@ -6,6 +6,7 @@ export interface ManagerCallbacks<CT> {
   readCallback?: (params?: { [key: string]: any }) => CT
   writeCallback?: (params?: { [key: string]: any }) => Promise<void>
   afterpartyCallback?: (params?: { [key: string]: any }) => void
+  logCallback?: (message: string) => void
 }
 
 export interface Manager<CT> {

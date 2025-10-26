@@ -1,9 +1,9 @@
-import * as vscode from 'vscode'
+import { getConfiguration } from '@shared/vscode'
 
 export async function writeSettings<T>(
   parameter: string,
   value: T,
 ): Promise<void> {
-  const config = vscode.workspace.getConfiguration()
-  await config.update(parameter, value, vscode.ConfigurationTarget.Workspace)
+  const config = getConfiguration()
+  await config.update(parameter, value, 1) // ConfigurationTarget.Workspace = 1
 }

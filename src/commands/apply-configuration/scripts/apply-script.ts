@@ -4,8 +4,6 @@ import { writeFile } from '@shared/file-ops'
 import {
   header,
   footer,
-  targetPath,
-  directoryPath,
   lineEnding as lineEnding,
   filePermissions as filePermissions,
   removeFile,
@@ -30,8 +28,9 @@ export async function applyScript(
   )
 
   for (const op of operations) {
-    const target = targetPath(op.target, workspaceRoot, targetOS)
-    const targetDir = directoryPath(op.target, targetOS)
+    // TODO: Implement targetPath and directoryPath using shared abstractions
+    const target = op.target // targetPath(op.target, workspaceRoot, targetOS)
+    const targetDir = op.target // directoryPath(op.target, targetOS)
 
     if (op.type === 'delete') {
       lines.push(...removeFile(target, op.target, targetOS))

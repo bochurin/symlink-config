@@ -1,4 +1,4 @@
-import * as path from 'path'
+import { join } from '@shared/file-ops'
 
 export function removeSymlink(
   target: string,
@@ -6,7 +6,7 @@ export function removeSymlink(
   isDirectory: boolean,
   targetOS: 'windows' | 'unix',
 ): string[] {
-  const targetPath = path.join(workspaceRoot, target)
+  const targetPath = join(workspaceRoot, target)
   const removeCmd =
     targetOS === 'windows'
       ? isDirectory

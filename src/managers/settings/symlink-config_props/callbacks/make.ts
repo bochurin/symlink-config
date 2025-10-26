@@ -1,11 +1,10 @@
 import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
 import { SETTINGS } from '@/src/shared/constants'
-import { warning } from '@/src/shared/vscode'
+import { warning, getConfiguration, ConfigurationTarget } from '@shared/vscode'
+import { pathExists, isDirectory } from '@shared/file-ops'
 import { ExclusionPart, useFilesExcludeManager } from '@managers'
 import { GitignoringPart, useGitignoreManager } from '@managers'
 import { SymlinkConfigSettingsPropertyValue } from '../types'
-import * as vscode from 'vscode'
-import * as fs from 'fs'
 import { log, LogLevel } from '@log'
 
 export function makeCallback(params?: {
@@ -63,19 +62,19 @@ export function makeCallback(params?: {
         case SETTINGS.SYMLINK_CONFIG.PROJECT_ROOT:
           if (event.value && typeof event.value === 'string') {
             if (
-              !fs.existsSync(event.value) ||
-              !fs.statSync(event.value).isDirectory()
+              !pathExists(event.value) ||
+              !isDirectory(event.value)
             ) {
               log(
                 `Invalid project root path: ${event.value}, reverting to previous value`,
               )
               warning(`Invalid project root path: ${event.value}`)
 
-              const config = vscode.workspace.getConfiguration('symlink-config')
+              const config = getConfiguration('symlink-config')
               config.update(
                 'projectRoot',
                 event.oldValue,
-                vscode.ConfigurationTarget.Workspace,
+                ConfigurationTarget.Workspace,
               )
               return
             }

@@ -1,7 +1,7 @@
-import * as path from 'path'
-import { fullPath } from '@shared/file-ops'
 import { useSymlinkConfigManager } from '@/src/managers'
+
 import { SETTINGS } from '@shared/constants'
+import { fullPath, relative, dirname } from '@shared/file-ops'
 import { osSpecificPath } from './os-specific-path'
 
 export function sourcePath(
@@ -21,7 +21,7 @@ export function sourcePath(
   const resolvedPath =
     pathMode === 'absolute'
       ? sourcePath
-      : path.relative(path.dirname(fullPath(workspaceRoot, target)), sourcePath)
+      : relative(dirname(fullPath(workspaceRoot, target)), sourcePath)
 
   return {
     sourcePath: osSpecificPath(sourceRelative, targetOS),

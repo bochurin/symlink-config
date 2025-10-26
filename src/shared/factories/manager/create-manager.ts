@@ -1,5 +1,4 @@
 
-import { log, LogLevel } from '@log'
 import type { Manager, ManagerCallbacks } from './types'
 
 function isEqual(a: any, b: any): boolean {
@@ -72,7 +71,7 @@ export function createManager<CT>(
     // Write final content if it exists and is different from initial
     if (finalContent && !isEqual(finalContent, initialContent)) {
       await write({ content: finalContent, ...params })
-      log(`${objectName()} updated`)
+      callbacks.logCallback?.(`Updated ${objectName(params)}`)
     }
 
     // Call afterPartyCallback if provided
@@ -84,14 +83,14 @@ export function createManager<CT>(
   async function handleEvent(params?: { [key: string]: any }) {
     const needsRegen = needsRegenerate(params)
     if (needsRegen) {
-      log(`${objectName()} was affected. Regenerating...`, LogLevel.Info)
+      callbacks.logCallback?.(`Regenerating ${objectName(params)}`)
       await make(params)
     }
   }
 
   async function init() {
     if (needsRegenerate()) {
-      log(`${objectName()} is inconsistent. Regenerating...`, LogLevel.Info)
+      callbacks.logCallback?.(`Initializing ${objectName()}`)
       await make()
     }
   }
