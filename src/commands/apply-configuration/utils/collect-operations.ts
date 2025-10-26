@@ -54,14 +54,45 @@ export function collectOperations(): SymlinkOperation[] {
     const currentContent = currentManager.read()
     const currentConfig = currentContent ? JSON.parse(currentContent) : null
 
-    if (currentConfig) {
-      const entries = [
-        ...(currentConfig.directories || []),
-        ...(currentConfig.files || []),
-      ]
-      for (const entry of entries) {
+    const nextManager = useNextSymlinkConfigManager()
+    const nextContent = nextManager.read()
+    const nextConfig = nextContent ? JSON.parse(nextContent) : null
+
+    const currentEntries = currentConfig
+      ? [
+          ...(currentConfig.directories || []),
+          ...(currentConfig.files || []),
+        ]
+      : []
+    const nextEntries = nextConfig
+      ? [...(nextConfig.directories || []), ...(nextConfig.files || [])]
+      : []
+
+    const nextMap = new Map(
+      nextEntries.map((e) => [e.target, e.source]),
+    )
+
+    for (const entry of currentEntries) {
+      const nextSource = nextMap.get(entry.target)
+      if (nextSource === undefined || nextSource !== entry.source) {
         operations.push({
-          type: entry.status === 'deleted' ? 'delete' : 'create',
+          type: 'delete',
+          target: entry.target,
+          source: entry.source,
+          isDirectory: entry.type === 'dir',
+        })
+      }
+    }
+
+    const currentMap = new Map(
+      currentEntries.map((e) => [e.target, e.source]),
+    )
+
+    for (const entry of nextEntries) {
+      const currentSource = currentMap.get(entry.target)
+      if (currentSource === undefined || currentSource !== entry.source) {
+        operations.push({
+          type: 'create',
           target: entry.target,
           source: entry.source,
           isDirectory: entry.type === 'dir',

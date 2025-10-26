@@ -1,6 +1,6 @@
 import { writeSettings } from '@shared/settings-ops'
 import { SETTINGS } from '@shared/constants'
-import { log } from '@/src/shared/log'
+import { log } from '@log'
 
 export async function writeCallback(params?: {
   content?: Record<string, boolean>

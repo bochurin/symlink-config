@@ -6,10 +6,8 @@ import { cleanScript, generateAdminScript } from './scripts'
 import { removeSymlinksDirectly } from './direct'
 import { getWorkspaceRoot } from '@state'
 import { log } from '@log'
-import { confirmWarning } from '@shared/vscode'
-import { FILE_NAMES, SETTINGS } from '@shared/constants'
+import { FILE_NAMES } from '@shared/constants'
 import { runScriptAsAdmin } from '@shared/script-runner'
-import { useSymlinkConfigManager } from '@managers'
 
 export async function cleanConfig(silent = false): Promise<void> {
   const workspaceRoot = getWorkspaceRoot()
@@ -18,11 +16,6 @@ export async function cleanConfig(silent = false): Promise<void> {
     vscode.window.showErrorMessage('No workspace folder found')
     return
   }
-
-  const settingsManager = useSymlinkConfigManager()
-  const scriptGenerationMode = settingsManager.read(
-    SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION_MODE,
-  )
 
   // Offer direct removal or script generation
   let choice: string | undefined

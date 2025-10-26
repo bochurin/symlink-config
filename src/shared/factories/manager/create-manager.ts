@@ -1,4 +1,4 @@
-import { info } from '@shared/vscode'
+
 import { log } from '@log'
 import type { Manager, ManagerCallbacks } from './types'
 
@@ -84,14 +84,14 @@ export function createManager<CT>(
   async function handleEvent(params?: { [key: string]: any }) {
     const needsRegen = needsRegenerate(params)
     if (needsRegen) {
-      info(`${objectName()} was affected. Regenerating...`)
+      log(`${objectName()} was affected. Regenerating...`, true)
       await make(params)
     }
   }
 
   async function init() {
     if (needsRegenerate()) {
-      info(`${objectName()} is inconsistent. Regenerating...`)
+      log(`${objectName()} is inconsistent. Regenerating...`, true)
       await make()
     }
   }

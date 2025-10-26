@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 import * as path from 'path'
 import * as fs from 'fs/promises'
 import { getWorkspaceRoot } from '@state'
-import { info } from '@shared/vscode/info'
+import { log } from '@log'
 import { isSymlink } from '@shared/file-ops'
 
 let selectedSource: vscode.Uri | undefined
@@ -41,8 +41,9 @@ export async function selectSymlinkSource(uri: vscode.Uri) {
     // First click - select source
     selectedSource = uri
     updateContext()
-    info(
+    log(
       `Source selected: ${path.basename(uri.fsPath)}. Now right-click target folder and select "Select symlink target folder".`,
+      true,
     )
     return
   }
@@ -90,9 +91,9 @@ export function cancelSymlinkCreation() {
   if (selectedSource) {
     selectedSource = undefined
     updateContext()
-    info('Symlink creation cancelled.')
+    log('Symlink creation cancelled.', true)
   } else {
-    info('No symlink creation in progress.')
+    log('No symlink creation in progress.', true)
   }
 }
 
@@ -149,5 +150,5 @@ async function createSymlinkConfig(
   const document = await vscode.workspace.openTextDocument(configPath)
   await vscode.window.showTextDocument(document)
 
-  info(`Symlink config created: ${sourceName} → @${sourcePath}`)
+  log(`Symlink config created: ${sourceName} → @${sourcePath}`, true)
 }

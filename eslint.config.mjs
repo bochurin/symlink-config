@@ -4,7 +4,15 @@ import importPlugin from 'eslint-plugin-import'
 
 export default [
   {
-    files: ['**/*.ts']
+    files: ['**/*.ts'],
+    ignores: [
+      'src/shared/vscode/**/*.ts',
+      'src/shared/file-ops/**/*.ts',
+      'src/extension/**/*.ts',
+      'src/state/**/*.ts',
+      'src/log/**/*.ts',
+      'src/views/**/*.ts'
+    ]
   },
   {
     plugins: {
@@ -80,6 +88,22 @@ export default [
             {
               group: ['*/queue/*', '!*/queue/index'],
               message: 'Import from queue/index.ts only, not internal files'
+            },
+            {
+              group: ['vscode'],
+              message: 'Import vscode API through @shared/vscode abstractions only'
+            },
+            {
+              group: ['path'],
+              message: 'Import path operations through @shared/file-ops abstractions only'
+            },
+            {
+              group: ['fs', 'fs/promises'],
+              message: 'Import file operations through @shared/file-ops abstractions only'
+            },
+            {
+              group: ['os'],
+              message: 'Import OS operations through @shared/file-ops abstractions only'
             }
           ]
         }

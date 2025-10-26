@@ -3,7 +3,7 @@ import { getOutputChannel } from '@state'
 
 let logCount = 0
 
-export async function log(message: string) {
+export async function log(message: string, withInfo = false) {
   const outputChannel = getOutputChannel()
   if (!outputChannel) {
     console.log('[symlink-config]', message)
@@ -24,6 +24,15 @@ export async function log(message: string) {
   const timestamp = new Date().toLocaleTimeString()
   outputChannel.appendLine(`[${timestamp}] ${message}`)
   logCount++
+  
+  if (withInfo) {
+    const silent = vscode.workspace
+      .getConfiguration('symlink-config')
+      .get<boolean>('silent', false)
+    if (!silent) {
+      vscode.window.showInformationMessage(message)
+    }
+  }
 }
 
 export function clearLogs() {

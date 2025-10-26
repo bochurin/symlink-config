@@ -13,6 +13,7 @@ const PROPERTIES = {
   SYMLINK_PATH_MODE: 'symlinkPathMode',
   SCRIPT_GENERATION_MODE: 'scriptGenerationMode',
   CONTINUOUS_MODE: 'continuousMode',
+  SILENT: 'silent',
   PROJECT_ROOT: 'projectRoot',
   MAX_LOG_ENTRIES: 'maxLogEntries',
   RESET_TO_DEFAULTS: 'resetToDefaults',

@@ -188,11 +188,62 @@ const content = lines.join('\n')
 
 - ❌ Namespace imports (except vscode API)
 - ❌ Direct fs usage (use shared/file-ops abstractions)
+- ❌ Direct vscode imports outside shared/vscode, extension, state, log, views
+- ❌ Direct path imports outside shared/file-ops
+- ❌ Direct os imports outside shared/file-ops
 - ❌ var keyword (use const/let)
 - ❌ Callbacks or raw promises (use async/await)
 - ❌ Direct file imports bypassing index.ts (ESLint enforced)
 - ❌ Dynamic imports (await import() or require())
 - ❌ Hardcoded paths without path module
+
+## AI Assistant Rules (CRITICAL)
+
+### Import Restrictions
+- **NEVER import vscode directly** in commands/, managers/, watchers/, shared/ (except shared/vscode/)
+- **NEVER import path directly** outside of shared/file-ops/
+- **NEVER import fs/fs/promises directly** outside of shared/file-ops/
+- **NEVER import os directly** outside of shared/file-ops/
+- **ALWAYS use shared abstractions** from @shared/vscode and @shared/file-ops
+
+### When Adding New Functionality
+1. **Check if shared abstraction exists** before importing APIs directly
+2. **Create new shared abstraction** if needed before using in commands/managers
+3. **Use existing patterns** - follow manager/hook/watcher folder structures
+4. **Follow ESLint rules** - run lint to verify compliance
+
+### Code Modification Rules
+1. **Replace direct API usage** with shared abstractions when found
+2. **Create missing abstractions** in shared/ before using in other modules
+3. **Maintain architectural boundaries** - only shared/ can import core APIs
+4. **Test after changes** - ensure functionality is preserved
+
+### Abstraction Usage Examples
+```typescript
+// ❌ WRONG - Direct vscode import in commands
+import * as vscode from 'vscode'
+vscode.window.showInformationMessage('Hello')
+
+// ✅ CORRECT - Use shared abstraction
+import { log } from '@log'
+log('Hello', true) // withInfo = true shows user message
+
+// ❌ WRONG - Direct path import
+import * as path from 'path'
+path.join(a, b)
+
+// ✅ CORRECT - Use shared file-ops
+import { fullPath } from '@shared/file-ops'
+fullPath(workspaceRoot, relativePath)
+
+// ❌ WRONG - Direct fs import
+import * as fs from 'fs'
+fs.readFileSync(path)
+
+// ✅ CORRECT - Use shared file-ops
+import { readFile } from '@shared/file-ops'
+readFile(workspaceRoot, fileName)
+```
 
 ## Current Architecture Notes
 

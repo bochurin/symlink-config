@@ -1,4 +1,4 @@
 export * from './warning'
 export * from './info'
+export * from './choice'
 export * from './confirm'
-export * from './confirm-warning'

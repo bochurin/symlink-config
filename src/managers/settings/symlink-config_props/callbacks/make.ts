@@ -1,12 +1,12 @@
 import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
 import { SETTINGS } from '@/src/shared/constants'
-import { info, warning } from '@/src/shared/vscode'
+import { warning } from '@/src/shared/vscode'
 import { ExclusionPart, useFilesExcludeManager } from '@managers'
 import { GitignoringPart, useGitignoreManager } from '@managers'
 import { SymlinkConfigSettingsPropertyValue } from '../types'
 import * as vscode from 'vscode'
 import * as fs from 'fs'
-import { log } from '@/src/shared/log'
+import { log } from '@log'
 
 export function makeCallback(params?: {
   event?: SettingsEvent
@@ -22,16 +22,18 @@ export function makeCallback(params?: {
     case SETTINGS.SYMLINK_CONFIG.SECTION:
       switch (event.parameter) {
         case SETTINGS.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES:
-          info(
+          log(
             //TODO: use constants for messages
             `Gitignoring service files ${event.value ? 'enabled' : 'disabled'}.`,
+            true,
           )
           gitignoreManager.make(GitignoringPart.ServiceFiles)
           break
 
         case SETTINGS.SYMLINK_CONFIG.GITIGNORE_SYMLINKS:
-          info(
+          log(
             `Gitignoring created symlinks ${event.value ? 'enabled' : 'disabled'}.`,
+            true,
           )
           gitignoreManager.make(GitignoringPart.Symlinks)
           break
@@ -47,7 +49,7 @@ export function makeCallback(params?: {
             event.parameter === SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES
               ? ExclusionPart.ServiceFiles
               : ExclusionPart.SymlinkConfigs
-          info(`Hiding ${object} ${action}.`)
+          log(`Hiding ${object} ${action}.`, true)
           filesExcludeManager.make(mode)
           break
 
@@ -55,7 +57,7 @@ export function makeCallback(params?: {
           const watchMessage = event.value
             ? 'Workspace watching enabled.'
             : 'Workspace watching disabled. Use Refresh command to manually update.'
-          info(watchMessage)
+          log(watchMessage, true)
           break
 
         case SETTINGS.SYMLINK_CONFIG.PROJECT_ROOT:
@@ -77,8 +79,7 @@ export function makeCallback(params?: {
               )
               return
             }
-            log(`Project root updated to: ${event.value}`)
-            info(`Project root updated to: ${event.value}`)
+            log(`Project root updated to: ${event.value}`, true)
           }
           break
 
@@ -94,7 +95,7 @@ export function makeCallback(params?: {
                   key as keyof typeof SETTINGS.SYMLINK_CONFIG.DEFAULT
                 ]
             }
-            info('All settings reset to defaults')
+            log('All settings reset to defaults', true)
             return newContent
           }
           break
