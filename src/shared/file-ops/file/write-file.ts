@@ -1,8 +1,8 @@
 import * as fs from 'fs/promises'
 import * as vscode from 'vscode'
-import { fullPath } from './full-path'
-import { normalizePath } from './normalize-path'
-import { toFsPath } from './to-fs-path'
+import { fullPath } from '../path/full-path'
+import { normalizePath } from '../path/normalize-path'
+import { toFsPath } from '../path/to-fs-path'
 
 export async function writeFile(
   rootPath: string | vscode.Uri,

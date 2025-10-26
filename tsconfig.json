@@ -21,8 +21,9 @@
       "@commands/*": ["./src/commands/*"],
       "@views": ["./src/views"],
       "@views/*": ["./src/views/*"],
-      "@shared/*": ["./src/shared/*"],
-      "@log": ["./src/log"]
+      "@dialogs": ["./src/dialogs"],
+      "@log": ["./src/log"],
+      "@shared/*": ["./src/shared/*"]
     }
     /* Additional Checks */
     // "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */

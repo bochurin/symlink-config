@@ -37,7 +37,8 @@ const extensionConfig = {
       '@managers': path.resolve(__dirname, 'src/managers'),
       '@views': path.resolve(__dirname, 'src/views'),
       '@shared': path.resolve(__dirname, 'src/shared'),
-      '@log': path.resolve(__dirname, 'src/log')
+      '@log': path.resolve(__dirname, 'src/log'),
+      '@dialogs': path.resolve(__dirname, 'src/dialogs')
     }
   },
   module: {

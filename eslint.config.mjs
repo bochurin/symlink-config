@@ -43,7 +43,7 @@ export default [
         {
           patterns: [
             {
-              group: ['@log', '@state', '@queue', '@extension', '@managers', '@watchers', '@views', '@commands'],
+              group: ['@log', '@state', '@queue', '@extension', '@managers', '@watchers', '@views', '@commands', '@dialogs'],
               message: 'Shared modules can only import from other shared modules (@shared/*) - no external dependencies allowed'
             }
           ]
@@ -149,6 +149,34 @@ export default [
       curly: 'warn',
       eqeqeq: 'warn',
       'no-throw-literal': 'warn'
+    }
+  },
+  // Forbid dialog imports from @shared/vscode outside of dialogs module
+  {
+    files: ['src/**/*.ts'],
+    ignores: ['src/shared/**/*.ts', 'src/dialogs/**/*.ts'],
+    plugins: {
+      '@typescript-eslint': typescriptEslint,
+      import: importPlugin
+    },
+    languageOptions: {
+      parser: tsParser,
+      ecmaVersion: 2022,
+      sourceType: 'module'
+    },
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@shared/vscode'],
+              importNames: ['info', 'warning', 'showError', 'choice', 'confirm', 'warningChoice'],
+              message: 'Import dialog functions from @dialogs only, not from @shared/vscode'
+            }
+          ]
+        }
+      ]
     }
   }
 ]

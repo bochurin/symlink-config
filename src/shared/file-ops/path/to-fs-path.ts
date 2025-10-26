@@ -1,5 +1,5 @@
-import { Uri } from '../types'
+import * as vscode from 'vscode'
 
-export function toFsPath(uri: Uri): string {
-  return uri.fsPath
+export function toFsPath(pathOrUri: string | vscode.Uri): string {
+  return typeof pathOrUri === 'string' ? pathOrUri : pathOrUri.fsPath
 }

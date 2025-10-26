@@ -38,6 +38,10 @@
       "path": "src/commands",
     },
     {
+      "name": "💬 @dialogs",
+      "path": "src/dialogs/",
+    },
+    {
       "name": "📝 @log",
       "path": "src/log",
     },

@@ -28,6 +28,10 @@
     {
       "target": "src/main.ts",
       "source": "@src/main.ts"
+    },
+    {
+      "target": "test-workspace/vscode-settings.json",
+      "source": "@test-workspace/.vscode/settings.json"
     }
   ]
 }
