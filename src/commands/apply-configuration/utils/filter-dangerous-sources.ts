@@ -1,5 +1,5 @@
 import { minimatch } from 'minimatch'
-import { log } from '@log'
+import { log, LogLevel } from '@log'
 import { DANGEROUS_SOURCES } from '@shared/constants'
 import { basename } from '@shared/file-ops'
 import { choice } from '@shared/vscode'
@@ -17,7 +17,7 @@ export async function filterDangerousSources(
 
   if (samePathOps.length > 0) {
     const msg = `Filtered ${samePathOps.length} symlinks with identical source and target`
-    log(msg, true)
+    log(msg, LogLevel.Info)
     samePathOps.forEach((op) => log(`  Same path: ${op.target}`))
   }
 

@@ -1,14 +1,14 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
-import * as os from 'os'
 import { FILE_NAMES } from '@shared/constants'
+import { platform, Platform } from '@shared/file-ops'
 
 export function runScriptAsAdmin(scriptPath: string, workspaceRoot: string) {
-  const isWindows = os.platform() === 'win32'
+  const currentPlatform = platform()
   const scriptName = path.basename(scriptPath)
   const needsAdmin = scriptName === FILE_NAMES.APPLY_SYMLINKS_BAT || scriptName === FILE_NAMES.APPLY_SYMLINKS_SH
   
-  if (isWindows) {
+  if (currentPlatform === Platform.Windows) {
     if (needsAdmin) {
       const adminBatPath = path.join(workspaceRoot, FILE_NAMES.RUN_ADMIN_BAT)
       const terminal = vscode.window.createTerminal({

@@ -1,5 +1,5 @@
 import { FILE_NAMES, SETTINGS } from '@shared/constants'
-import { writeFile, isWindows, fullPath } from '@shared/file-ops'
+import { writeFile, fullPath } from '@shared/file-ops'
 import { useSymlinkConfigManager } from '@/src/managers'
 import { collectOperations } from '../utils'
 import { header, footer, lineEnding, filePermissions, ifExists } from './shared'

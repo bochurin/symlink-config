@@ -1,5 +1,4 @@
 import * as vscode from 'vscode'
-import * as os from 'os'
 import * as path from 'path'
 
 import { cleanScript, generateAdminScript } from './scripts'
@@ -8,6 +7,7 @@ import { getWorkspaceRoot } from '@state'
 import { log } from '@log'
 import { FILE_NAMES } from '@shared/constants'
 import { runScriptAsAdmin } from '@shared/script-runner'
+import { platform, Platform } from '@shared/file-ops'
 
 export async function cleanConfig(silent = false): Promise<void> {
   const workspaceRoot = getWorkspaceRoot()
@@ -61,26 +61,26 @@ export async function cleanConfig(silent = false): Promise<void> {
     'Generating clean configuration scripts (user chose scripts over direct removal)...',
   )
 
-  const isWindows = os.platform() === 'win32'
+  const currentPlatform = platform()
 
   try {
     log('Generating clean script...')
-    const targetOS = isWindows ? 'windows' : 'unix'
+    const targetOS = currentPlatform === Platform.Windows ? 'windows' : 'unix'
     await cleanScript(workspaceRoot, targetOS)
-    if (isWindows) {
+    if (currentPlatform === Platform.Windows) {
       await generateAdminScript(workspaceRoot)
     }
     log('Clean script generated')
     const scriptPath = path.join(
       workspaceRoot,
-      isWindows ? FILE_NAMES.CLEAN_SYMLINKS_BAT : FILE_NAMES.CLEAN_SYMLINKS_SH,
+      currentPlatform === Platform.Windows ? FILE_NAMES.CLEAN_SYMLINKS_BAT : FILE_NAMES.CLEAN_SYMLINKS_SH,
     )
 
     if (silent) {
       const document = await vscode.workspace.openTextDocument(scriptPath)
       await vscode.window.showTextDocument(document)
     } else {
-      if (isWindows) {
+      if (currentPlatform === Platform.Windows) {
         await vscode.env.clipboard.writeText(path.basename(scriptPath))
       }
 

@@ -1,9 +1,10 @@
 import * as vscode from 'vscode'
 import { getOutputChannel } from '@state'
+import { LogLevel } from './enums'
 
 let logCount = 0
 
-export async function log(message: string, withInfo = false) {
+export async function log(message: string, level?: LogLevel) {
   const outputChannel = getOutputChannel()
   if (!outputChannel) {
     console.log('[symlink-config]', message)
@@ -25,12 +26,16 @@ export async function log(message: string, withInfo = false) {
   outputChannel.appendLine(`[${timestamp}] ${message}`)
   logCount++
   
-  if (withInfo) {
+  if (level) {
     const silent = vscode.workspace
       .getConfiguration('symlink-config')
       .get<boolean>('silent', false)
     if (!silent) {
-      vscode.window.showInformationMessage(message)
+      if (level === LogLevel.Info) {
+        vscode.window.showInformationMessage(message)
+      } else if (level === LogLevel.Error) {
+        vscode.window.showErrorMessage(message)
+      }
     }
   }
 }

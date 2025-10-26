@@ -6,7 +6,7 @@ import { GitignoringPart, useGitignoreManager } from '@managers'
 import { SymlinkConfigSettingsPropertyValue } from '../types'
 import * as vscode from 'vscode'
 import * as fs from 'fs'
-import { log } from '@log'
+import { log, LogLevel } from '@log'
 
 export function makeCallback(params?: {
   event?: SettingsEvent
@@ -25,7 +25,7 @@ export function makeCallback(params?: {
           log(
             //TODO: use constants for messages
             `Gitignoring service files ${event.value ? 'enabled' : 'disabled'}.`,
-            true,
+            LogLevel.Info,
           )
           gitignoreManager.make(GitignoringPart.ServiceFiles)
           break
@@ -33,7 +33,7 @@ export function makeCallback(params?: {
         case SETTINGS.SYMLINK_CONFIG.GITIGNORE_SYMLINKS:
           log(
             `Gitignoring created symlinks ${event.value ? 'enabled' : 'disabled'}.`,
-            true,
+            LogLevel.Info,
           )
           gitignoreManager.make(GitignoringPart.Symlinks)
           break
@@ -49,7 +49,7 @@ export function makeCallback(params?: {
             event.parameter === SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES
               ? ExclusionPart.ServiceFiles
               : ExclusionPart.SymlinkConfigs
-          log(`Hiding ${object} ${action}.`, true)
+          log(`Hiding ${object} ${action}.`, LogLevel.Info)
           filesExcludeManager.make(mode)
           break
 
@@ -57,7 +57,7 @@ export function makeCallback(params?: {
           const watchMessage = event.value
             ? 'Workspace watching enabled.'
             : 'Workspace watching disabled. Use Refresh command to manually update.'
-          log(watchMessage, true)
+          log(watchMessage, LogLevel.Info)
           break
 
         case SETTINGS.SYMLINK_CONFIG.PROJECT_ROOT:
@@ -79,7 +79,7 @@ export function makeCallback(params?: {
               )
               return
             }
-            log(`Project root updated to: ${event.value}`, true)
+            log(`Project root updated to: ${event.value}`, LogLevel.Info)
           }
           break
 
@@ -95,7 +95,7 @@ export function makeCallback(params?: {
                   key as keyof typeof SETTINGS.SYMLINK_CONFIG.DEFAULT
                 ]
             }
-            log('All settings reset to defaults', true)
+            log('All settings reset to defaults', LogLevel.Info)
             return newContent
           }
           break

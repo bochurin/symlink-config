@@ -1,8 +1,8 @@
-import * as os from 'os'
 import { execSync } from 'child_process'
+import { platform, Platform } from '@shared/file-ops'
 
 export async function isRunningAsAdmin(): Promise<boolean> {
-  if (os.platform() === 'win32') {
+  if (platform() === Platform.Windows) {
     return isWindowsAdmin()
   } else {
     return isUnixAdmin()

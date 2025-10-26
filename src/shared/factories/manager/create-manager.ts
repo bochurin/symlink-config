@@ -1,5 +1,5 @@
 
-import { log } from '@log'
+import { log, LogLevel } from '@log'
 import type { Manager, ManagerCallbacks } from './types'
 
 function isEqual(a: any, b: any): boolean {
@@ -84,14 +84,14 @@ export function createManager<CT>(
   async function handleEvent(params?: { [key: string]: any }) {
     const needsRegen = needsRegenerate(params)
     if (needsRegen) {
-      log(`${objectName()} was affected. Regenerating...`, true)
+      log(`${objectName()} was affected. Regenerating...`, LogLevel.Info)
       await make(params)
     }
   }
 
   async function init() {
     if (needsRegenerate()) {
-      log(`${objectName()} is inconsistent. Regenerating...`, true)
+      log(`${objectName()} is inconsistent. Regenerating...`, LogLevel.Info)
       await make()
     }
   }

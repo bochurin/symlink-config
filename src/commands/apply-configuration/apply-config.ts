@@ -1,9 +1,9 @@
 import * as vscode from 'vscode'
-import * as os from 'os'
 import * as path from 'path'
 import { getWorkspaceRoot } from '@state'
 import { log } from '@log'
 import { choice, warning } from '@shared/vscode'
+import { LogLevel } from '@log'
 import { collectOperations, filterDangerousSources } from './utils'
 import { applyScript, generateAdminScript } from './scripts'
 import { createSymlinksDirectly } from './direct'
@@ -12,6 +12,7 @@ import { SETTINGS, FILE_NAMES } from '@shared/constants'
 import { confirm } from '@shared/vscode'
 import { runScriptAsAdmin } from '@shared/script-runner'
 import { isRunningAsAdmin } from '@shared/admin-detection'
+import { platform, Platform } from '@shared/file-ops'
 
 export async function applyConfig(silent = false) {
   const workspaceRoot = getWorkspaceRoot()
@@ -23,7 +24,7 @@ export async function applyConfig(silent = false) {
 
     if (operations.length === 0) {
       log('No symlink operations needed')
-      log('No symlink operations needed', true)
+      log('No symlink operations needed', LogLevel.Info)
       return
     }
 
@@ -70,7 +71,7 @@ export async function applyConfig(silent = false) {
           `Symlinks created with ${result.failed} errors. Check output for details.`,
         )
       } else {
-        log(`Successfully created ${result.success} symlinks`, true)
+        log(`Successfully created ${result.success} symlinks`, LogLevel.Info)
       }
       log(
         `Direct creation complete: ${result.success} success, ${result.failed} failed`,
@@ -83,28 +84,28 @@ export async function applyConfig(silent = false) {
       SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION,
     )
     log('Generating scripts...')
-    const isWindows = os.platform() === 'win32'
+    const currentPlatform = platform()
 
     const shouldGenerateWindows =
       scriptGeneration === 'windows-only' ||
       scriptGeneration === 'both' ||
-      (scriptGeneration === 'auto' && isWindows)
+      (scriptGeneration === 'auto' && currentPlatform === Platform.Windows)
     const shouldGenerateUnix =
       scriptGeneration === 'unix-only' ||
       scriptGeneration === 'both' ||
-      (scriptGeneration === 'auto' && !isWindows)
+      (scriptGeneration === 'auto' && currentPlatform === Platform.Unix)
 
     if (shouldGenerateWindows || shouldGenerateUnix) {
       log('Generating apply script...')
-      const targetOS = isWindows ? 'windows' : 'unix'
+      const targetOS = currentPlatform === Platform.Windows ? 'windows' : 'unix'
       await applyScript(safeOperations, workspaceRoot, targetOS)
-      if (isWindows) {
+      if (currentPlatform === Platform.Windows) {
         await generateAdminScript(workspaceRoot)
       }
       log('Apply script generated')
       const scriptPath = path.join(
         workspaceRoot,
-        isWindows
+        currentPlatform === Platform.Windows
           ? FILE_NAMES.APPLY_SYMLINKS_BAT
           : FILE_NAMES.APPLY_SYMLINKS_SH,
       )
@@ -113,11 +114,11 @@ export async function applyConfig(silent = false) {
         const document = await vscode.workspace.openTextDocument(scriptPath)
         await vscode.window.showTextDocument(document)
       } else {
-        if (isWindows) {
+        if (currentPlatform === Platform.Windows) {
           await vscode.env.clipboard.writeText(path.basename(scriptPath))
         }
 
-        const options = isWindows
+        const options = currentPlatform === Platform.Windows
           ? ['Open in Code', 'Run as Admin']
           : ['Open in Code', 'Run Now']
         const scriptChoice = await choice(
