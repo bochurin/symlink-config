@@ -30,7 +30,30 @@ This documentation is organized into separate files for better maintainability:
 
 ## Recent Changes (v0.0.87)
 
-### Jest Test Suite Implementation (Latest - 19.12.2024)
+### Package.json Builder Rewrite (Latest - 19.12.2024)
+
+- **Simplified builder logic** - Rewritten `scripts/build-package.js` with minimal deep merge approach
+  - Removed complex key ordering and sorting mechanisms
+  - Uses numeric file prefixes (01_, 02_, 03_, etc.) for automatic section ordering via alphabetical sort
+  - Preserves natural JSON property order within each section
+  - Array concatenation for multiple files contributing to same section (like menus)
+
+- **File-based section ordering** - Numeric prefix system for maintainable organization
+  - `01_base.json` - Core package properties (name, version, engines, etc.)
+  - `02_scripts.json` - NPM scripts
+  - `03_devDependencies.json` - Development dependencies
+  - `41_contributes-configuration.json` - VSCode configuration schema
+  - `42_contributes-commands.json` - Command definitions
+  - `44-48_contributes-menus-*.json` - Menu contributions by context
+  - `49_contributes-views.json` - Tree view definitions
+
+- **Deep merge with array concatenation** - Proper handling of multiple files per section
+  - Arrays are concatenated (for menus, commands, etc.)
+  - Objects are deep merged with property preservation
+  - No complex sorting - relies on file system ordering
+  - Maintains all existing functionality with simpler logic
+
+### Jest Test Suite Implementation (19.12.2024)
 
 - **Complete Jest testing framework** - Replaced Mocha with Jest for comprehensive testing
   - Installed Jest with TypeScript support (`jest`, `ts-jest`, `@types/jest`)

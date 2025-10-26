@@ -177,3 +177,37 @@ Script generation modules create platform-specific batch/shell scripts for symli
 - Not in file-ops because it's not for file operations
 - Windows needs `\\\\` in script content for proper batch file parsing
 - Unix uses forward slashes unchanged
+
+## Package.json Builder
+
+### `scripts/build-package.js`
+
+**Purpose:** Builds package.json from decomposed section files using numeric ordering
+
+**Functions:**
+- `buildPackageJson()` - Main build function
+- `deepMerge(target, source)` - Merges objects with array concatenation
+
+**Implementation:**
+- Reads files from `package_json/` directory
+- Sorts files alphabetically (respects numeric prefixes)
+- Deep merges each file into result object
+- Arrays are concatenated (for menus, commands, etc.)
+- Preserves natural JSON property order within sections
+- Writes final package.json with 2-space indentation
+
+**File Naming Convention:**
+- Numeric prefixes control section order: `01_base.json`, `02_scripts.json`, etc.
+- Multiple files can contribute to same section (e.g., `44_contributes-menus-commandPalette.json`)
+- Alphabetical sorting ensures proper processing order
+
+**Usage:**
+```bash
+node scripts/build-package.js
+```
+
+**Architecture:**
+- **Section ordering**: Controlled by numeric file prefixes
+- **Entry preservation**: Natural JSON property order maintained
+- **Array handling**: Multiple files contributing to arrays are concatenated
+- **Simple logic**: No complex sorting, relies on file system ordering
