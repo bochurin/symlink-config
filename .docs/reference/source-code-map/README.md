@@ -1,6 +1,6 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 2025-01-15T10:30:00.0000000+00:00
+**Generated**: 2025-10-26T12:00:00.0000000+00:00
 **Version**: 0.0.87
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
@@ -27,31 +27,36 @@ This documentation is organized into separate files for better maintainability:
 
 ## Recent Changes (v0.0.87)
 
-### Dangerous Symlink Source Validation
+### Shared Abstractions Architecture (Latest)
 
+- **Complete shared abstraction system** - Created comprehensive `@shared/vscode` and `@shared/file-ops` modules
+- **Architectural boundary enforcement** - ESLint rules prevent direct API imports outside designated modules
+- **Manager logging callbacks** - All managers now use `logCallback` parameter for pure factory pattern
+- **Path and fs abstraction** - Added `pathExists`, `isDirectory`, `ConfigurationTarget`, `Uri` type exports
+- **ESLint configuration** - Fixed rules to properly exclude `@shared/vscode` from vscode restrictions
+
+### Factory Pattern Enhancement
+
+- **Pure factory functions** - Removed external dependencies from `createManager()` factory
+- **Optional logging callback** - Added `logCallback?: (message: string) => void` to `ManagerCallbacks`
+- **Logging integration** - All managers pass `log` function as callback for consistent logging
+- **Architectural purity** - Factories remain pure utilities with no external module dependencies
+
+### Import Restrictions Fixed
+
+- **Direct API elimination** - Replaced all direct `vscode`, `fs`, `path`, `os` imports with shared abstractions
+- **Script generation fixes** - Temporarily disabled broken path functions with TODO comments
+- **TypeScript compilation** - Fixed all build errors and type issues
+- **ESLint compliance** - Zero linting errors with proper architectural enforcement
+
+### Previous Changes
+
+#### Dangerous Symlink Source Validation
 - Added `DANGEROUS_SOURCES.PATTERNS` constant with glob patterns for risky symlinks
 - Created `filterDangerousSources()` function to validate operations before execution
-- Patterns include `**/.vscode/**`, `**/*.code-workspace`, `**/.gitignore`
-- Validates both dangerous patterns and matching basename (source/target names)
-- Filters out same-path operations (source === target) automatically
 - User confirmation dialog with "Include Anyway" or "Skip Dangerous Symlinks"
 
-### Operation Collection Refactor
-
-- Fixed `collectOperations()` incremental mode to properly compare configs
-- Complete mode: delete all current, create all next
-- Incremental mode: delete/create only changed targets with different sources
-- Uses Map-based comparison for efficient target/source matching
-
-### VSCode Dialog Utilities
-
-- Added `choice()` function for information dialogs with multiple options
-- Added `warningChoice()` function for warning dialogs with choices
-- Centralized dialog handling in shared/vscode module
-- Removed direct vscode API usage from command modules
-
-### Module Reorganization
-
+#### Module Reorganization
 - Moved log module from shared/ to src/ (application-specific, not reusable)
 - Added comprehensive README.md files for all modules with rules
 - Updated path aliases and imports (@log instead of @shared/log)

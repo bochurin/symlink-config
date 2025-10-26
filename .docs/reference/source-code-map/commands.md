@@ -4,6 +4,8 @@
 
 ### Main Commands
 - `applyConfig(silent?: boolean): Promise<void>` - Apply symlink configuration
+  - **Refactored**: Now uses shared abstractions (`@shared/vscode`, `@shared/file-ops`) instead of direct API imports
+  - Uses `join`, `basename` from file-ops and `choice`, `showError`, `openTextDocument` from vscode abstractions
 - `cleanConfig(silent?: boolean): Promise<void>` - Clean symlinks from current config
 
 ### Direct Operations (`direct/`)
