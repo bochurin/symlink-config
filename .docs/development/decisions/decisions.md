@@ -26,6 +26,7 @@
 - **[Manager Factory Consolidation and Named Parameters](manager-factory-consolidation-named-parameters.md)** - Factory consolidation with flexible named parameter system
 - **[Modes Rule](modes-rule.md)** - Critical distinction between complete/incremental modes: SCOPE vs SAFETY
 - **[OS Module Encapsulation](../architecture-refactoring-os-encapsulation.md)** - Proper OS abstraction and target OS parameter pattern for script generation
+- **[Package.json Build System](package-json-build-system.md)** - Elegant import-based build system for maintainable package.json decomposition
 
 ## Development Process
 
