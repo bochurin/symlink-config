@@ -7,4 +7,4 @@ ln -s "../../symlink-config.code-workspace" "selected/root/symlink-config.code-w
 ln -s "../../.gitignore" "selected/root/_gitignore"
 ln -s "../../tsconfig.json" "selected/root/tsconfig.json"
 ln -s "../../src/main.ts" "selected/src/main.ts"
-ln -s "../../test-workspace/.vscode/settings.json" "selected/test-workspace/vscode_-_settings.json"
+ln -s "../../test-ws-unix/.vscode/settings.json" "selected/test-workspace/vscode_-_settings.json"
