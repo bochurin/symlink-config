@@ -1,7 +1,10 @@
 import * as path from 'path'
+
 import { SymlinkConfigEntry, TreeNode, treeBase } from '../types'
+
 import { parseConfig } from './parse-config'
 import { sortTree } from './sort-tree'
+
 import { useCurrentSymlinkConfigManager, useNextSymlinkConfigManager } from '@/src/managers'
 
 export function generateTree(treeBase: treeBase): Record<string, TreeNode> {

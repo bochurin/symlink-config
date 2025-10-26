@@ -1,9 +1,8 @@
+import { warning, showError, info } from '@dialogs'
+import { log } from '@log'
+import { basename, relative, join , isSymlink, readFile, writeFile, statFile } from '@shared/file-ops'
+import { executeCommand, StatusBarAlignment, openTextDocument, showTextDocument, createStatusBarItem, Uri } from '@shared/vscode'
 import { getWorkspaceRoot } from '@state'
-import { log, LogLevel } from '@log'
-
-import { basename, relative, join } from '@shared/file-ops'
-import { isSymlink, readFile, writeFile, statFile } from '@shared/file-ops'
-import { warning, showError, executeCommand, StatusBarAlignment, openTextDocument, showTextDocument, createStatusBarItem, Uri } from '@shared/vscode'
 
 let selectedSource: Uri | undefined
 let statusBarItem: any | undefined
@@ -41,9 +40,8 @@ export async function selectSymlinkSource(uri: Uri) {
     // First click - select source
     selectedSource = uri
     updateContext()
-    log(
+    info(
       `Source selected: ${basename(uri.fsPath)}. Now right-click target folder and select "Select symlink target folder".`,
-      LogLevel.Info,
     )
     return
   }
@@ -91,9 +89,9 @@ export function cancelSymlinkCreation() {
   if (selectedSource) {
     selectedSource = undefined
     updateContext()
-    log('Symlink creation cancelled.', LogLevel.Info)
+    info('Symlink creation cancelled.')
   } else {
-    log('No symlink creation in progress.', LogLevel.Info)
+    info('No symlink creation in progress.')
   }
 }
 
@@ -148,5 +146,5 @@ async function createSymlinkConfig(
   const document = await openTextDocument(configPath)
   await showTextDocument(document)
 
-  log(`Symlink config created: ${sourceName} → @${sourcePath}`, LogLevel.Info)
+  info(`Symlink config created: ${sourceName} → @${sourcePath}`)
 }

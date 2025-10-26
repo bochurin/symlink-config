@@ -7,7 +7,7 @@ export function makeCallback(params?: {
 
   const mergedExclusions = { ...initialExclusions, ...generatedExclusions }
 
-  if (JSON.stringify(initialExclusions) != JSON.stringify(mergedExclusions)) {
+  if (JSON.stringify(initialExclusions) !== JSON.stringify(mergedExclusions)) {
     return mergedExclusions
   }
 

@@ -1,11 +1,11 @@
-import * as vscode from 'vscode'
 
 import * as state from '@state'
+import * as vscode from 'vscode'
 
-import { treeBase, TreeNode } from './types'
-import { TreeItem } from './tree-item'
 import { generateTree } from './generate'
+import { TreeItem } from './tree-item'
 import { renderTree } from './tree-render'
+import { treeBase, TreeNode } from './types'
 
 export class TreeProvider implements vscode.TreeDataProvider<TreeItem> {
   private _onDidChangeTreeData = new vscode.EventEmitter<

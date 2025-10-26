@@ -1,6 +1,8 @@
-import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
 import { SETTINGS } from '@shared/constants'
+
 import { ExclusionPart } from './enums'
+
+import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
 
 export type FilesExcludeProperty = typeof SETTINGS.FILES.EXCLUDE
 

@@ -1,18 +1,17 @@
-import * as vscode from 'vscode'
+import { useSymlinkConfigManager } from '@managers'
+import { SETTINGS } from '@shared/constants'
 import { getOutputChannel } from '@state'
-import { LogLevel } from './enums'
 
 let logCount = 0
 
-export async function log(message: string, level?: LogLevel) {
+export async function log(message: string) {
   const outputChannel = getOutputChannel()
   if (!outputChannel) {
     console.log('[symlink-config]', message)
     return
   }
-  const maxEntries = vscode.workspace
-    .getConfiguration('symlink-config')
-    .get<number>('maxLogEntries', 1000)
+  const settingsManager = useSymlinkConfigManager()
+  const maxEntries = settingsManager.read(SETTINGS.SYMLINK_CONFIG.MAX_LOG_ENTRIES) as number
   if (maxEntries > 0 && logCount >= maxEntries) {
     outputChannel.clear()
     logCount = 0
@@ -25,24 +24,11 @@ export async function log(message: string, level?: LogLevel) {
   const timestamp = new Date().toLocaleTimeString()
   outputChannel.appendLine(`[${timestamp}] ${message}`)
   logCount++
-  
-  if (level) {
-    const silent = vscode.workspace
-      .getConfiguration('symlink-config')
-      .get<boolean>('silent', false)
-    if (!silent) {
-      if (level === LogLevel.Info) {
-        vscode.window.showInformationMessage(message)
-      } else if (level === LogLevel.Error) {
-        vscode.window.showErrorMessage(message)
-      }
-    }
-  }
 }
 
 export function clearLogs() {
   const outputChannel = getOutputChannel()
-  if (!outputChannel) return
+  if (!outputChannel) {return}
   outputChannel.clear()
   logCount = 0
   log('Logs cleared manually')

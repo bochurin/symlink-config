@@ -1,7 +1,8 @@
-import * as vscode from 'vscode'
-import { setWorkspaceRoot, setWorkspaceName, disposeWatchers, setInitialized } from '@state'
 import { log } from '@log'
 import { findCommonPath } from '@shared/file-ops'
+import { setWorkspaceRoot, setWorkspaceName, disposeWatchers, setInitialized } from '@state'
+import * as vscode from 'vscode'
+
 import { makeWatchers } from './make-watchers'
 import { managersInit } from './managers-init'
 

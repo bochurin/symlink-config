@@ -1,6 +1,5 @@
 import { FILE_NAMES } from '@shared/constants'
-import { basename, join } from '@shared/file-ops'
-import { platform, Platform } from '@shared/file-ops'
+import { basename, join , platform, Platform } from '@shared/file-ops'
 import { createTerminal } from '@shared/vscode'
 
 export function runScriptAsAdmin(scriptPath: string, workspaceRoot: string) {

@@ -42,6 +42,8 @@ export const SETTINGS = {
         props[`${SECTION}.${PROPERTIES.SCRIPT_GENERATION_MODE}`].default,
       CONTINUOUS_MODE:
         props[`${SECTION}.${PROPERTIES.CONTINUOUS_MODE}`].default,
+      SILENT:
+        props[`${SECTION}.${PROPERTIES.SILENT}`].default,
       MAX_LOG_ENTRIES:
         props[`${SECTION}.${PROPERTIES.MAX_LOG_ENTRIES}`].default,
     },

@@ -1,9 +1,9 @@
-import { useFileWatcher, FileEventType } from '@shared/hooks/use-file-watcher'
-import { useNextSymlinkConfigManager } from '@managers'
-import { FILE_NAMES, WATCHERS } from '@shared/constants'
-import { getTreeProvider, registerWatcher } from '@state'
 import { log } from '@log'
+import { useNextSymlinkConfigManager } from '@managers'
 import { queue } from '@queue'
+import { FILE_NAMES, WATCHERS } from '@shared/constants'
+import { useFileWatcher, FileEventType } from '@shared/hooks/use-file-watcher'
+import { getTreeProvider, registerWatcher } from '@state'
 
 export function symlinkConfigsWatcher() {
   const nextConfigManager = useNextSymlinkConfigManager()

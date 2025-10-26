@@ -1,6 +1,7 @@
-import { SettingsEvent } from '@shared/hooks/use-settings-watcher'
 import { log } from '@log'
 import { SETTINGS } from '@shared/constants'
+import { SettingsEvent } from '@shared/hooks/use-settings-watcher'
+
 import { useSymlinkConfigManager } from '@/src/managers'
 
 export function needsRegenerateCallback(params?: {

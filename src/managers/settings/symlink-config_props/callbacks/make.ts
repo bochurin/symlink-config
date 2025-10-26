@@ -1,18 +1,21 @@
-import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
-import { SETTINGS } from '@/src/shared/constants'
-import { warning, getConfiguration, ConfigurationTarget } from '@shared/vscode'
+import { warning, info } from '@dialogs'
+import { log } from '@log'
+import { ExclusionPart, useFilesExcludeManager , GitignoringPart, useGitignoreManager } from '@managers'
 import { pathExists, isDirectory } from '@shared/file-ops'
-import { ExclusionPart, useFilesExcludeManager } from '@managers'
-import { GitignoringPart, useGitignoreManager } from '@managers'
+import { getConfiguration, ConfigurationTarget } from '@shared/vscode'
+
 import { SymlinkConfigSettingsPropertyValue } from '../types'
-import { log, LogLevel } from '@log'
+
+
+import { SETTINGS } from '@/src/shared/constants'
+import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
 
 export function makeCallback(params?: {
   event?: SettingsEvent
   initialContent?: Record<string, SymlinkConfigSettingsPropertyValue>
 }): Record<string, SymlinkConfigSettingsPropertyValue> | undefined {
   const event = params?.event
-  if (!event) return
+  if (!event) {return}
 
   const filesExcludeManager = useFilesExcludeManager()
   const gitignoreManager = useGitignoreManager()
@@ -21,18 +24,16 @@ export function makeCallback(params?: {
     case SETTINGS.SYMLINK_CONFIG.SECTION:
       switch (event.parameter) {
         case SETTINGS.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES:
-          log(
+          info(
             //TODO: use constants for messages
             `Gitignoring service files ${event.value ? 'enabled' : 'disabled'}.`,
-            LogLevel.Info,
           )
           gitignoreManager.make(GitignoringPart.ServiceFiles)
           break
 
         case SETTINGS.SYMLINK_CONFIG.GITIGNORE_SYMLINKS:
-          log(
+          info(
             `Gitignoring created symlinks ${event.value ? 'enabled' : 'disabled'}.`,
-            LogLevel.Info,
           )
           gitignoreManager.make(GitignoringPart.Symlinks)
           break
@@ -48,7 +49,7 @@ export function makeCallback(params?: {
             event.parameter === SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES
               ? ExclusionPart.ServiceFiles
               : ExclusionPart.SymlinkConfigs
-          log(`Hiding ${object} ${action}.`, LogLevel.Info)
+          info(`Hiding ${object} ${action}.`)
           filesExcludeManager.make(mode)
           break
 
@@ -56,7 +57,7 @@ export function makeCallback(params?: {
           const watchMessage = event.value
             ? 'Workspace watching enabled.'
             : 'Workspace watching disabled. Use Refresh command to manually update.'
-          log(watchMessage, LogLevel.Info)
+          info(watchMessage)
           break
 
         case SETTINGS.SYMLINK_CONFIG.PROJECT_ROOT:
@@ -78,7 +79,7 @@ export function makeCallback(params?: {
               )
               return
             }
-            log(`Project root updated to: ${event.value}`, LogLevel.Info)
+            info(`Project root updated to: ${event.value}`)
           }
           break
 
@@ -94,7 +95,7 @@ export function makeCallback(params?: {
                   key as keyof typeof SETTINGS.SYMLINK_CONFIG.DEFAULT
                 ]
             }
-            log('All settings reset to defaults', LogLevel.Info)
+            info('All settings reset to defaults')
             return newContent
           }
           break

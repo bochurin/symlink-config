@@ -1,11 +1,8 @@
-export * from './warning'
-export * from './info'
-export * from './choice'
-export * from './confirm'
+
 export * from './document'
 export * from './clipboard'
-export * from './error'
-export * from './dialogs'
+
 export * from './commands'
 export * from './configuration'
 export * from './ui'
+export * from './dialogs'

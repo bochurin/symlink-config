@@ -1,9 +1,10 @@
-import { useFileWatcher, FileEventType } from '@shared/hooks/use-file-watcher'
-import { FILE_NAMES, WATCHERS } from '@shared/constants'
-import { isRootFile } from '@shared/file-ops'
-import { getWorkspaceRoot, registerWatcher } from '@state'
 import { log } from '@log'
 import { queue } from '@queue'
+import { FILE_NAMES, WATCHERS } from '@shared/constants'
+import { isRootFile } from '@shared/file-ops'
+import { useFileWatcher, FileEventType } from '@shared/hooks/use-file-watcher'
+import { getWorkspaceRoot, registerWatcher } from '@state'
+
 import { useGitignoreManager } from '@/src/managers/files/_gitignore'
 
 export function gitignoreWatcher() {

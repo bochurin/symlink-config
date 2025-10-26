@@ -1,5 +1,5 @@
-export * from './shared'
-export * from './shared/operations'
+export * from './utils'
+export * from './utils/operations'
 export * from './apply-script'
 export * from './clean-script'
 export { adminScript as generateAdminScript } from './admin-script'

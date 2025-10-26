@@ -1,7 +1,8 @@
-import * as vscode from 'vscode'
-import { treeBase, TreeNode } from './types'
-import { TreeItem } from './tree-item'
 import { FILE_NAMES } from '@shared/constants'
+import * as vscode from 'vscode'
+
+import { TreeItem } from './tree-item'
+import { treeBase, TreeNode } from './types'
 
 export function renderTree(
   tree: Record<string, TreeNode>,
@@ -69,6 +70,7 @@ export function renderTree(
         symlinkStatus: treeNode.symlinkStatus,
         iconPath: treeNode.iconPath,
         tooltip,
+        commandId: treeNode.isSymlinkLeaf ? 'symlink-config.openSymlinkConfig' : undefined,
       },
     )
 

@@ -1,12 +1,12 @@
+import { log } from '@log'
+import { useSymlinkConfigManager } from '@managers'
+import { queue } from '@queue'
+import { SETTINGS, WATCHERS } from '@shared/constants'
 import {
   SettingsEvent,
   useSettingsWatcher,
 } from '@shared/hooks/use-settings-watcher'
-import { SETTINGS, WATCHERS } from '@shared/constants'
 import { registerWatcher } from '@state'
-import { log } from '@log'
-import { queue } from '@queue'
-import { useSymlinkConfigManager } from '@managers'
 
 export function symlinkConfigSettingsWatcher() {
   // TODO: Fix manager creation error handling, type compatibility, and method availability

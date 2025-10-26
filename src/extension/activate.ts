@@ -1,10 +1,12 @@
-import * as vscode from 'vscode'
-import { setOutputChannel, setTreeProvider, disposeWatchers } from '@state'
 import { log } from '@log'
-import { SymlinkTreeProvider, ScriptCodeLensProvider } from '@views'
-import { registerCommands } from './register-commands'
-import { init, reset } from './ini'
 import { isRunningAsAdmin } from '@shared/admin-detection'
+import { setOutputChannel, setTreeProvider, disposeWatchers } from '@state'
+import { SymlinkTreeProvider, ScriptCodeLensProvider } from '@views'
+import * as vscode from 'vscode'
+
+import { init, reset } from './ini'
+import { registerCommands } from './register-commands'
+
 
 export async function activate(context: vscode.ExtensionContext) {
   const outputChannel = vscode.window.createOutputChannel('symlink-config', {
@@ -21,7 +23,7 @@ export async function activate(context: vscode.ExtensionContext) {
   })
   
   // Update view name with admin status
-  const isAdmin = await isRunningAsAdmin()
+  const isAdmin = isRunningAsAdmin()
   if (isAdmin) {
     treeView.title = '🔑 SYMLINK-CONFIG'
   }

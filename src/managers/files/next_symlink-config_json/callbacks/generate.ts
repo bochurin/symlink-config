@@ -1,6 +1,6 @@
-import { getWorkspaceRoot } from '@state'
-import { readDir, readFile, normalizePath } from '@shared/file-ops'
 import { Config, ConfigEntry } from '@managers'
+import { readDir, readFile, normalizePath } from '@shared/file-ops'
+import { getWorkspaceRoot } from '@state'
 
 export function generateCallback(): string {
   try {
@@ -46,7 +46,7 @@ function createMasterConfig(configFiles: string[]): Config {
 
   for (const configFile of configFiles) {
     const config = loadConfig(configFile)
-    if (!config) continue
+    if (!config) {continue}
 
     const configDir = configFile.includes('/')
       ? configFile.substring(0, configFile.lastIndexOf('/'))

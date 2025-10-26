@@ -1,6 +1,7 @@
-import * as vscode from 'vscode'
 import * as path from 'path'
+
 import { FILE_NAMES } from '@shared/constants'
+import * as vscode from 'vscode'
 
 export class ScriptCodeLensProvider implements vscode.CodeLensProvider {
   provideCodeLenses(document: vscode.TextDocument): vscode.CodeLens[] {

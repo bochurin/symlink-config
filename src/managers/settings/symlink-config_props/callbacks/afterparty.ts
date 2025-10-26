@@ -1,5 +1,6 @@
-import { SymlinkConfigSettingsProperty } from '../types'
 import { makeWatchers } from '@extension'
+
+import { SymlinkConfigSettingsProperty } from '../types'
 
 export async function afterpartyCallback(params?: {
   content?: Record<string, SymlinkConfigSettingsProperty>

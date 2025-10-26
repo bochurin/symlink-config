@@ -1,5 +1,6 @@
-import { FileEvent } from '@/src/shared/hooks/use-file-watcher'
 import { GitignoringPart } from './enums'
+
+import { FileEvent } from '@/src/shared/hooks/use-file-watcher'
 
 export interface GitignoreManager {
   objectName: () => string

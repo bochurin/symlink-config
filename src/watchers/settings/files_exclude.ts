@@ -1,11 +1,12 @@
+import { log } from '@log'
+import { queue } from '@queue'
+import { SETTINGS, WATCHERS } from '@shared/constants'
 import {
   SettingsEvent,
   useSettingsWatcher,
 } from '@shared/hooks/use-settings-watcher'
-import { SETTINGS, WATCHERS } from '@shared/constants'
 import { registerWatcher } from '@state'
-import { log } from '@log'
-import { queue } from '@queue'
+
 import { useFilesExcludeManager } from '@/src/managers/settings/files_exclude'
 
 export function filesSettingsWatcher() {

@@ -1,7 +1,7 @@
-import { readFile } from '@shared/file-ops'
-import { getWorkspaceRoot } from '@state'
-import { parseGitignore } from '@shared/gitignore-ops'
 import { FILE_NAMES } from '@shared/constants'
+import { readFile } from '@shared/file-ops'
+import { parseGitignore } from '@shared/gitignore-ops'
+import { getWorkspaceRoot } from '@state'
 
 export function readCallback(): Record<
   string,

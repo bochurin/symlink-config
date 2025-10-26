@@ -1,9 +1,12 @@
 import { FILE_NAMES, SETTINGS } from '@shared/constants'
 import { writeFile, fullPath } from '@shared/file-ops'
-import { useSymlinkConfigManager } from '@/src/managers'
+
 import { collectOperations } from '../utils'
-import { header, footer, lineEnding, filePermissions, ifExists } from './shared'
-import { removeSymlink } from './shared/operations'
+
+import { header, footer, lineEnding, filePermissions, ifExists } from './utils'
+import { removeSymlink } from './utils/operations'
+
+import { useSymlinkConfigManager } from '@/src/managers'
 
 export async function cleanScript(
   workspaceRoot: string,

@@ -1,6 +1,8 @@
-import { useSymlinkConfigManager } from '@/src/managers'
-import { ExclusionPart } from '../enums'
 import { FILE_NAMES, SETTINGS } from '@shared/constants'
+
+import { ExclusionPart } from '../enums'
+
+import { useSymlinkConfigManager } from '@/src/managers'
 
 export function generateCallback(params?: {
   mode?: ExclusionPart
@@ -12,7 +14,7 @@ export function generateCallback(params?: {
   const generatedExclusions: Record<string, boolean> = {}
 
   try {
-    if (mode == ExclusionPart.All || mode == ExclusionPart.ServiceFiles) {
+    if (mode === ExclusionPart.All || mode === ExclusionPart.ServiceFiles) {
       const hideServiceFiles = settingsManager.read(
         SETTINGS.SYMLINK_CONFIG.HIDE_SERVICE_FILES,
       ) as boolean
@@ -25,7 +27,7 @@ export function generateCallback(params?: {
       generatedExclusions[FILE_NAMES.RUN_ADMIN_BAT] = hideServiceFiles
     }
 
-    if (mode == ExclusionPart.All || mode == ExclusionPart.SymlinkConfigs) {
+    if (mode === ExclusionPart.All || mode === ExclusionPart.SymlinkConfigs) {
       const hideSymlinkConfigs = settingsManager.read(
         SETTINGS.SYMLINK_CONFIG.HIDE_SYMLINK_CONFIGS,
       ) as boolean

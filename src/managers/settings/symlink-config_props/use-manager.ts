@@ -1,16 +1,19 @@
+import { log } from '@log'
 import { SETTINGS } from '@shared/constants'
 import { createManager } from '@shared/factories/manager'
-import { log } from '@log'
+
+import { afterpartyCallback } from './callbacks/afterparty'
+import { makeCallback } from './callbacks/make'
+import { readCallback } from './callbacks/read'
+import { writeCallback } from './callbacks/write'
 import {
   SymlinkConfigSettingsProperty,
   SymlinkConfigSettingsPropertyValue,
   SymlinkConfigSettingsManager,
 } from './types'
+
 import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
-import { readCallback } from './callbacks/read'
-import { makeCallback } from './callbacks/make'
-import { writeCallback } from './callbacks/write'
-import { afterpartyCallback } from './callbacks/afterparty'
+
 
 export function useSymlinkConfigManager(): SymlinkConfigSettingsManager {
   const manager = createManager<

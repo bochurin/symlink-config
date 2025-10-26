@@ -2,8 +2,8 @@
 import type { Manager, ManagerCallbacks } from './types'
 
 function isEqual(a: any, b: any): boolean {
-  if (a === b) return true
-  if (a == null || b == null) return false
+  if (a === b) {return true}
+  if (a === null || b === null) {return false}
   try {
     return JSON.stringify(a) === JSON.stringify(b)
   } catch {

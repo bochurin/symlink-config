@@ -1,6 +1,6 @@
-import { writeSettings } from '@shared/settings-ops'
-import { SETTINGS } from '@shared/constants'
 import { log } from '@log'
+import { SETTINGS } from '@shared/constants'
+import { writeSettings } from '@shared/settings-ops'
 
 export async function writeCallback(params?: {
   content?: Record<string, boolean>

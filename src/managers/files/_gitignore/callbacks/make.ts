@@ -17,7 +17,7 @@ export function makeCallback(params?: {
   const mergedEntries = { ...initialEntries, ...generatedEntries }
   if (JSON.stringify(initialEntries) !== JSON.stringify(mergedEntries)) {
     Object.entries(mergedEntries).forEach(([key, entry]) => {
-      if (originalSpacing[key]) entry.spacing = originalSpacing[key]
+      if (originalSpacing[key]) {entry.spacing = originalSpacing[key]}
     })
 
     log('.gitignore updated')

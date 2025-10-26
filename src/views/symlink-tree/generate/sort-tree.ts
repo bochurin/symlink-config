@@ -7,7 +7,7 @@ export function sortTree(
     ([nameA, nodeA], [nameB, nodeB]) => {
       // First sort by name
       const nameCompare = nameA.localeCompare(nameB)
-      if (nameCompare !== 0) return nameCompare
+      if (nameCompare !== 0) {return nameCompare}
 
       // Then by status: deleted (0) before new (1), unchanged (2) is after all
       const statusOrder: Record<string, number> = {

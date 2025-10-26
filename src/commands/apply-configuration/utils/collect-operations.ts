@@ -2,6 +2,7 @@ import { useCurrentSymlinkConfigManager } from '@managers/files/current_symlink-
 import { useNextSymlinkConfigManager } from '@managers/files/next_symlink-config_json'
 import { useSymlinkConfigManager } from '@managers/settings/symlink-config_props'
 import { SETTINGS } from '@shared/constants'
+
 import { SymlinkOperation } from './types'
 
 export function collectOperations(): SymlinkOperation[] {
@@ -102,8 +103,8 @@ export function collectOperations(): SymlinkOperation[] {
   }
 
   return operations.sort((a, b) => {
-    if (a.type === 'delete' && b.type === 'create') return -1
-    if (a.type === 'create' && b.type === 'delete') return 1
+    if (a.type === 'delete' && b.type === 'create') {return -1}
+    if (a.type === 'create' && b.type === 'delete') {return 1}
     return 0
   })
 }

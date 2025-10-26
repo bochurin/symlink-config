@@ -1,14 +1,14 @@
-import { getWorkspaceRoot } from '@state'
-
+import { showError } from '@dialogs'
 import { FILE_NAMES } from '@shared/constants'
 import { join } from '@shared/file-ops'
-import { openTextDocument, showTextDocument, showError } from '@shared/vscode'
+import { openTextDocument, showTextDocument } from '@shared/vscode'
+import { getWorkspaceRoot } from '@state'
 
 export async function openSymlinkConfig(treeItem: any) {
   const workspaceRoot = getWorkspaceRoot()
 
-  // Use targetPath from tree item, fallback to root
-  const targetFolder = treeItem?.targetPath || ''
+  // Use configPath from tree item, fallback to root
+  const targetFolder = treeItem?.configPath || ''
   const configPath = join(
     workspaceRoot,
     targetFolder,

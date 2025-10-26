@@ -1,9 +1,8 @@
 import { log } from '@log'
 import { useCurrentSymlinkConfigManager } from '@managers'
+import { join , statFile , removeSymlink } from '@shared/file-ops'
 
-import { join } from '@shared/file-ops'
-import { statFile } from '@shared/file-ops'
-import { removeSymlink } from '@shared/file-ops'
+
 
 export async function removeSymlinksDirectly(
   workspaceRoot: string,

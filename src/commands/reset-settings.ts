@@ -1,6 +1,6 @@
+import { info } from '@dialogs'
 import { SETTINGS } from '@shared/constants'
 import { writeSettings } from '@shared/settings-ops'
-import { info } from '@shared/vscode'
 
 export async function resetSettings(): Promise<void> {
   const properties = [

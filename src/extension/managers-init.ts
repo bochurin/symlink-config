@@ -1,12 +1,14 @@
+import { log } from '@log'
 import { SETTINGS } from '@shared/constants'
+
+import { useGitignoreManager as use_gitignoreFileManager } from '../managers/files/_gitignore'
+import { useFilesExcludeManager } from '../managers/settings/files_exclude'
+
 import {
   useCurrentSymlinkConfigManager,
   useSymlinkConfigManager,
   useNextSymlinkConfigManager,
 } from '@/src/managers'
-import { log } from '@log'
-import { useFilesExcludeManager } from '../managers/settings/files_exclude'
-import { useGitignoreManager as use_gitignoreFileManager } from '../managers/files/_gitignore'
 
 export async function managersInit(force?: boolean) {
   force = force || false

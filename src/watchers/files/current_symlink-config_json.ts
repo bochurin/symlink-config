@@ -1,17 +1,18 @@
-import { useFileWatcher, FileEventType } from '@shared/hooks/use-file-watcher'
-import { FILE_NAMES, WATCHERS, SETTINGS } from '@shared/constants'
-import { isRootFile } from '@shared/file-ops'
-import { getTreeProvider, getWorkspaceRoot, registerWatcher } from '@state'
-import { readSettings } from '@shared/settings-ops'
 import { cleanConfig } from '@commands'
 import { log } from '@log'
 import { queue } from '@queue'
+import { FILE_NAMES, WATCHERS, SETTINGS } from '@shared/constants'
+import { isRootFile } from '@shared/file-ops'
+import { useFileWatcher, FileEventType } from '@shared/hooks/use-file-watcher'
+import { getTreeProvider, getWorkspaceRoot, registerWatcher } from '@state'
+
+import { useCurrentSymlinkConfigManager, useSymlinkConfigManager } from '@/src/managers'
 import { useGitignoreManager } from '@/src/managers/files/_gitignore'
-import { useCurrentSymlinkConfigManager } from '@/src/managers'
 
 export function currentConfigWatcher() {
   const _gitignoreFileManager = useGitignoreManager()
   const currentConfigManager = useCurrentSymlinkConfigManager()
+  const settingsManager = useSymlinkConfigManager()
 
   const treeProvider = getTreeProvider()
   const workspaceRoot = getWorkspaceRoot()
@@ -32,10 +33,10 @@ export function currentConfigWatcher() {
         await queue(() => _gitignoreFileManager.handleEvent(events))
         treeProvider?.refresh()
         
-        const continuousMode = readSettings(SETTINGS.SYMLINK_CONFIG.CONTINUOUS_MODE, false)
+        const continuousMode = settingsManager.read(SETTINGS.SYMLINK_CONFIG.CONTINUOUS_MODE)
         if (continuousMode) {
           log('Continuous mode: auto-cleaning configuration...')
-          await queue(() => cleanConfig(true))
+          await queue(() => cleanConfig())
         }
       },
     },

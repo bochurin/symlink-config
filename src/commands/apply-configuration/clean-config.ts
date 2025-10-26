@@ -1,16 +1,20 @@
-import { cleanScript, generateAdminScript } from './scripts'
-import { removeSymlinksDirectly } from './direct'
-import { getWorkspaceRoot } from '@state'
+import { showError, warning, info, warningChoice } from '@dialogs'
 import { log } from '@log'
+import { useSymlinkConfigManager } from '@managers'
+import { FILE_NAMES, SETTINGS } from '@shared/constants'
+import { join, basename , platform, Platform } from '@shared/file-ops'
 import { runScriptAsAdmin } from '@shared/script-runner'
+import { openTextDocument, showTextDocument, writeToClipboard } from '@shared/vscode'
+import { getWorkspaceRoot } from '@state'
 
-import { FILE_NAMES } from '@shared/constants'
-import { join, basename } from '@shared/file-ops'
-import { platform, Platform } from '@shared/file-ops'
-import { showError, warning, info, warningChoice, openTextDocument, showTextDocument, writeToClipboard } from '@shared/vscode'
+import { removeSymlinksDirectly } from './direct'
+import { cleanScript, generateAdminScript } from './scripts'
 
-export async function cleanConfig(silent = false): Promise<void> {
+export async function cleanConfig(): Promise<void> {
   const workspaceRoot = getWorkspaceRoot()
+  const settingsManager = useSymlinkConfigManager()
+  const continuousMode = settingsManager.read(SETTINGS.SYMLINK_CONFIG.CONTINUOUS_MODE)
+  
   if (!workspaceRoot) {
     log('ERROR: No workspace folder found')
     showError('No workspace folder found')
@@ -19,9 +23,10 @@ export async function cleanConfig(silent = false): Promise<void> {
 
   // Offer direct removal or script generation
   let choice: string | undefined
-
-  if (silent) {
-    choice = 'Remove Directly'
+  
+  if (continuousMode) {
+    choice = 'Generate Script'
+    log('Continuous mode: generating clean script automatically')
   } else {
     choice = await warningChoice(
       'Remove symlinks handled by the extension?',
@@ -61,38 +66,57 @@ export async function cleanConfig(silent = false): Promise<void> {
   )
 
   const currentPlatform = platform()
+  const scriptGeneration = settingsManager.read(
+    SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION,
+  )
+
+  const shouldGenerateWindows =
+    scriptGeneration === 'windows-only' ||
+    scriptGeneration === 'both' ||
+    (scriptGeneration === 'auto' && currentPlatform === Platform.Windows)
+  const shouldGenerateUnix =
+    scriptGeneration === 'unix-only' ||
+    scriptGeneration === 'both' ||
+    (scriptGeneration === 'auto' && currentPlatform === Platform.Unix)
 
   try {
-    log('Generating clean script...')
-    const targetOS = currentPlatform === Platform.Windows ? 'windows' : 'unix'
-    await cleanScript(workspaceRoot, targetOS)
-    if (currentPlatform === Platform.Windows) {
-      await generateAdminScript(workspaceRoot)
+    log('Generating clean scripts...')
+    
+    if (shouldGenerateWindows) {
+      await cleanScript(workspaceRoot, 'windows')
+      await generateAdminScript(workspaceRoot, 'windows')
+      log('Windows clean script generated')
     }
-    log('Clean script generated')
+    
+    if (shouldGenerateUnix) {
+      await cleanScript(workspaceRoot, 'unix')
+      await generateAdminScript(workspaceRoot, 'unix')
+      log('Unix clean script generated')
+    }
     const scriptPath = join(
       workspaceRoot,
       currentPlatform === Platform.Windows ? FILE_NAMES.CLEAN_SYMLINKS_BAT : FILE_NAMES.CLEAN_SYMLINKS_SH,
     )
 
-    if (silent) {
+    if (continuousMode) {
       const document = await openTextDocument(scriptPath)
       await showTextDocument(document)
+      log('Continuous mode: opened clean script in Code')
     } else {
       if (currentPlatform === Platform.Windows) {
         await writeToClipboard(basename(scriptPath))
       }
 
       const options = ['Open in Code', 'Run Now']
-      const choice = await warningChoice(
+      const scriptChoice = await warningChoice(
         `Cleaning script generated: ${basename(scriptPath)}`,
         ...options,
       )
 
-      if (choice === 'Open in Code') {
+      if (scriptChoice === 'Open in Code') {
         const document = await openTextDocument(scriptPath)
         await showTextDocument(document)
-      } else if (choice === 'Run Now') {
+      } else if (scriptChoice === 'Run Now') {
         runScriptAsAdmin(scriptPath, workspaceRoot)
       }
     }

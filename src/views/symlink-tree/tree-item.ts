@@ -1,4 +1,5 @@
 import * as vscode from 'vscode'
+
 import { SymlinkType, TreeNodeType } from './types'
 
 export class TreeItem extends vscode.TreeItem {

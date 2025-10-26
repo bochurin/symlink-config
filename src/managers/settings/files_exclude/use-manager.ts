@@ -1,14 +1,16 @@
+import { log } from '@log'
 import { SETTINGS } from '@shared/constants'
 import { createManager } from '@shared/factories/manager'
-import { log } from '@log'
-import { makeCallback } from './callbacks/make'
-import { readCallback } from './callbacks/read'
-import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
-import { needsRegenerateCallback } from './callbacks/needs-regenerate'
-import { ExclusionPart } from './enums'
+
 import { generateCallback } from './callbacks/generate'
+import { makeCallback } from './callbacks/make'
+import { needsRegenerateCallback } from './callbacks/needs-regenerate'
+import { readCallback } from './callbacks/read'
 import { writeCallback } from './callbacks/write'
+import { ExclusionPart } from './enums'
 import { FilesExcludeManager } from './types'
+
+import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
 
 export function useFilesExcludeManager(): FilesExcludeManager {
   const manager = createManager({

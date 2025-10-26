@@ -1,6 +1,8 @@
 import { FILE_NAMES } from '@shared/constants'
-import { SymlinkOperation } from '../utils'
 import { writeFile } from '@shared/file-ops'
+
+import { SymlinkOperation } from '../utils'
+
 import {
   header,
   footer,
@@ -8,8 +10,8 @@ import {
   filePermissions as filePermissions,
   removeFile,
   createDirectory,
-} from './shared'
-import { createSymlink } from './shared/operations'
+} from './utils'
+import { createSymlink } from './utils/operations'
 
 export async function applyScript(
   operations: SymlinkOperation[],

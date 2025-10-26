@@ -1,15 +1,15 @@
-import { useFileWatcher, FileEventType } from '@shared/hooks/use-file-watcher'
-import { useNextSymlinkConfigManager } from '@managers'
-import { FILE_NAMES, WATCHERS, SETTINGS } from '@shared/constants'
-import { isRootFile } from '@shared/file-ops'
-import { getTreeProvider, getWorkspaceRoot, registerWatcher } from '@state'
-import { readSettings } from '@shared/settings-ops'
 import { applyConfig } from '@commands'
 import { log } from '@log'
+import { useNextSymlinkConfigManager, useSymlinkConfigManager } from '@managers'
 import { queue } from '@queue'
+import { FILE_NAMES, WATCHERS, SETTINGS } from '@shared/constants'
+import { isRootFile } from '@shared/file-ops'
+import { useFileWatcher, FileEventType } from '@shared/hooks/use-file-watcher'
+import { getTreeProvider, getWorkspaceRoot, registerWatcher } from '@state'
 
 export function nextConfigWatcher() {
   const nextConfigManager = useNextSymlinkConfigManager()
+  const settingsManager = useSymlinkConfigManager()
   log('Next config watcher registered')
   const treeProvider = getTreeProvider()
   const workspaceRoot = getWorkspaceRoot()
@@ -25,10 +25,10 @@ export function nextConfigWatcher() {
         await queue(() => nextConfigManager.handleEvent(events))
         treeProvider?.refresh()
         
-        const continuousMode = readSettings(SETTINGS.SYMLINK_CONFIG.CONTINUOUS_MODE, false)
+        const continuousMode = settingsManager.read(SETTINGS.SYMLINK_CONFIG.CONTINUOUS_MODE)
         if (continuousMode) {
           log('Continuous mode: auto-applying configuration...')
-          await queue(() => applyConfig(true))
+          await queue(() => applyConfig())
         }
       },
     },

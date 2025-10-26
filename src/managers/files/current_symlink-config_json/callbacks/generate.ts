@@ -1,6 +1,6 @@
-import { getWorkspaceRoot } from '@state'
-import { readDir, readSymlink, statFile, normalizePath } from '@shared/file-ops'
 import { Config, ConfigEntry } from '@managers'
+import { readDir, readSymlink, statFile, normalizePath } from '@shared/file-ops'
+import { getWorkspaceRoot } from '@state'
 
 interface ExistingSymlink {
   target: string

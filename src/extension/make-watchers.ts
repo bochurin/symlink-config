@@ -1,3 +1,6 @@
+import { log } from '@log'
+import { SETTINGS } from '@shared/constants'
+import { disposeWatchers } from '@state'
 import {
   symlinkConfigsWatcher,
   nextConfigWatcher,
@@ -8,10 +11,8 @@ import {
   filesSettingsWatcher,
 } from '@watchers'
 
-import { SETTINGS } from '@shared/constants'
 import { useSymlinkConfigManager } from '@/src/managers'
-import { disposeWatchers } from '@state'
-import { log } from '@log'
+
 
 export function makeWatchers() {
   const settingsManager = useSymlinkConfigManager()

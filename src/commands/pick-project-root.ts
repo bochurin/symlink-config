@@ -1,8 +1,8 @@
-import { writeSettings } from '@shared/settings-ops'
-import { SETTINGS } from '@shared/constants'
+import { info } from '@dialogs'
 import { log } from '@log'
-
-import { showOpenDialog, info } from '@shared/vscode'
+import { SETTINGS } from '@shared/constants'
+import { writeSettings } from '@shared/settings-ops'
+import { showOpenDialog } from '@shared/vscode'
 
 export async function pickProjectRoot(): Promise<void> {
   const options = {

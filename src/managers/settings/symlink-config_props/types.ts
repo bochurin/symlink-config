@@ -1,5 +1,6 @@
-import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
 import { SETTINGS } from '@shared/constants'
+
+import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
 
 export type SymlinkConfigSettingsProperty =
   | typeof SETTINGS.SYMLINK_CONFIG.WATCH_WORKSPACE
@@ -10,6 +11,8 @@ export type SymlinkConfigSettingsProperty =
   | typeof SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION
   | typeof SETTINGS.SYMLINK_CONFIG.SYMLINK_PATH_MODE
   | typeof SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION_MODE
+  | typeof SETTINGS.SYMLINK_CONFIG.CONTINUOUS_MODE
+  | typeof SETTINGS.SYMLINK_CONFIG.SILENT
   | typeof SETTINGS.SYMLINK_CONFIG.MAX_LOG_ENTRIES
 
 export type SymlinkConfigSettingsPropertyValue =

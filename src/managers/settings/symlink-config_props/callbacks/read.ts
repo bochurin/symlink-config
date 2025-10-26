@@ -1,9 +1,11 @@
-import { readSettings } from '@/src/shared/settings-ops'
 import { SETTINGS } from '@shared/constants'
+
 import {
   SymlinkConfigSettingsProperty,
   SymlinkConfigSettingsPropertyValue,
 } from '../types'
+
+import { readSettings } from '@/src/shared/settings-ops'
 
 export function readCallback(params?: {
   property?: SymlinkConfigSettingsProperty

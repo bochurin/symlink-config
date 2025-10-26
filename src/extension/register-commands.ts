@@ -1,4 +1,3 @@
-import * as vscode from 'vscode'
 import {
   applyConfig,
   cancelSymlinkCreation,
@@ -13,6 +12,7 @@ import {
   selectSymlinkSource,
   selectSymlinkTarget,
 } from '@commands'
+import * as vscode from 'vscode'
 
 export function registerCommands(
   context: vscode.ExtensionContext,

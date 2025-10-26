@@ -1,5 +1,6 @@
 import { SETTINGS } from '@shared/constants'
 import { writeSettings } from '@shared/settings-ops'
+
 import { SymlinkConfigSettingsProperty } from '../types'
 
 export async function writeCallback(params?: {

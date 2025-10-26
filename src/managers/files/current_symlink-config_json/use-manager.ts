@@ -1,11 +1,13 @@
+import { log } from '@log'
 import { FILE_NAMES } from '@shared/constants'
 import { createManager } from '@shared/factories/manager'
-import { FileEvent } from '@/src/shared/hooks/use-file-watcher'
-import { log } from '@log'
-import { readCallback } from './callbacks/read'
+
 import { generateCallback } from './callbacks/generate'
+import { readCallback } from './callbacks/read'
 import { writeCallback } from './callbacks/write'
 import { CurrentSymlinkConfigManager } from './types'
+
+import { FileEvent } from '@/src/shared/hooks/use-file-watcher'
 
 export function useCurrentSymlinkConfigManager(): CurrentSymlinkConfigManager {
   const manager = createManager({

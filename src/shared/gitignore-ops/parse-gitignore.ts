@@ -14,7 +14,7 @@ export function parseGitignore(
     }
 
     const match = line.match(/^(\s*)(#?)(\s*)(.*)$/)
-    if (!match) return
+    if (!match) {return}
 
     const [, leadingSpaces, hash, hashSpaces, rest] = match
     const spacing = leadingSpaces + hashSpaces

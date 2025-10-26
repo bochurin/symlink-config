@@ -7,5 +7,6 @@ export const FILE_NAMES = {
   CLEAN_SYMLINKS_BAT: 'clean.symlink-config.bat',
   CLEAN_SYMLINKS_SH: 'clean.symlink-config.sh',
   RUN_ADMIN_BAT: 'admin.symlink-config.bat',
+  RUN_ADMIN_SH: 'admin.symlink-config.sh',
   GITIGNORE: '.gitignore',
 } as const

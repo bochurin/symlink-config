@@ -1,19 +1,21 @@
-import { getWorkspaceRoot } from '@state'
+import { choice, warning, showError, info } from '@dialogs'
 import { log, LogLevel } from '@log'
-import { collectOperations, filterDangerousSources } from './utils'
-import { applyScript, generateAdminScript } from './scripts'
-import { createSymlinksDirectly } from './direct'
 import { useSymlinkConfigManager } from '@managers'
-import { runScriptAsAdmin } from '@shared/script-runner'
 import { isRunningAsAdmin } from '@shared/admin-detection'
-
 import { SETTINGS, FILE_NAMES } from '@shared/constants'
-import { join, basename } from '@shared/file-ops'
-import { platform, Platform } from '@shared/file-ops'
-import { choice, warning, confirm, openTextDocument, showTextDocument, writeToClipboard, showError } from '@shared/vscode'
+import { join, basename , platform, Platform } from '@shared/file-ops'
+import { runScriptAsAdmin } from '@shared/script-runner'
+import { openTextDocument, showTextDocument, writeToClipboard } from '@shared/vscode'
+import { getWorkspaceRoot } from '@state'
 
-export async function applyConfig(silent = false) {
+import { createSymlinksDirectly } from './direct'
+import { applyScript, generateAdminScript } from './scripts'
+import { collectOperations, filterDangerousSources } from './utils'
+
+export async function applyConfig() {
   const workspaceRoot = getWorkspaceRoot()
+  const settingsManager = useSymlinkConfigManager()
+  const continuousMode = settingsManager.read(SETTINGS.SYMLINK_CONFIG.CONTINUOUS_MODE)
 
   try {
     // Collect symlink operations based on mode
@@ -22,39 +24,66 @@ export async function applyConfig(silent = false) {
 
     if (operations.length === 0) {
       log('No symlink operations needed')
-      log('No symlink operations needed', LogLevel.Info)
+      info('No symlink operations needed')
       return
     }
 
     // Filter dangerous sources from create operations
-    const safeOperations = await filterDangerousSources(operations)
+    let safeOperations: typeof operations
+    if (continuousMode) {
+      // In continuous mode, automatically skip dangerous sources
+      const { minimatch } = await import('minimatch')
+      const { DANGEROUS_SOURCES } = await import('@shared/constants')
+      
+      const dangerousOps = operations.filter((op) => {
+        if (op.type !== 'create') {return false}
+        const source = op.source.replace(/^@/, '')
+        const isDangerousPattern = DANGEROUS_SOURCES.PATTERNS.some((pattern) =>
+          minimatch(source, pattern, { nocase: true }),
+        )
+        const sourceName = basename(source)
+        const targetName = basename(op.target)
+        const isSameName = sourceName === targetName
+        return isDangerousPattern && isSameName
+      })
+      
+      safeOperations = operations.filter((op) => !dangerousOps.includes(op))
+      if (dangerousOps.length > 0) {
+        log(`Continuous mode: automatically skipped ${dangerousOps.length} dangerous operations`)
+      }
+    } else {
+      safeOperations = await filterDangerousSources(operations)
+    }
+    
     if (safeOperations.length === 0) {
       log('No operations to process after filtering')
       return
     }
 
     // Check admin status and show appropriate dialog
-    const isAdmin = await isRunningAsAdmin()
+    const isAdmin = isRunningAsAdmin()
     let userChoice: string | undefined
 
-    if (silent) {
-      userChoice = isAdmin ? 'Create Directly' : 'Generate Scripts'
+    if (continuousMode) {
+      userChoice = 'Generate Scripts'
+      log('Continuous mode: generating scripts automatically')
     } else {
       if (isAdmin) {
         userChoice = await choice(
           'Apply symlink configuration?',
           'Create Directly',
           'Generate Scripts',
+          'Cancel',
         )
       } else {
-        const confirmed = await confirm(
+        userChoice = await choice(
           'Apply symlink configuration?',
           'Generate Scripts',
+          'Cancel',
         )
-        userChoice = confirmed ? 'Generate Scripts' : undefined
       }
 
-      if (!userChoice) {
+      if (!userChoice || userChoice === 'Cancel') {
         log('Apply configuration cancelled by user')
         return
       }
@@ -69,7 +98,7 @@ export async function applyConfig(silent = false) {
           `Symlinks created with ${result.failed} errors. Check output for details.`,
         )
       } else {
-        log(`Successfully created ${result.success} symlinks`, LogLevel.Info)
+        info(`Successfully created ${result.success} symlinks`)
       }
       log(
         `Direct creation complete: ${result.success} success, ${result.failed} failed`,
@@ -77,7 +106,6 @@ export async function applyConfig(silent = false) {
       return
     }
 
-    const settingsManager = useSymlinkConfigManager()
     const scriptGeneration = settingsManager.read(
       SETTINGS.SYMLINK_CONFIG.SCRIPT_GENERATION,
     )
@@ -94,13 +122,20 @@ export async function applyConfig(silent = false) {
       (scriptGeneration === 'auto' && currentPlatform === Platform.Unix)
 
     if (shouldGenerateWindows || shouldGenerateUnix) {
-      log('Generating apply script...')
-      const targetOS = currentPlatform === Platform.Windows ? 'windows' : 'unix'
-      await applyScript(safeOperations, workspaceRoot, targetOS)
-      if (currentPlatform === Platform.Windows) {
-        await generateAdminScript(workspaceRoot)
+      log('Generating apply scripts...')
+      
+      if (shouldGenerateWindows) {
+        await applyScript(safeOperations, workspaceRoot, 'windows')
+        await generateAdminScript(workspaceRoot, 'windows')
+        log('Windows apply script generated')
       }
-      log('Apply script generated')
+      
+      if (shouldGenerateUnix) {
+        await applyScript(safeOperations, workspaceRoot, 'unix')
+        await generateAdminScript(workspaceRoot, 'unix')
+        log('Unix apply script generated')
+      }
+      
       const scriptPath = join(
         workspaceRoot,
         currentPlatform === Platform.Windows
@@ -108,9 +143,10 @@ export async function applyConfig(silent = false) {
           : FILE_NAMES.APPLY_SYMLINKS_SH,
       )
 
-      if (silent) {
+      if (continuousMode) {
         const document = await openTextDocument(scriptPath)
         await showTextDocument(document)
+        log('Continuous mode: opened script in Code')
       } else {
         if (currentPlatform === Platform.Windows) {
           await writeToClipboard(basename(scriptPath))

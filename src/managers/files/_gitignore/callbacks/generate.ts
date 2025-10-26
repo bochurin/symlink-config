@@ -1,9 +1,11 @@
+import { FILE_NAMES, SETTINGS } from '@shared/constants'
+
+import { GitignoringPart } from '../enums'
+
 import {
   useCurrentSymlinkConfigManager,
   useSymlinkConfigManager,
 } from '@/src/managers'
-import { FILE_NAMES, SETTINGS } from '@shared/constants'
-import { GitignoringPart } from '../enums'
 
 export function generateCallback(params?: {
   mode?: GitignoringPart
@@ -17,7 +19,7 @@ export function generateCallback(params?: {
     {}
 
   try {
-    if (mode == GitignoringPart.All || mode == GitignoringPart.ServiceFiles) {
+    if (mode === GitignoringPart.All || mode === GitignoringPart.ServiceFiles) {
       const gitignoreServiceFiles = settingsManager.read(
         SETTINGS.SYMLINK_CONFIG.GITIGNORE_SERVICE_FILES,
       ) as boolean
@@ -51,7 +53,7 @@ export function generateCallback(params?: {
       }
     }
 
-    if (mode == GitignoringPart.All || mode == GitignoringPart.Symlinks) {
+    if (mode === GitignoringPart.All || mode === GitignoringPart.Symlinks) {
       // Add created symlinks to gitignore
       const gitignoreSymlinks = settingsManager.read(
         SETTINGS.SYMLINK_CONFIG.GITIGNORE_SYMLINKS,

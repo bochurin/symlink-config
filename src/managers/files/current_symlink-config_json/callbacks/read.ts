@@ -1,6 +1,6 @@
+import { FILE_NAMES } from '@shared/constants'
 import { readFile } from '@shared/file-ops'
 import { getWorkspaceRoot } from '@state'
-import { FILE_NAMES } from '@shared/constants'
 
 export function readCallback(): string {
   const content = readFile(
