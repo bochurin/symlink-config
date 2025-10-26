@@ -1,0 +1,73 @@
+{
+  "contributes": {
+    "commands": [
+      {
+        "command": "symlink-config.applyConfiguration",
+        "title": "Apply configuration",
+        "category": "symlink-config",
+        "icon": "$(play)"
+      },
+      {
+        "command": "symlink-config.cleanConfiguration",
+        "title": "Clean handled symlinks",
+        "category": "symlink-config",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "symlink-config.refreshManagers",
+        "title": "Refresh",
+        "category": "symlink-config",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "symlink-config.clearLogs",
+        "title": "Clear logs",
+        "category": "symlink-config"
+      },
+      {
+        "command": "symlink-config.showLogs",
+        "title": "Show logs",
+        "category": "symlink-config"
+      },
+      {
+        "command": "symlink-config.toggleView",
+        "title": "Toggle tree view",
+        "icon": "$(arrow-swap)"
+      },
+      {
+        "command": "symlink-config.collapseAll",
+        "title": "Collapse all",
+        "icon": "$(collapse-all)"
+      },
+      {
+        "command": "symlink-config.openSettings",
+        "title": "Open symlin-config settings",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "symlink-config.selectSymlinkSource",
+        "title": "Select as symlink source"
+      },
+      {
+        "command": "symlink-config.cancelSymlinkCreation",
+        "title": "Cancel symlink creation"
+      },
+      {
+        "command": "symlink-config.selectSymlinkTarget",
+        "title": "Select symlink target folder"
+      },
+      {
+        "command": "symlink-config.openSymlinkConfig",
+        "title": "Open symlink configuration"
+      },
+      {
+        "command": "symlink-config.runScript",
+        "title": "Run script"
+      },
+      {
+        "command": "symlink-config.pickProjectRoot",
+        "title": "Pick project root directory"
+      }
+    ]
+  }
+}

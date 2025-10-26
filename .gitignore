@@ -4,11 +4,11 @@ node_modules
 .vscode-test/
 *.vsix
 
+# Generated files (built from package/ parts)
+package.json
+
 # Local commit message drafts
 *commit-message.txt
-
-# Test workspace (keep for testing)
-# test-workspace/
 
 next.symlink-config.json
 current.symlink-config.json

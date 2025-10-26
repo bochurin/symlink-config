@@ -1,0 +1,14 @@
+{
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "symlink-config",
+          "name": "symlink-config",
+          "when": "workspaceFolderCount > 0",
+          "icon": "$(link-external)"
+        }
+      ]
+    }
+  }
+}

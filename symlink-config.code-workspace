@@ -49,6 +49,10 @@
       "path": "src/shared",
     },
     {
+      "name": "🎁 @package.json",
+      "path": "package_json",
+    },
+    {
       "name": "🧪 @test",
       "path": "src/test",
     },
