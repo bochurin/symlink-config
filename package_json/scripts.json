@@ -1,0 +1,23 @@
+{
+  "vscode:prepublish": "npm run package",
+  "build-package": "bash scripts/build-package.sh",
+  "build": "npm run build-package && webpack",
+  "watch": "npm run build-package && webpack --watch",
+  "package": "npm run build-package && webpack --mode production --devtool hidden-source-map",
+  "compile-tests": "tsc -p . --outDir out",
+  "watch-tests": "tsc -p . -w --outDir out",
+  "test": "npm run build-package && npm run compile-tests && npm run build && npm run lint && vscode-test",
+  "lint": "eslint src",
+  "lint:fix": "eslint src --fix",
+  "format": "prettier --write .",
+  "format:check": "prettier --check .",
+  "test:jest": "jest",
+  "test:jest:watch": "jest --watch",
+  "test:jest:coverage": "jest --coverage",
+  "git:docs:commit": "bash scripts/utils/commit/docs-commit.sh",
+  "git:docs:commit:auto": "bash scripts/utils/commit/docs-commit.sh --auto",
+  "git:code:commit": "bash scripts/utils/commit/code-commit.sh",
+  "git:code:commit:auto": "bash scripts/utils/commit/code-commit.sh --auto",
+  "q:menu": "bash scripts/utils/q/prompts-menu.sh",
+  "q:prompts": "start %USERPROFILE%\\.aws\\amazonq\\prompts"
+}

@@ -1,0 +1,74 @@
+[
+  {
+    "command": "symlink-config.applyConfiguration",
+    "when": "view == symlink-config && symlink-config.initialized",
+    "group": "navigation@1",
+    "icon": "$(play)"
+  },
+  {
+    "command": "symlink-config.cleanConfiguration",
+    "when": "view == symlink-config && symlink-config.initialized",
+    "group": "navigation@1",
+    "icon": "$(trash)"
+  },
+  {
+    "command": "symlink-config.refreshManagers",
+    "when": "view == symlink-config && symlink-config.initialized && !config.symlink-config.watchWorkspace",
+    "group": "navigation@2",
+    "icon": "$(refresh)"
+  },
+  {
+    "command": "symlink-config.toggleView",
+    "when": "view == symlink-config",
+    "group": "navigation@2",
+    "icon": "$(arrow-swap)"
+  },
+  {
+    "command": "symlink-config.collapseAll",
+    "when": "view == symlink-config",
+    "group": "navigation@3",
+    "icon": "$(collapse-all)"
+  },
+  {
+    "command": "symlink-config.openSettings",
+    "when": "view == symlink-config",
+    "group": "navigation@4",
+    "icon": "$(gear)"
+  },
+  {
+    "command": "symlink-config.applyConfiguration",
+    "when": "view == symlink-config && symlink-config.initialized",
+    "group": "1_apply",
+    "icon": "$(play)"
+  },
+  {
+    "command": "symlink-config.cleanConfiguration",
+    "when": "view == symlink-config && symlink-config.initialized",
+    "group": "1_apply",
+    "icon": "$(play)"
+  },
+  {
+    "command": "symlink-config.refreshManagers",
+    "when": "view == symlink-config && symlink-config.initialized && !config.symlink-config.watchWorkspace",
+    "group": "2_actions",
+    "icon": "$(refresh)"
+  },
+  {
+    "command": "symlink-config.toggleView",
+    "when": "view == symlink-config",
+    "group": "2_actions",
+    "icon": "$(arrow-swap)"
+  },
+  {
+    "command": "symlink-config.collapseAll",
+    "when": "view == symlink-config",
+    "group": "3_actions",
+    "icon": "$(collapse-all)"
+  },
+  {
+    "command": "symlink-config.openSettings",
+    "when": "view == symlink-config",
+    "group": "4_settings",
+    "icon": "$(gear)"
+  }
+]

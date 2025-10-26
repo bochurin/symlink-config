@@ -13,6 +13,7 @@ Update affected documentation in `.docs/reference/source-code-map/`
 ## Files to Check
 
 - All TypeScript files in src/ that changed
+- All bash scripts in scripts/ that changed
 - Related documentation files in ./docs
 - Modify references in documentation if it's needed
 - Progress log if significant changes

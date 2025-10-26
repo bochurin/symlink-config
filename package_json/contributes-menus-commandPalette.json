@@ -1,0 +1,54 @@
+[
+  {
+    "command": "symlink-config.applyConfiguration",
+    "when": "workspaceFolderCount > 0 && symlink-config.initialized"
+  },
+  {
+    "command": "symlink-config.cleanConfiguration",
+    "when": "workspaceFolderCount > 0 && symlink-config.initialized"
+  },
+  {
+    "command": "symlink-config.refreshManagers",
+    "when": "workspaceFolderCount > 0 && symlink-config.initialized && !config.symlink-config.watchWorkspace"
+  },
+  {
+    "command": "symlink-config.clearLogs",
+    "when": "workspaceFolderCount > 0 && symlink-config.initialized"
+  },
+  {
+    "command": "symlink-config.showLogs",
+    "when": "workspaceFolderCount > 0 && symlink-config.initialized"
+  },
+  {
+    "command": "symlink-config.toggleView",
+    "when": "false"
+  },
+  {
+    "command": "symlink-config.collapseAll",
+    "when": "false"
+  },
+  {
+    "command": "symlink-config.openSettings",
+    "when": "false"
+  },
+  {
+    "command": "symlink-config.selectSymlinkSource",
+    "when": "false"
+  },
+  {
+    "command": "symlink-config.cancelSymlinkCreation",
+    "when": "false"
+  },
+  {
+    "command": "symlink-config.selectSymlinkTarget",
+    "when": "false"
+  },
+  {
+    "command": "symlink-config.openSymlinkConfig",
+    "when": "false"
+  },
+  {
+    "command": "symlink-config.runScript",
+    "when": "false"
+  }
+]

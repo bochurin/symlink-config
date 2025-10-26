@@ -1,0 +1,29 @@
+{
+  "name": "@bochurin/symlink-config",
+  "displayName": "symlink-config",
+  "description": "Automated symlink management for package.json files across project containers and workspaces",
+  "version": "0.0.87",
+  "engines": {
+    "vscode": "^1.104.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "scripts": "import:scripts.json",
+  "devDependencies": "import:devDependencies.json",
+  "contributes": {
+    "configuration": "import:contributes-configuration.json",
+    "commands": "import:contributes-commands.json",
+    "menus": {
+      "commandPalette": "import:contributes-menus-commandPalette.json",
+      "explorer/context": "import:contributes-menus-explorerContext.json",
+      "view/title": "import:contributes-menus-viewTitle.json",
+      "view/item/context": "import:contributes-menus-viewItemContext.json"
+    },
+    "views": "import:contributes-views.json"
+  }
+}

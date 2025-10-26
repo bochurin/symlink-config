@@ -1,0 +1,6 @@
+{
+  "commandPalette": "import:contributes-menus-commandPalette.json",
+  "explorer/context": "import:contributes-menus-explorerContext.json",
+  "view/title": "import:contributes-menus-viewTitle.json",
+  "view/item/context": "import:contributes-menus-viewItemContext.json"
+}
