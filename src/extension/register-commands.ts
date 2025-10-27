@@ -7,6 +7,7 @@ import {
   openSettings,
   openSymlinkConfig,
   pickProjectRoot,
+  platformTestWorkspace,
   refreshManagers,
   runScript,
   selectSymlinkSource,
@@ -60,6 +61,10 @@ export function registerCommands(
     vscode.commands.registerCommand(
       'symlink-config.pickProjectRoot',
       pickProjectRoot,
+    ),
+    vscode.commands.registerCommand(
+      'extension.platform.testWorkspace',
+      platformTestWorkspace,
     ),
   ]
 

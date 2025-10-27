@@ -65,5 +65,9 @@
   {
     "command": "symlink-config.pickProjectRoot",
     "title": "Pick project root directory"
+  },
+  {
+    "command": "extension.platform.testWorkspace",
+    "title": "Get platform test workspace"
   }
 ]
