@@ -1,6 +1,6 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 2024-10-27T11:00:00.0000000+00:00
+**Generated**: 2024-12-19T15:30:00.0000000+00:00
 **Version**: 0.0.87
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
@@ -31,7 +31,21 @@ This documentation is organized into separate files for better maintainability:
 
 ## Recent Changes (v0.0.87)
 
-### Pure JavaScript Package Builder & Webpack Integration (Latest - 27.10.2024)
+### Symlink Creation Script Fixes (Latest - 19.12.2024)
+
+- **Fixed symlink path resolution** - Corrected relative paths in both Unix and Windows scripts
+  - Fixed `create-symlinks.sh` to use proper `../../` paths relative from target directories
+  - Fixed `create-symlinks.bat` to use correct `..\..\` paths for Windows symlinks
+  - Moved scripts to `selected/` directory for better organization
+  - Scripts now create symlinks with correct relative paths from symlink locations
+
+- **Cross-platform symlink creation** - Enhanced development workflow
+  - Unix script works without sudo for user-owned directories
+  - Windows script requires admin elevation for symlink creation
+  - Both scripts create organized `root/`, `src/`, and `test-ws-*` directories
+  - Verbose output shows symlink creation progress
+
+### Pure JavaScript Package Builder & Webpack Integration (Previous - 27.10.2024)
 
 - **Pure JavaScript implementation** - Replaced bash/jq dependencies with clean Node.js solution
   - Moved from `scripts/build-package.sh` to `scripts/webpack/package-json-builder.plugin.js`
