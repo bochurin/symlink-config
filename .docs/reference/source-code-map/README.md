@@ -1,6 +1,6 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 2024-12-19T15:30:00.0000000+00:00
+**Generated**: 2024-12-27T20:45:00.0000000+00:00
 **Version**: 0.0.87
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
@@ -31,7 +31,26 @@ This documentation is organized into separate files for better maintainability:
 
 ## Recent Changes (v0.0.87)
 
-### Symlink Creation Script Fixes (Latest - 19.12.2024)
+### Package Build System Webpack Integration (Latest - 27.12.2024)
+
+- **Directory rename** - Moved `package_json/` to `package/` for cleaner naming
+  - Updated all references in webpack plugin and build scripts
+  - Simplified directory structure with shorter, cleaner name
+  - Maintained all existing functionality with new path
+
+- **Webpack plugin enhancement** - Added intelligent rebuild detection and file watching
+  - Implemented content comparison to prevent continuous rebuilds during watch mode
+  - Added webpack dependency tracking for package/ files using `compilation.fileDependencies.add()`
+  - Plugin now only rebuilds package.json when package/ files actually change
+  - Eliminated unnecessary rebuilds while maintaining automatic updates
+
+- **Pure JavaScript webpack plugin** - Converted from bash script to webpack plugin class
+  - Created `PackageJsonBuilderPlugin` class with proper webpack lifecycle hooks
+  - Integrated with `beforeRun` and `watchRun` hooks for automatic execution
+  - Content comparison logic prevents writes when package.json content unchanged
+  - Webpack watches package/ files and triggers rebuilds only when needed
+
+### Symlink Creation Script Fixes (Previous - 19.12.2024)
 
 - **Fixed symlink path resolution** - Corrected relative paths in both Unix and Windows scripts
   - Fixed `create-symlinks.sh` to use proper `../../` paths relative from target directories

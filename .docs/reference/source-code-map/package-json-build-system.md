@@ -14,7 +14,7 @@ Elegant import-based package.json build system that decomposes the package.json 
 
 ### Directory Structure
 ```
-package_json/
+package/
 ├── base.json                           # Main template with import tags
 ├── scripts.json                        # NPM scripts
 ├── devDependencies.json                # Development dependencies
@@ -27,10 +27,11 @@ package_json/
 └── contributes-views.json              # Tree view definitions
 ```
 
-## Build Script
+## Build System
 
-### `scripts/build-package.sh`
-**Purpose**: Processes base.json template and generates final package.json
+### Webpack Plugin Integration
+**File**: `scripts/webpack/package-json-builder.plugin.js`
+**Purpose**: Webpack plugin that automatically builds package.json before compilation
 
 **Implementation**:
 ```bash
@@ -72,10 +73,11 @@ echo "✅ Generated package.json"
 ## Integration
 
 ### NPM Scripts Integration
-- **`build`**: `npm run build-package && webpack`
-- **`watch`**: `npm run build-package && webpack --watch`
-- **`package`**: `npm run build-package && webpack --mode production`
-- **`test`**: `npm run build-package && npm run compile-tests && npm run build && npm run lint && vscode-test`
+- **`build`**: `webpack` (plugin handles package.json automatically)
+- **`watch`**: `webpack --watch` (plugin handles package.json automatically)
+- **`package`**: `webpack --mode production` (plugin handles package.json automatically)
+- **`test`**: `npm run compile-tests && npm run build && npm run lint && vscode-test`
+- **`build:package`**: `node scripts/webpack/package-json-builder.plugin.js` (manual execution)
 
 ### Development Workflow
 1. **F5 Debugging**: Automatically builds package.json via watch script
