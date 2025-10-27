@@ -54,7 +54,7 @@
     },
     {
       "name": "🎁 @package.json",
-      "path": "package_json",
+      "path": "package",
     },
     {
       "name": "🧪 @test",
@@ -91,14 +91,6 @@
       "**/symlink-config.json": false,
     },
     "explorerExclude.backup": {},
-    "symlink-config.hideServiceFiles": false,
-    "symlink-config.hideSymlinkConfigs": true,
-    "symlink-config.gitignoreServiceFiles": true,
-    "symlink-config.gitignoreSymlinks": true,
-    "symlink-config.silent": true,
-    "symlink-config.scriptGeneration": "auto",
-    "symlink-config.symlinkPathMode": "relative",
-    "symlink-config.watchWorkspace": true,
     "editor.tokenColorCustomizations": {
       "comments": "",
       "textMateRules": [],

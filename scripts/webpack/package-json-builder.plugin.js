@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const PACKAGE_DIR = 'package_json';
+const PACKAGE_DIR = 'package';
 const BASE_FILE = 'base.json';
 const OUTPUT_FILE = 'package.json';
 
@@ -43,13 +43,21 @@ function buildPackageJson() {
     throw new Error(`Base file not found: ${baseFilePath}`);
   }
   
-  console.log('Building package.json from base with imports');
-  
   const baseContent = JSON.parse(fs.readFileSync(baseFilePath, 'utf8'));
   const result = processImports(baseContent, PACKAGE_DIR);
+  const newContent = JSON.stringify(result, null, 2) + '\n';
   
-  fs.writeFileSync(OUTPUT_FILE, JSON.stringify(result, null, 2) + '\n');
-  console.log('✅ Generated package.json');
+  // Compare with existing package.json
+  let currentContent = '';
+  if (fs.existsSync(OUTPUT_FILE)) {
+    currentContent = fs.readFileSync(OUTPUT_FILE, 'utf8');
+  }
+  
+  if (newContent !== currentContent) {
+    console.log('Building package.json from base with imports');
+    fs.writeFileSync(OUTPUT_FILE, newContent);
+    console.log('✅ Generated package.json');
+  }
 }
 
 // Webpack plugin class
@@ -62,6 +70,17 @@ class PackageJsonBuilderPlugin {
       } catch (error) {
         callback(error);
       }
+    });
+    
+    compiler.hooks.compilation.tap('PackageJsonBuilderPlugin', (compilation) => {
+      // Add package files as dependencies so webpack watches them
+      const packageFiles = fs.readdirSync(PACKAGE_DIR)
+        .filter(file => file.endsWith('.json'))
+        .map(file => path.resolve(PACKAGE_DIR, file));
+      
+      packageFiles.forEach(file => {
+        compilation.fileDependencies.add(file);
+      });
     });
     
     compiler.hooks.watchRun.tapAsync('PackageJsonBuilderPlugin', (compiler, callback) => {
