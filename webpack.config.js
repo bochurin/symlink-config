@@ -3,6 +3,7 @@
 'use strict'
 
 const path = require('path')
+const { PackageJsonBuilderPlugin } = require('./scripts/webpack/package-json-builder.plugin.js')
 
 //@ts-check
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
@@ -54,6 +55,9 @@ const extensionConfig = {
       }
     ]
   },
+  plugins: [
+    new PackageJsonBuilderPlugin()
+  ],
   devtool: 'nosources-source-map',
   infrastructureLogging: {
     level: 'log' // enables logging required for problem matchers

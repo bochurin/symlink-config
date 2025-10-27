@@ -7,6 +7,7 @@ import {
   openSettings,
   openSymlinkConfig,
   pickProjectRoot,
+  platformTestWorkspace,
   refreshManagers,
   runScript,
   selectSymlinkSource,
@@ -19,7 +20,10 @@ export function registerCommands(
   treeProvider: any,
 ) {
   const commands = [
-    vscode.commands.registerCommand('symlink-config.openSettings', openSettings),
+    vscode.commands.registerCommand(
+      'symlink-config.openSettings',
+      openSettings,
+    ),
     vscode.commands.registerCommand('symlink-config.toggleView', () => {
       treeProvider.toggleViewMode()
     }),
@@ -60,6 +64,10 @@ export function registerCommands(
     vscode.commands.registerCommand(
       'symlink-config.pickProjectRoot',
       pickProjectRoot,
+    ),
+    vscode.commands.registerCommand(
+      'extension.platform.testWorkspace',
+      platformTestWorkspace,
     ),
   ]
 

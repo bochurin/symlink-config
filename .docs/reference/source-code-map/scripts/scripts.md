@@ -19,11 +19,14 @@ Development and build utility scripts in the root `scripts/` directory.
 #### `scripts/utils/q/`
 - **`prompts-menu.sh`** - Amazon Q prompts management menu
 
-### `scripts/build-package.sh`
-- **Purpose**: Package.json build system with import tag processing
-- **Status**: Active - integrated with npm scripts (build, watch, package, test)
-- **Architecture**: Bash wrapper with embedded Node.js for JSON processing
-- **Features**: Recursive import tag replacement, maintains JSON structure
+### `scripts/webpack/`
+- **`package-json-builder.plugin.js`** - Pure JavaScript package.json build system
+  - **Purpose**: Package.json build system with import tag processing
+  - **Status**: Active - integrated as webpack plugin and standalone script
+  - **Architecture**: Pure Node.js implementation, no bash/jq dependencies
+  - **Features**: Recursive import tag replacement, webpack plugin integration
+  - **Dual mode**: Works as webpack plugin or standalone script
+  - **Cross-platform**: No external dependencies, works on Windows/Unix/macOS
 
 ## Usage
 
