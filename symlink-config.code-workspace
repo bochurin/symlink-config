@@ -88,7 +88,7 @@
       "**/dist": true,
       "**/out": true,
       "**/.vscode-test": true,
-      "**/symlink-config.json": true,
+      "**/symlink-config.json": false,
     },
     "explorerExclude.backup": {},
     "symlink-config.hideServiceFiles": false,

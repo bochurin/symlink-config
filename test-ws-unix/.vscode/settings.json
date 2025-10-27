@@ -15,7 +15,7 @@
     "admin.symlink-config.bat": false,
     "**/symlink-config.json": false
   },
-  "symlink-config.silent": true,
+  "symlink-config.silent": false,
   "symlink-config.maxLogEntries": 500,
   "symlink-config.hideSymlinkConfigs": false,
   "symlink-config.hideServiceFiles": false,
