@@ -1,11 +1,15 @@
 {
   "folders": [
     {
-      "name": "📖 .docs",
+      "name": "🌳 Project root",
+      "path": ".",
+    },
+    {
+      "name": "📖 Documentation",
       "path": ".docs",
     },
     {
-      "name": "📌 selected",
+      "name": "📌 Selected form various",
       "path": "selected",
     },
     {
@@ -57,20 +61,16 @@
       "path": "src/test",
     },
     {
-      "name": "📦 @src",
-      "path": "src",
-    },
-    {
-      "name": "🔬 test-ws-win",
+      "name": "🔬 Windows testing workspace",
       "path": "test-ws-win",
     },
     {
-      "name": "🔬 test-ws-unix",
+      "name": "🔬 Unix testing workspace",
       "path": "test-ws-unix",
     },
     {
-      "name": "🌳 @",
-      "path": ".",
+      "name": "📜 Helper scripts",
+      "path": "scripts",
     },
   ],
   "settings": {
