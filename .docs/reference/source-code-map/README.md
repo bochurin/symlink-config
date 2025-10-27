@@ -1,6 +1,6 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 2024-12-26T15:45:00.0000000+00:00
+**Generated**: 2024-10-27T11:00:00.0000000+00:00
 **Version**: 0.0.87
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
@@ -31,7 +31,40 @@ This documentation is organized into separate files for better maintainability:
 
 ## Recent Changes (v0.0.87)
 
-### Package.json Build System with Import Tags (Latest - 26.12.2024)
+### Pure JavaScript Package Builder & Webpack Integration (Latest - 27.10.2024)
+
+- **Pure JavaScript implementation** - Replaced bash/jq dependencies with clean Node.js solution
+  - Moved from `scripts/build-package.sh` to `scripts/webpack/package-json-builder.plugin.js`
+  - Eliminated jq dependency and complex bash scripting
+  - Cross-platform compatibility without external tools
+  - Identical functionality with cleaner, more maintainable code
+
+- **Webpack plugin integration** - Automatic package.json building before all webpack operations
+  - Created `PackageJsonBuilderPlugin` class for webpack integration
+  - Hooks into `beforeRun` and `watchRun` webpack lifecycle events
+  - Automatic execution before build, watch, F5 debug, package, and test
+  - Removed manual `build-package` steps from npm scripts (webpack handles automatically)
+  - Simplified npm scripts: `build`, `watch`, `package` no longer need explicit package building
+
+- **Platform-specific F5 debugging** - Enhanced development workflow
+  - Added `platform-test-workspace` command for dynamic workspace selection
+  - F5 debug now opens `test-ws-win` on Windows, `test-ws-unix` on Unix/Linux
+  - Updated launch.json to use platform-specific test workspace command
+  - Cross-platform development support with appropriate test environments
+
+- **Organized webpack structure** - Clean separation of webpack-related utilities
+  - Created `scripts/webpack/` subfolder for webpack-specific tools
+  - Renamed to `package-json-builder.plugin.js` with proper plugin suffix
+  - Dual-mode operation: standalone script or webpack plugin
+  - Updated npm script to `build:package` for consistency
+
+- **Symlink creation utilities** - Enhanced development tools
+  - Created `selected/create-symlinks.bat` for easy symlink setup
+  - Platform-specific batch script for Windows development
+  - Moved from root to `selected/` folder for better organization
+  - Admin elevation support for Windows symlink creation
+
+### Package.json Build System with Import Tags (Previous - 26.12.2024)
 
 - **Elegant import-based architecture** - Complete package.json decomposition using import tag system
   - Created `package_json/` directory with decomposed structure
