@@ -1,5 +1,4 @@
 {
-  "symlink-config.projectRoot": "c:\\Users\\bochu\\Projects\\symlink-config\\test-workspace",
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
@@ -15,6 +14,7 @@
     "admin.symlink-config.bat": false,
     "**/symlink-config.json": false
   },
+  "symlink-config.workspaceRoot": "c:\\Users\\bochu\\Projects\\symlink-config\\test-workspace",
   "symlink-config.silent": false,
   "symlink-config.maxLogEntries": 500,
   "symlink-config.hideSymlinkConfigs": false,

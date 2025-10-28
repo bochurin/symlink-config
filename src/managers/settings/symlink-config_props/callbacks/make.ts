@@ -1,21 +1,26 @@
 import { warning, info } from '@dialogs'
 import { log } from '@log'
-import { ExclusionPart, useFilesExcludeManager , GitignoringPart, useGitignoreManager } from '@managers'
-import { pathExists, isDirectory } from '@shared/file-ops'
-import { getConfiguration, ConfigurationTarget } from '@shared/vscode'
+import {
+  ExclusionPart,
+  useFilesExcludeManager,
+  GitignoringPart,
+  useGitignoreManager,
+} from '@managers'
 
 import { SymlinkConfigSettingsPropertyValue } from '../types'
 
-
 import { SETTINGS } from '@/src/shared/constants'
 import { SettingsEvent } from '@/src/shared/hooks/use-settings-watcher'
+import { isWorkspaceRootValid, rebase } from '@extension'
 
 export function makeCallback(params?: {
   event?: SettingsEvent
   initialContent?: Record<string, SymlinkConfigSettingsPropertyValue>
 }): Record<string, SymlinkConfigSettingsPropertyValue> | undefined {
   const event = params?.event
-  if (!event) {return}
+  if (!event) {
+    return
+  }
 
   const filesExcludeManager = useFilesExcludeManager()
   const gitignoreManager = useGitignoreManager()
@@ -60,26 +65,22 @@ export function makeCallback(params?: {
           info(watchMessage)
           break
 
-        case SETTINGS.SYMLINK_CONFIG.PROJECT_ROOT:
-          if (event.value && typeof event.value === 'string') {
-            if (
-              !pathExists(event.value) ||
-              !isDirectory(event.value)
-            ) {
-              log(
-                `Invalid project root path: ${event.value}, reverting to previous value`,
-              )
-              warning(`Invalid project root path: ${event.value}`)
+        case SETTINGS.SYMLINK_CONFIG.WORKSPACE_ROOT:
+          if (!isWorkspaceRootValid(event.value)) {
+            warning(
+              `Invalid workspace root: ${event.value}. Rebasing to calculated root.`,
+            )
+            const rebasedRoot = rebase()
+            log(`Workspace root rebased from ${event.value} to ${rebasedRoot}`)
 
-              const config = getConfiguration('symlink-config')
-              config.update(
-                'projectRoot',
-                event.oldValue,
-                ConfigurationTarget.Workspace,
-              )
-              return
+            const newContent: Record<
+              string,
+              SymlinkConfigSettingsPropertyValue
+            > = {
+              ...params?.initialContent,
+              [SETTINGS.SYMLINK_CONFIG.WORKSPACE_ROOT]: rebasedRoot,
             }
-            info(`Project root updated to: ${event.value}`)
+            return newContent
           }
           break
 

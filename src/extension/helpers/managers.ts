@@ -1,8 +1,8 @@
 import { log } from '@log'
 import { SETTINGS } from '@shared/constants'
 
-import { useGitignoreManager as use_gitignoreFileManager } from '../managers/files/_gitignore'
-import { useFilesExcludeManager } from '../managers/settings/files_exclude'
+import { useGitignoreManager as use_gitignoreFileManager } from '../../managers/files/_gitignore'
+import { useFilesExcludeManager } from '../../managers/settings/files_exclude'
 
 import {
   useCurrentSymlinkConfigManager,

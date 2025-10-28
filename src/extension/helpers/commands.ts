@@ -6,7 +6,7 @@ import {
   collapseAll,
   openSettings,
   openSymlinkConfig,
-  pickProjectRoot,
+  pickWorkspaceRoot,
   platformTestWorkspace,
   refreshManagers,
   runScript,
@@ -62,8 +62,8 @@ export function registerCommands(
     ),
     vscode.commands.registerCommand('symlink-config.runScript', runScript),
     vscode.commands.registerCommand(
-      'symlink-config.pickProjectRoot',
-      pickProjectRoot,
+      'symlink-config.pickWorkspaceRoot',
+      pickWorkspaceRoot,
     ),
     vscode.commands.registerCommand(
       'extension.platform.testWorkspace',

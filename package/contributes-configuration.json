@@ -78,12 +78,12 @@
       "default": false,
       "description": "Automatically hide symlink-config.json files from VSCode Explorer."
     },
-    "symlink-config.projectRoot": {
+    "symlink-config.workspaceRoot": {
       "order": 10,
       "type": "string",
       "scope": "resource",
-      "description": "Project root path for symlink operations. Auto-calculated from workspace folders.",
-      "markdownDescription": "Project root path for symlink operations. Auto-calculated from workspace folders. [⋯ Pick Directory](command:symlink-config.pickProjectRoot)"
+      "description": "Workspace root path for symlink operations. Auto-calculated from workspace folders.",
+      "markdownDescription": "Workspace root path for symlink operations. Auto-calculated from workspace folders. [⋯ Pick Directory](command:symlink-config.pickWorkspaceRoot)"
     },
     "symlink-config.continuousMode": {
       "order": 11,

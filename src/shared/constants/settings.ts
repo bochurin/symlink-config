@@ -14,7 +14,7 @@ const PROPERTIES = {
   SCRIPT_GENERATION_MODE: 'scriptGenerationMode',
   CONTINUOUS_MODE: 'continuousMode',
   SILENT: 'silent',
-  PROJECT_ROOT: 'projectRoot',
+  WORKSPACE_ROOT: 'workspaceRoot',
   MAX_LOG_ENTRIES: 'maxLogEntries',
   RESET_TO_DEFAULTS: 'resetToDefaults',
 } as const

@@ -1,5 +1,6 @@
 import { normalizePath } from './normalize-path'
 
+// TODO: Refactor to accept Uri[] or (string | Uri)[] for consistency with other file-ops
 export function findCommonPath(paths: string[]): string {
   if (paths.length === 1) {
     return normalizePath(paths[0], true)

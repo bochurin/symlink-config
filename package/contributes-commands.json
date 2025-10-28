@@ -63,7 +63,7 @@
     "title": "Run script"
   },
   {
-    "command": "symlink-config.pickProjectRoot",
+    "command": "symlink-config.pickWorkspaceRoot",
     "title": "Pick project root directory"
   },
   {

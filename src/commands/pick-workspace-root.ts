@@ -4,7 +4,7 @@ import { SETTINGS } from '@shared/constants'
 import { writeSettings } from '@shared/settings-ops'
 import { showOpenDialog } from '@shared/vscode'
 
-export async function pickProjectRoot(): Promise<void> {
+export async function pickWorkspaceRoot(): Promise<void> {
   const options = {
     canSelectMany: false,
     canSelectFiles: false,
@@ -19,7 +19,7 @@ export async function pickProjectRoot(): Promise<void> {
     const selectedPath = folderUri[0].fsPath
     log(`Setting project root to: ${selectedPath}`)
     
-    await writeSettings('projectRoot', selectedPath)
+    await writeSettings('workspaceRoot', selectedPath)
     
     info(`Project root set to: ${selectedPath}`)
   }

@@ -1,12 +1,15 @@
 import { log } from '@log'
 import { findCommonPath } from '@shared/file-ops'
-import { setWorkspaceRoot, setWorkspaceName, disposeWatchers, setInitialized } from '@state'
+import {
+  setWorkspaceRoot,
+  setWorkspaceName,
+  disposeWatchers,
+  setInitialized,
+} from '@state'
 import * as vscode from 'vscode'
 
-import { makeWatchers } from './make-watchers'
-import { managersInit } from './managers-init'
-
-
+import { makeWatchers } from './helpers/watchers'
+import { managersInit } from './helpers/managers'
 
 export async function init(): Promise<(() => void) | undefined> {
   if (!vscode.workspace.workspaceFolders) {
@@ -40,7 +43,7 @@ async function calculateAndSetProjectRoot(): Promise<{
   workspaceName: string
 }> {
   const config = vscode.workspace.getConfiguration('symlink-config')
-  const existingRoot = config.get<string>('projectRoot')
+  const existingRoot = config.get<string>('workspaceRoot')
   const workspaceName =
     vscode.workspace.name ||
     vscode.workspace.workspaceFolders?.[0]?.name ||
@@ -57,7 +60,7 @@ async function calculateAndSetProjectRoot(): Promise<{
 
   try {
     await config.update(
-      'projectRoot',
+      'workspaceRoot',
       normalizedPath,
       vscode.ConfigurationTarget.Workspace,
     )

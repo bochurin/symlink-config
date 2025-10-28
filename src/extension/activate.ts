@@ -5,8 +5,7 @@ import { SymlinkTreeProvider, ScriptCodeLensProvider } from '@views'
 import * as vscode from 'vscode'
 
 import { init, reset } from './ini'
-import { registerCommands } from './register-commands'
-
+import { registerCommands } from './helpers/commands'
 
 export async function activate(context: vscode.ExtensionContext) {
   const outputChannel = vscode.window.createOutputChannel('symlink-config', {
@@ -21,7 +20,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const treeView = vscode.window.createTreeView('symlink-config', {
     treeDataProvider: treeProvider,
   })
-  
+
   // Update view name with admin status
   const isAdmin = isRunningAsAdmin()
   if (isAdmin) {
@@ -34,7 +33,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const codeLensProvider = new ScriptCodeLensProvider()
   context.subscriptions.push(
-    vscode.languages.registerCodeLensProvider(['bat', 'shellscript'], codeLensProvider)
+    vscode.languages.registerCodeLensProvider(
+      ['bat', 'shellscript'],
+      codeLensProvider,
+    ),
   )
 
   const dispose = await init()
@@ -64,7 +66,7 @@ export function deactivate() {
 
 async function checkProjectRootAfterWorkspaceChange() {
   const config = vscode.workspace.getConfiguration('symlink-config')
-  const existingRoot = config.get<string>('projectRoot')
+  const existingRoot = config.get<string>('workspaceRoot')
 
   if (existingRoot) {
     const choice = await vscode.window.showInformationMessage(
@@ -76,7 +78,7 @@ async function checkProjectRootAfterWorkspaceChange() {
     if (choice === 'Check Now') {
       // This will trigger the project root calculation in init()
       await config.update(
-        'projectRoot',
+        'workspaceRoot',
         undefined,
         vscode.ConfigurationTarget.Workspace,
       )
