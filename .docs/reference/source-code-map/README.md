@@ -1,6 +1,6 @@
 # Source Code Map - Symlink Config Extension
 
-**Generated**: 2024-12-27T20:45:00.0000000+00:00
+**Generated**: 2024-12-19T16:00:00.0000000+00:00
 **Version**: 0.0.87
 **Purpose**: Complete reference of all source files, functions, types, and constants for change tracking
 
@@ -31,7 +31,29 @@ This documentation is organized into separate files for better maintainability:
 
 ## Recent Changes (v0.0.87)
 
-### Package Build System Webpack Integration (Latest - 27.12.2024)
+### Workspace Root Validation & Property Rename (Latest - 19.12.2024)
+
+- **Comprehensive projectRoot to workspaceRoot rename** - Updated terminology throughout codebase
+  - Renamed `PROJECT_ROOT` constant to `WORKSPACE_ROOT` in settings
+  - Updated package configuration from `symlink-config.projectRoot` to `symlink-config.workspaceRoot`
+  - Renamed command from `pickProjectRoot` to `pickWorkspaceRoot`
+  - Updated all TypeScript files to use `workspaceRoot` variable names
+  - Enhanced `SymlinkConfigSettingsProperty` type to include missing properties
+
+- **Workspace root validation functions** - Added extension helpers for workspace management
+  - Created `isWorkspaceRootValid(workspaceRoot: string): boolean` function
+  - Added `rebase(): string` function to calculate workspace root from folders
+  - Implemented `getWorkspaceName(): string` with priority-based name resolution
+  - Functions validate workspace folders and calculate common path
+  - Integration with settings manager for workspace root property access
+
+- **Settings manager integration** - Enhanced workspace root handling in settings callbacks
+  - Added validation in make callback with automatic rebasing for invalid roots
+  - Warning dialog shown when workspace root is invalid with auto-correction
+  - Afterparty callback updates workspace name in state after changes
+  - Proper error handling and user notification for workspace root issues
+
+### Package Build System Webpack Integration (Previous - 27.12.2024)
 
 - **Directory rename** - Moved `package_json/` to `package/` for cleaner naming
   - Updated all references in webpack plugin and build scripts
