@@ -44,6 +44,14 @@ Re-exports `activate` and `deactivate` from `extension/` module.
 - Registers all extension commands
 - Adds disposables to context.subscriptions
 
+### helpers/workspace.ts
+- `isWorkspaceRootValid(workspaceRoot: string): boolean` - Validates workspace root path
+- `rebase(): string` - Calculates workspace root from workspace folders
+- `getWorkspaceName(): string` - Gets workspace name with priority-based resolution
+  - Priority: workspace file name → workspace root directory name → 'unknown workspace'
+  - Uses settings manager to read workspace root property
+  - Integrates with `basename()` from shared file-ops
+
 ## Initialization Flow
 
 1. **activate()** - Extension activation
